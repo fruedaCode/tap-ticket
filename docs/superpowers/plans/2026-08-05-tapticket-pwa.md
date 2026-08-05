@@ -598,6 +598,13 @@ language sql security definer set search_path = public stable as $$
   select exists (select 1 from ticket_members m where m.ticket_id = p_ticket_id and m.user_id = auth.uid())
 $$;
 
+-- helper: is current user the owner of a ticket (security definer: at owner-row insert
+-- time the caller is not a member yet, so the tickets select policy would hide the row)
+create or replace function is_ticket_owner(p_ticket_id uuid) returns boolean
+language sql security definer set search_path = public stable as $$
+  select exists (select 1 from tickets t where t.id = p_ticket_id and t.owner_id = auth.uid())
+$$;
+
 -- join via share token (idempotent)
 create or replace function join_ticket(p_ticket_id uuid, p_token text) returns void
 language plpgsql security definer set search_path = public as $$
@@ -654,6 +661,34 @@ create trigger on_member_removed
   after delete on ticket_members
   for each row execute function remove_member_assignments();
 
+-- guard: members can update ticket content but not identity columns
+create or replace function protect_ticket_columns() returns trigger
+language plpgsql as $$
+begin
+  if new.id is distinct from old.id
+     or new.owner_id is distinct from old.owner_id
+     or new.share_token is distinct from old.share_token then
+    raise exception 'protected_column';
+  end if;
+  return new;
+end $$;
+
+create trigger protect_ticket_columns
+  before update on tickets
+  for each row execute function protect_ticket_columns();
+
+-- guard: members can flag seen but not change their role
+create or replace function protect_member_role() returns trigger
+language plpgsql as $$
+begin
+  if new.role is distinct from old.role then raise exception 'protected_column'; end if;
+  return new;
+end $$;
+
+create trigger protect_member_role
+  before update on ticket_members
+  for each row execute function protect_member_role();
+
 -- RLS
 alter table profiles enable row level security;
 alter table tickets enable row level security;
@@ -686,8 +721,12 @@ create policy "assignments member delete" on item_assignments for delete to auth
 create policy "members member read" on ticket_members for select to authenticated using (is_ticket_member(ticket_id));
 create policy "members update own seen" on ticket_members for update to authenticated
   using (user_id = auth.uid()) with check (user_id = auth.uid());
-create policy "members member delete" on ticket_members for delete to authenticated using (is_ticket_member(ticket_id));
--- no client insert policy: membership is created only via join_ticket / add_member_by_email / ticket insert path
+create policy "members delete self or owner" on ticket_members for delete to authenticated
+  using (user_id = auth.uid() or exists (select 1 from tickets t where t.id = ticket_id and t.owner_id = auth.uid()));
+create policy "members owner insert" on ticket_members for insert to authenticated
+  with check (user_id = auth.uid() and role = 'owner' and is_ticket_owner(ticket_id));
+-- owner membership row is inserted by the ticket creator for their own tickets;
+-- all other membership is created only via join_ticket / add_member_by_email
 
 -- realtime
 alter publication supabase_realtime add table tickets;
@@ -701,12 +740,13 @@ insert into storage.buckets (id, name, public) values ('ticket-images', 'ticket-
 create policy "members read ticket images" on storage.objects for select to authenticated
   using (bucket_id = 'ticket-images' and is_ticket_member(name::uuid));
 create policy "users upload ticket images" on storage.objects for insert to authenticated
-  with check (bucket_id = 'ticket-images');
+  with check (bucket_id = 'ticket-images'
+              and name ~ '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$');
 create policy "owners delete ticket images" on storage.objects for delete to authenticated
   using (bucket_id = 'ticket-images' and is_ticket_member(name::uuid));
 ```
 
-Note: `is_ticket_member` is `security definer` so policies on `ticket_members` don't recurse.
+Note: `is_ticket_member` is `security definer` so policies on `ticket_members` don't recurse; `is_ticket_owner` is `security definer` because at owner-row insert time the caller is not yet a member, so the `tickets` select policy would hide the row from a plain `exists` subquery. `protect_ticket_columns` / `protect_member_role` triggers stop members from rewriting `owner_id`/`share_token`/their `role` via the member update policies.
 
 - [ ] **Step 2: Commit** — `feat: supabase schema, RLS, RPCs`
 
