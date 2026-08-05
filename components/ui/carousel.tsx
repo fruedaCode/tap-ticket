@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect -- generated shadcn component */
 "use client"
 
 import * as React from "react"

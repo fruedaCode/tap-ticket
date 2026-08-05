@@ -6,7 +6,12 @@
 
 **Architecture:** Next.js 15 App Router + TypeScript + Tailwind + shadcn/ui frontend; Supabase (Postgres+RLS, Auth, Storage, Realtime) backend; server-side AI scanning via a provider abstraction defaulting to Groq (Llama 4 Scout vision). Deployed as a Docker image on fly.io.
 
-**Tech Stack:** Next.js 15, React 19, TypeScript, Tailwind CSS v4, shadcn/ui, @supabase/ssr + @supabase/supabase-js, Groq API (OpenAI-compatible), vitest, @ducanh2912/next-pwa, Docker, fly.io.
+**Tech Stack:** Next.js 16 (scaffolded version — see note), React 19, TypeScript, Tailwind CSS v4, shadcn/ui, @supabase/ssr + @supabase/supabase-js, Groq API (OpenAI-compatible), vitest, hand-rolled service worker (see Task 16 amendment), Docker, fly.io.
+
+> **Next.js 16 amendment (post-scaffold):** the scaffold produced Next.js **16.3.0**, not 15. Two plan changes:
+> 1. `middleware.ts` is deprecated — use **`proxy.ts`** exporting `export async function proxy(request: NextRequest)` (same `config.matcher` export). Task 6 file list changes accordingly: `proxy.ts` instead of `middleware.ts`, and `lib/supabase/middleware.ts` keeps its name but is imported by `proxy.ts`.
+> 2. `@ducanh2912/next-pwa` relies on webpack; Next 16 builds with Turbopack by default. Task 16 is amended to a **hand-rolled service worker** (`public/sw.js` + a small client-side registration component) — no webpack dependency, no build friction.
+> Bundled docs for any doubt: `node_modules/next/dist/docs/` (e.g. `01-app/03-api-reference/03-file-conventions/proxy.md`). Dynamic route `params` are async: in client components use `useParams()` from `next/navigation`.
 
 **Spec:** `docs/superpowers/specs/2026-08-05-tapticket-pwa-design.md`
 
