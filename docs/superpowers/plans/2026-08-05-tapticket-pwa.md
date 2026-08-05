@@ -1087,16 +1087,23 @@ export async function POST(request: Request) {
 
   const buffer = Buffer.from(await file.arrayBuffer())
 
-  // 1) create the ticket row first (id needed for storage path), with placeholder content
-  const { data: ticket, error: ticketError } = await supabase
+  // 1) create the ticket row first (id needed for storage path), with placeholder content.
+  //    NOTE: generate the id in the route and insert WITHOUT .select() — the tickets SELECT
+  //    policy requires membership, which doesn't exist yet, so INSERT...RETURNING would fail RLS.
+  const ticketId = crypto.randomUUID()
+  const { error: ticketError } = await supabase
     .from('tickets')
-    .insert({ owner_id: user.id, share_token: shareToken(), img_path: '', restaurant: {}, invoice: {}, totals: {} })
-    .select('id')
-    .single()
-  if (ticketError || !ticket) return NextResponse.json({ error: ticketError?.message ?? 'insert failed' }, { status: 500 })
+    .insert({ id: ticketId, owner_id: user.id, share_token: shareToken(), img_path: '', restaurant: {}, invoice: {}, totals: {} })
+  if (ticketError) return NextResponse.json({ error: ticketError.message }, { status: 500 })
+
+  // 1.5) owner membership MUST come before any ticket update / items insert (RLS requires membership)
+  const { error: memberError } = await supabase
+    .from('ticket_members')
+    .insert({ ticket_id: ticketId, user_id: user.id, role: 'owner', seen: false })
+  if (memberError) return NextResponse.json({ error: memberError.message }, { status: 500 })
 
   // 2) upload the image
-  const imgPath = ticket.id
+  const imgPath = ticketId
   const { error: uploadError } = await supabase.storage
     .from('ticket-images')
     .upload(imgPath, buffer, { contentType: file.type })
@@ -1110,18 +1117,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: `scan failed: ${e}` }, { status: 502 })
   }
 
-  // 4) fill the ticket, items, owner membership + default assignment
+  // 4) fill the ticket, items + default owner assignment (owner membership already inserted at 1.5)
   const { error: updateError } = await supabase
     .from('tickets')
     .update({ restaurant: inferred.restaurant, invoice: inferred.invoice, totals: inferred.totals, img_path: imgPath })
-    .eq('id', ticket.id)
+    .eq('id', ticketId)
   if (updateError) return NextResponse.json({ error: updateError.message }, { status: 500 })
 
   const { data: items, error: itemsError } = await supabase
     .from('ticket_items')
     .insert(
       inferred.items.map((it, i) => ({
-        ticket_id: ticket.id,
+        ticket_id: ticketId,
         position: i,
         quantity: it.quantity,
         description: it.description,
@@ -1133,14 +1140,13 @@ export async function POST(request: Request) {
     .select('id')
   if (itemsError || !items) return NextResponse.json({ error: itemsError?.message ?? 'items failed' }, { status: 500 })
 
-  await supabase.from('ticket_members').insert({ ticket_id: ticket.id, user_id: user.id, role: 'owner', seen: false })
   await supabase.from('item_assignments').insert(items.map((it) => ({ item_id: it.id, user_id: user.id, payment_type: 'unit', amount: 0 })))
 
-  return NextResponse.json({ ticketId: ticket.id })
+  return NextResponse.json({ ticketId })
 }
 ```
 
-Note: `ticket_items` insert uses the `items member insert` policy — at that point the caller is not yet a member. Order matters: insert the `ticket_members` owner row **before** `ticket_items`. Adjust: move the `ticket_members` insert to right after the ticket row insert (step 1.5). Also RLS on `tickets` update requires membership — owner row must exist first. Final order: ticket → member(owner) → image upload → AI → ticket update → items → assignments.
+Note: RLS order matters and is encoded above: ticket row (id generated route-side, no RETURNING — the SELECT policy requires membership that doesn't exist yet) → owner `ticket_members` row (allowed by the `members owner insert` policy via `is_ticket_owner`) → image upload → AI → ticket update (member update policy) → items (member insert policy; `.select('id')` is fine now that membership exists) → assignments.
 
 - [ ] **Step 2: Commit** — `feat: scan api route`
 
