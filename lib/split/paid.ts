@@ -11,10 +11,8 @@ export const getPercentagePaid = (item: Item, assignments: ItemAssignment[], use
   return sumBy(toCount, (a) => (a.payment_type === 'unit' ? a.amount * threshold : a.amount))
 }
 
-export const isItemPaid = (item: Item, assignments: ItemAssignment[]): boolean => {
-  const finalPrice = getFinalPrice(item)
-  return finalPrice === finalPrice * getPercentagePaid(item, assignments)
-}
+export const isItemPaid = (item: Item, assignments: ItemAssignment[]): boolean =>
+  Math.abs(1 - getPercentagePaid(item, assignments)) < 1e-9
 
 export const getTicketPaidPercentage = (
   items: Array<Item & { assignments: ItemAssignment[] }>,

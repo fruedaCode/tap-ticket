@@ -29,4 +29,10 @@ describe('isItemPaid / getTicketPaidPercentage', () => {
     ]
     expect(getTicketPaidPercentage(items)).toBe(0.75)
   })
+  it('fully covered quantity-6 item reports paid despite float summation error', () => {
+    const sixPack = { ...item, quantity: 6 }
+    const assignments = ['u1', 'u2', 'u3', 'u4', 'u5', 'u6'].map((u) => a(u, 'unit', 1))
+    expect(isItemPaid(sixPack, assignments)).toBe(true)
+  })
+  it('empty ticket has 0% paid', () => expect(getTicketPaidPercentage([])).toBe(0))
 })
