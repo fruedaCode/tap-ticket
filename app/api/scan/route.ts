@@ -11,6 +11,13 @@ function shareToken(): string {
   return [...bytes].map((b) => TOKEN_ALPHABET[b % 62]).join('')
 }
 
+// roll back a half-finished scan: the tickets delete cascades members/items (owner delete policy
+// passes for the caller); the storage remove passes via the member-based delete policy
+async function cleanupFailedScan(supabase: Awaited<ReturnType<typeof createClient>>, ticketId: string) {
+  await supabase.from('tickets').delete().eq('id', ticketId) // cascades members/items
+  await supabase.storage.from('ticket-images').remove([ticketId])
+}
+
 export async function POST(request: Request) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -42,13 +49,17 @@ export async function POST(request: Request) {
   const { error: uploadError } = await supabase.storage
     .from('ticket-images')
     .upload(imgPath, buffer, { contentType: file.type })
-  if (uploadError) return NextResponse.json({ error: uploadError.message }, { status: 500 })
+  if (uploadError) {
+    await cleanupFailedScan(supabase, ticketId)
+    return NextResponse.json({ error: uploadError.message }, { status: 500 })
+  }
 
   // 3) AI scan
   let inferred
   try {
     inferred = await getScanner().scan({ base64: buffer.toString('base64'), mediaType: file.type as 'image/jpeg' | 'image/png' | 'image/webp' })
   } catch (e) {
+    await cleanupFailedScan(supabase, ticketId)
     return NextResponse.json({ error: `scan failed: ${e}` }, { status: 502 })
   }
 
@@ -57,7 +68,10 @@ export async function POST(request: Request) {
     .from('tickets')
     .update({ restaurant: inferred.restaurant, invoice: inferred.invoice, totals: inferred.totals, img_path: imgPath })
     .eq('id', ticketId)
-  if (updateError) return NextResponse.json({ error: updateError.message }, { status: 500 })
+  if (updateError) {
+    await cleanupFailedScan(supabase, ticketId)
+    return NextResponse.json({ error: updateError.message }, { status: 500 })
+  }
 
   const { data: items, error: itemsError } = await supabase
     .from('ticket_items')
@@ -73,9 +87,18 @@ export async function POST(request: Request) {
       })),
     )
     .select('id')
-  if (itemsError || !items) return NextResponse.json({ error: itemsError?.message ?? 'items failed' }, { status: 500 })
+  if (itemsError || !items) {
+    await cleanupFailedScan(supabase, ticketId)
+    return NextResponse.json({ error: itemsError?.message ?? 'items failed' }, { status: 500 })
+  }
 
-  await supabase.from('item_assignments').insert(items.map((it) => ({ item_id: it.id, user_id: user.id, payment_type: 'unit', amount: 0 })))
+  const { error: assignError } = await supabase
+    .from('item_assignments')
+    .insert(items.map((it) => ({ item_id: it.id, user_id: user.id, payment_type: 'unit', amount: 0 })))
+  if (assignError) {
+    await cleanupFailedScan(supabase, ticketId)
+    return NextResponse.json({ error: assignError.message }, { status: 500 })
+  }
 
   return NextResponse.json({ ticketId })
 }
