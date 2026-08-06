@@ -38,14 +38,18 @@ export default function AccountPage() {
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data: { user } }) => {
-      if (!user) return
+      if (!user) {
+        setLoading(false)
+        router.replace('/login')
+        return
+      }
       setEmail(user.email ?? '')
-      setAvatarUrl((user.user_metadata.avatar_url as string | undefined) ?? null)
       const { data: profile } = await supabase
         .from('profiles')
-        .select('display_name')
+        .select('display_name, photo_url')
         .eq('id', user.id)
         .single()
+      setAvatarUrl(profile?.photo_url ?? (user.user_metadata.avatar_url as string | undefined) ?? null)
       setDisplayName(
         profile?.display_name ??
           (user.user_metadata.full_name as string | undefined) ??
@@ -54,18 +58,21 @@ export default function AccountPage() {
       )
       setLoading(false)
     })
-  }, [supabase])
+  }, [supabase, router])
 
   const handleSaveName = async () => {
     setSaving(true)
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-    if (!user) return
-    const { error } = await supabase.from('profiles').update({ display_name: displayName }).eq('id', user.id)
-    if (error) toast.error(t('Error'))
-    else toast.success(t('Success'))
-    setSaving(false)
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+      if (!user) return
+      const { error } = await supabase.from('profiles').update({ display_name: displayName }).eq('id', user.id)
+      if (error) toast.error(t('Error'))
+      else toast.success(t('Success'))
+    } finally {
+      setSaving(false)
+    }
   }
 
   const handleSignOut = async () => {
