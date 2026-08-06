@@ -28,9 +28,12 @@ export async function fetchTicketDetail(supabase: SupabaseClient, ticketId: stri
 }
 
 export async function fetchTicketList(supabase: SupabaseClient) {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return []
   const { data: memberships, error } = await supabase
     .from('ticket_members')
     .select('ticket_id, seen, role, tickets(*)')
+    .eq('user_id', user.id)
     .order('seen', { ascending: true })
   if (error) throw error
   const rows = (memberships ?? []).filter((m) => m.tickets)
