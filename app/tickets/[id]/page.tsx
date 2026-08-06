@@ -227,9 +227,9 @@ export default function TicketSummaryPage() {
         <IndividualBill bill={selectedBill} settled={selectedSettled} />
 
         <div className="flex gap-2">
-          <ShareButton ticket={ticket} />
-          <TagDialog ticketId={ticket.id} members={ticket.members} />
-          <Button type="button" variant="outline" className="min-h-11" onClick={() => router.push(`/tickets/${id}/edit`)}>
+          <ShareButton ticket={ticket} className="min-h-11 flex-1" />
+          <TagDialog ticketId={ticket.id} members={ticket.members} className="min-h-11 flex-1" />
+          <Button type="button" variant="outline" className="min-h-11 flex-1" onClick={() => router.push(`/tickets/${id}/edit`)}>
             <Pencil />
             {t('Edit')}
           </Button>

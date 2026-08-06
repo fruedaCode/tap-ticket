@@ -5,8 +5,9 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { useI18n } from '@/lib/i18n'
 import type { Ticket } from '@/lib/types'
+import { cn } from '@/lib/utils'
 
-export function ShareButton({ ticket }: { ticket: Ticket }) {
+export function ShareButton({ ticket, className }: { ticket: Ticket; className?: string }) {
   const { t } = useI18n()
 
   const handleShare = async () => {
@@ -24,7 +25,7 @@ export function ShareButton({ ticket }: { ticket: Ticket }) {
   }
 
   return (
-    <Button type="button" variant="outline" onClick={handleShare}>
+    <Button type="button" variant="outline" className={cn(className)} onClick={handleShare}>
       <Share2 />
       {t('Share')}
     </Button>

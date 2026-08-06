@@ -12,7 +12,7 @@ import { addMemberByEmail, removeMember } from '@/lib/mutations'
 import { createClient } from '@/lib/supabase/client'
 import type { MemberWithProfile } from '@/lib/types'
 
-export function TagDialog({ ticketId, members }: { ticketId: string; members: MemberWithProfile[] }) {
+export function TagDialog({ ticketId, members, className }: { ticketId: string; members: MemberWithProfile[]; className?: string }) {
   const { t } = useI18n()
   const [supabase] = useState(createClient)
   const [email, setEmail] = useState('')
@@ -48,7 +48,7 @@ export function TagDialog({ ticketId, members }: { ticketId: string; members: Me
 
   return (
     <Dialog>
-      <DialogTrigger render={<Button variant="outline" />}>
+      <DialogTrigger render={<Button variant="outline" className={className} />}>
         <UserPlus />
         {t('Tag')}
       </DialogTrigger>

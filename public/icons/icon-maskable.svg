@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Tap Ticket logo">
+  <!-- Maskable variant: full-bleed background, artwork inside the safe zone -->
+  <rect width="512" height="512" fill="#DC2626"/>
+  <g transform="rotate(-10 256 256)">
+    <!-- ticket body with side notches -->
+    <path d="M 134 171
+             H 378
+             Q 396 171 396 189
+             V 234 A 22 22 0 0 1 396 278
+             V 323 Q 396 341 378 341
+             H 134
+             Q 116 341 116 323
+             V 278 A 22 22 0 0 1 116 234
+             V 189 Q 116 171 134 171 Z"
+          fill="#FFFFFF"/>
+    <!-- tear-off perforation -->
+    <line x1="186" y1="193" x2="186" y2="319"
+          stroke="#DC2626" stroke-width="6" stroke-linecap="round"
+          stroke-dasharray="4 16"/>
+    <!-- tap ripple: open arcs radiating from the touch point -->
+    <path d="M 301.5 201.9 A 56 56 0 1 1 261.9 241.5"
+          fill="none" stroke="#DC2626" stroke-width="8" stroke-linecap="round" opacity="0.45"/>
+    <path d="M 306.7 221.2 A 36 36 0 1 1 281.2 246.7"
+          fill="none" stroke="#DC2626" stroke-width="8" stroke-linecap="round" opacity="0.75"/>
+    <circle cx="316" cy="256" r="17" fill="#DC2626"/>
+  </g>
+</svg>
