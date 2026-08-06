@@ -46,8 +46,23 @@ export type ItemAssignment = {
 }
 export type MemberRole = 'owner' | 'member'
 export type TicketMember = { ticket_id: string; user_id: string; role: MemberRole; seen: boolean }
+export type SettlementStatus = 'pending' | 'confirmed' | 'rejected'
+export type Settlement = {
+  id: string
+  ticket_id: string
+  from_user: string
+  amount: number
+  proof_path: string
+  status: SettlementStatus
+  created_at: string
+  resolved_at: string | null
+}
 
 // ---- View models ----
 export type TicketItemWithAssignments = TicketItem & { assignments: ItemAssignment[] }
 export type MemberWithProfile = TicketMember & { profile: Profile }
-export type TicketDetail = Ticket & { items: TicketItemWithAssignments[]; members: MemberWithProfile[] }
+export type TicketDetail = Ticket & {
+  items: TicketItemWithAssignments[]
+  members: MemberWithProfile[]
+  settlements: Settlement[]
+}

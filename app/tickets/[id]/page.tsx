@@ -7,6 +7,7 @@ import { BottomNav } from '@/components/bottom-nav'
 import { GroupStatusBar } from '@/components/claim/group-status-bar'
 import { memberName } from '@/components/claim/participant-avatar'
 import { ReceiptListSkeleton } from '@/components/claim/receipt-list-skeleton'
+import { SettleDialog } from '@/components/claim/settle-dialog'
 import { TotalFooter } from '@/components/claim/total-footer'
 import { IndividualBill } from '@/components/individual-bill'
 import { ItemDialog } from '@/components/item-dialog'
@@ -20,7 +21,7 @@ import { numberToCurrency } from '@/lib/currency'
 import { useTicket } from '@/lib/hooks/useTicket'
 import { useI18n } from '@/lib/i18n'
 import { markSeen } from '@/lib/mutations'
-import { getTicketPaidPercentage, groupItemsByUser, type UserBill } from '@/lib/split'
+import { getOutstanding, getTicketPaidPercentage, groupItemsByUser, type UserBill } from '@/lib/split'
 import { createClient } from '@/lib/supabase/client'
 import type { TicketItemWithAssignments } from '@/lib/types'
 
@@ -43,7 +44,7 @@ export default function TicketSummaryPage() {
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null)
   const [imgUrl, setImgUrl] = useState<string | null>(null)
   const [imgOpen, setImgOpen] = useState(false)
-  const billRef = useRef<HTMLDivElement>(null)
+  const [settleOpen, setSettleOpen] = useState(false)
 
   // live-update feedback: diff assignment signatures between refetches (§3.2)
   const prevSigs = useRef<Map<string, string> | null>(null)
@@ -147,6 +148,8 @@ export default function TicketSummaryPage() {
   const selected = ticket.members.some((m) => m.user_id === requested) ? requested : (userId ?? '')
   const emptyBill: UserBill = { userId: selected, items: [], total: 0 }
   const selectedBill = bills.find((b) => b.userId === selected) ?? emptyBill
+  const myBill = bills.find((b) => b.userId === userId) ?? { userId: userId ?? '', items: [], total: 0 }
+  const selectedSettled = selectedBill.total > 0 && getOutstanding(selectedBill, ticket.settlements) === 0
 
   // derive the live item so realtime reloads are reflected in the open dialog;
   // if the item was deleted, the dialog is treated as closed
@@ -221,9 +224,7 @@ export default function TicketSummaryPage() {
           )}
         </section>
 
-        <div ref={billRef} className="scroll-mt-4">
-          <IndividualBill bill={selectedBill} />
-        </div>
+        <IndividualBill bill={selectedBill} settled={selectedSettled} />
 
         <div className="flex gap-2">
           <ShareButton ticket={ticket} />
@@ -239,6 +240,16 @@ export default function TicketSummaryPage() {
         <ItemDialog item={selectedItem} userId={userId} onClose={() => setSelectedItemId(null)} />
       )}
 
+      {userId && (
+        <SettleDialog
+          ticket={ticket}
+          bill={myBill}
+          userId={userId}
+          open={settleOpen}
+          onClose={() => setSettleOpen(false)}
+        />
+      )}
+
       <Dialog open={imgOpen} onOpenChange={setImgOpen}>
         <DialogContent className="max-w-[calc(100%-1rem)] p-2 sm:max-w-2xl" onClick={() => setImgOpen(false)}>
           {imgUrl && (
@@ -249,7 +260,7 @@ export default function TicketSummaryPage() {
       </Dialog>
 
       <div className="fixed inset-x-0 bottom-0 z-50 mx-auto max-w-md">
-        <TotalFooter bill={selectedBill} onReview={() => billRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })} />
+        <TotalFooter bill={selectedBill} onReview={() => setSettleOpen(true)} />
         <BottomNav className="relative" />
       </div>
     </div>

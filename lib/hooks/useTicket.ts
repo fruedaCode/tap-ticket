@@ -29,6 +29,7 @@ export function useTicket(ticketId: string) {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'item_assignments' }, reload)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'ticket_members', filter: `ticket_id=eq.${ticketId}` }, reload)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'tickets', filter: `id=eq.${ticketId}` }, reload)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'settlements', filter: `ticket_id=eq.${ticketId}` }, reload)
       .subscribe()
     return () => { supabase.removeChannel(channel) }
   }, [reload, supabase, ticketId])

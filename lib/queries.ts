@@ -22,6 +22,11 @@ export async function fetchTicketDetail(supabase: SupabaseClient, ticketId: stri
   const { data: profiles } = userIds.length
     ? await supabase.from('profiles').select('*').in('id', userIds)
     : { data: [] }
+  const { data: settlements } = await supabase
+    .from('settlements')
+    .select('*')
+    .eq('ticket_id', ticketId)
+    .order('created_at')
   return {
     ...ticket,
     items: (items ?? []).map((i): TicketItemWithAssignments => ({
@@ -32,6 +37,7 @@ export async function fetchTicketDetail(supabase: SupabaseClient, ticketId: stri
       ...m,
       profile: (profiles ?? []).find((p) => p.id === m.user_id) ?? { id: m.user_id, email: '', display_name: null, photo_url: null },
     })),
+    settlements: settlements ?? [],
   }
 }
 
