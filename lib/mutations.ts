@@ -60,9 +60,9 @@ export async function updateItemFields(
 }
 
 export async function deleteTicket(supabase: SupabaseClient, ticketId: string, imgPath: string) {
+  await supabase.storage.from('ticket-images').remove([imgPath])
   const { error } = await supabase.from('tickets').delete().eq('id', ticketId)
   if (error) throw error
-  await supabase.storage.from('ticket-images').remove([imgPath])
 }
 
 export async function removeMember(supabase: SupabaseClient, ticketId: string, userId: string) {
