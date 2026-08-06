@@ -42,7 +42,10 @@ type TotalsForm = {
   totalWithTax: string
 }
 
-const num = (s: string) => (s.trim() === '' ? 0 : Number(s))
+const num = (s: string) => {
+  const n = Number(s)
+  return s.trim() === '' || !Number.isFinite(n) ? 0 : n
+}
 
 export default function TicketEditPage() {
   const { id } = useParams<{ id: string }>()
@@ -138,7 +141,16 @@ export default function TicketEditPage() {
     }
   }
 
-  if (loading || !restaurant || !invoice || !totals || !items) {
+  if (!loading && !ticket) {
+    return (
+      <div className="mx-auto min-h-dvh max-w-md bg-background pb-24">
+        <p className="px-4 pt-24 text-center text-muted-foreground">{t('Invalid link')}</p>
+        <BottomNav />
+      </div>
+    )
+  }
+
+  if (loading || !ticket || !restaurant || !invoice || !totals || !items) {
     return (
       <div className="mx-auto min-h-dvh max-w-md bg-background pb-24">
         <div className="space-y-4 px-4 pt-6">
@@ -150,15 +162,6 @@ export default function TicketEditPage() {
           <Skeleton className="h-10 w-full" />
           <Skeleton className="h-24 w-full" />
         </div>
-        <BottomNav />
-      </div>
-    )
-  }
-
-  if (!ticket) {
-    return (
-      <div className="mx-auto min-h-dvh max-w-md bg-background pb-24">
-        <p className="px-4 pt-24 text-center text-muted-foreground">{t('Invalid link')}</p>
         <BottomNav />
       </div>
     )
@@ -212,7 +215,7 @@ export default function TicketEditPage() {
         <section className="flex flex-col gap-3">
           <h2 className="text-lg font-semibold">{t('Ticket')}</h2>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="invoice-type">Type</Label>
+            <Label htmlFor="invoice-type">{t('Type')}</Label>
             <Input
               id="invoice-type"
               value={invoice.type}
@@ -220,7 +223,7 @@ export default function TicketEditPage() {
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="invoice-operation-number">Operation number</Label>
+            <Label htmlFor="invoice-operation-number">{t('Operation number')}</Label>
             <Input
               id="invoice-operation-number"
               value={invoice.operation_number}
@@ -228,7 +231,7 @@ export default function TicketEditPage() {
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="invoice-table">Table</Label>
+            <Label htmlFor="invoice-table">{t('Table')}</Label>
             <Input
               id="invoice-table"
               value={invoice.table}
@@ -244,7 +247,7 @@ export default function TicketEditPage() {
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="invoice-cashier">Cashier</Label>
+            <Label htmlFor="invoice-cashier">{t('Cashier')}</Label>
             <Input
               id="invoice-cashier"
               value={invoice.cashier}
@@ -290,7 +293,7 @@ export default function TicketEditPage() {
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <Label htmlFor={`item-${item.id}-discount-percentage`}>Discount %</Label>
+                  <Label htmlFor={`item-${item.id}-discount-percentage`}>{t('Discount %')}</Label>
                   <Input
                     id={`item-${item.id}-discount-percentage`}
                     type="number"
@@ -301,7 +304,7 @@ export default function TicketEditPage() {
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <Label htmlFor={`item-${item.id}-discount-amount`}>Discount amount</Label>
+                  <Label htmlFor={`item-${item.id}-discount-amount`}>{t('Discount amount')}</Label>
                   <Input
                     id={`item-${item.id}-discount-amount`}
                     type="number"
@@ -322,7 +325,7 @@ export default function TicketEditPage() {
           <h2 className="text-lg font-semibold">{t('Bill')}</h2>
           <div className="grid grid-cols-2 gap-3">
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="totals-base">Base</Label>
+              <Label htmlFor="totals-base">{t('Base')}</Label>
               <Input
                 id="totals-base"
                 type="number"
@@ -355,7 +358,7 @@ export default function TicketEditPage() {
               />
             </div>
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="totals-without-tax">Total without tax</Label>
+              <Label htmlFor="totals-without-tax">{t('Total without tax')}</Label>
               <Input
                 id="totals-without-tax"
                 type="number"

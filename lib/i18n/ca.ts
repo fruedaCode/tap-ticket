@@ -76,4 +76,13 @@ export const ca: Record<string, string> = {
   'Link copied': 'Enllaç copiat',
   'Scanning ticket': 'Escanejant tiquet',
   'Remove': 'Elimina',
+  'Type': 'Tipus',
+  'Operation number': 'Número d’operació',
+  'Table': 'Taula',
+  'Cashier': 'Caixer',
+  'Discount %': 'Descompte %',
+  'Discount amount': 'Import descompte',
+  'Base': 'Base',
+  'Total without tax': 'Total sense impostos',
+  'Items': 'Articles',
 }
