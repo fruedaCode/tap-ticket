@@ -43,7 +43,10 @@ export async function POST(request: Request) {
   const { error: memberError } = await supabase
     .from('ticket_members')
     .insert({ ticket_id: ticketId, user_id: user.id, role: 'owner', seen: false })
-  if (memberError) return NextResponse.json({ error: memberError.message }, { status: 500 })
+  if (memberError) {
+    await cleanupFailedScan(supabase, ticketId)
+    return NextResponse.json({ error: memberError.message }, { status: 500 })
+  }
 
   // 2) upload the image (object name = ticket UUID; storage insert policy enforces UUID-shaped names)
   const imgPath = ticketId

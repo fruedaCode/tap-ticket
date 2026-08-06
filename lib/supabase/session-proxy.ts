@@ -25,7 +25,10 @@ export async function updateSession(request: NextRequest) {
   // Refresh cookies written to `response` by setAll must survive redirects.
   const redirectWithCookies = (url: URL) => {
     const redirect = NextResponse.redirect(url)
-    response.cookies.getAll().forEach((c) => redirect.cookies.set(c.name, c.value))
+    response.cookies.getAll().forEach((c) => {
+      const { name, value, ...options } = c
+      redirect.cookies.set(name, value, options)
+    })
     return redirect
   }
   const path = request.nextUrl.pathname

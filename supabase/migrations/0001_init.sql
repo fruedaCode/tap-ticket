@@ -224,3 +224,39 @@ create policy "users upload ticket images" on storage.objects for insert to auth
               and is_ticket_owner(name::uuid));
 create policy "owners delete ticket images" on storage.objects for delete to authenticated
   using (bucket_id = 'ticket-images' and is_ticket_owner(name::uuid));
+
+-- realtime authorization (private channels): RLS on realtime.messages gates subscriptions
+-- ticket channels use topic 'ticket:<ticket uuid>' — members only; the regex guard keeps
+-- the uuid cast safe by running it only for well-formed ticket topics
+create policy "ticket members can read realtime"
+  on realtime.messages for select to authenticated
+  using (
+    case
+      when realtime.topic() ~ '^ticket:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+      then is_ticket_member(substring(realtime.topic() from 8)::uuid)
+      else false
+    end
+  );
+
+-- per-user ticket list channel, topic 'ticket_list:<user uuid>'
+create policy "users read own ticket list realtime"
+  on realtime.messages for select to authenticated
+  using (realtime.topic() = 'ticket_list:' || auth.uid()::text);
+
+-- guard: the owner membership row cannot be deleted while the ticket and the profile
+-- exist; cascade deletes from ticket/user removal still pass because the parent row
+-- is already gone when the FK action fires
+create or replace function protect_owner_membership() returns trigger
+language plpgsql as $$
+begin
+  if old.role = 'owner'
+     and exists (select 1 from tickets t where t.id = old.ticket_id)
+     and exists (select 1 from profiles p where p.id = old.user_id) then
+    raise exception 'protected_member';
+  end if;
+  return old;
+end $$;
+
+create trigger protect_owner_membership
+  before delete on ticket_members
+  for each row execute function protect_owner_membership();

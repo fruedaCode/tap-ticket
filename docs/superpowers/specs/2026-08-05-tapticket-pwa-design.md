@@ -112,7 +112,7 @@ Pure functions in `lib/split/`, TDD with vitest:
 
 ### PWA
 
-`@ducanh2912/next-pwa`, `manifest.webmanifest` (name TapTicket, theme color, 192/512 icons, `display: standalone`), offline app shell, installable on iOS/Android. Camera via file input `capture="environment"` (most reliable cross-browser; no getUserMedia viewfinder).
+Hand-rolled service worker: `public/sw.js` registered by the `ServiceWorkerRegistration` client component. `@ducanh2912/next-pwa` was dropped because it is incompatible with Next.js 16 / Turbopack. Web manifest via `app/manifest.ts` (name TapTicket, theme color, 192/512 icons, `display: standalone`), offline app shell, installable on iOS/Android. Camera via file input `capture="environment"` (most reliable cross-browser; no getUserMedia viewfinder).
 
 ### Deployment
 

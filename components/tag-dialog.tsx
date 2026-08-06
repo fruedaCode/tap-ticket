@@ -80,15 +80,17 @@ export function TagDialog({ ticketId, members }: { ticketId: string; members: Me
                   <AvatarFallback>{name.slice(0, 2).toUpperCase()}</AvatarFallback>
                 </Avatar>
                 <span className="min-w-0 flex-1 truncate text-sm">{name}</span>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-sm"
-                  aria-label={t('Remove')}
-                  onClick={() => handleRemove(member.user_id)}
-                >
-                  <Trash2 className="text-destructive" />
-                </Button>
+                {member.role !== 'owner' && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon-sm"
+                    aria-label={t('Remove')}
+                    onClick={() => handleRemove(member.user_id)}
+                  >
+                    <Trash2 className="text-destructive" />
+                  </Button>
+                )}
               </div>
             )
           })}

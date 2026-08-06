@@ -13,7 +13,7 @@ Built as a **Next.js 16 PWA** backed by **Supabase** (Postgres + Auth + Realtime
 ## Supabase setup
 
 1. Create a project at [supabase.com](https://supabase.com).
-2. In the **SQL Editor**, run the full contents of `supabase/migrations/0001_init.sql`. This creates the tables, RLS policies, realtime publication, and the `ticket-images` storage bucket (private, with its access policies) — no manual bucket creation needed.
+2. In the **SQL Editor**, run the full contents of `supabase/migrations/0001_init.sql`. This creates the tables, RLS policies, realtime publication, and the `ticket-images` storage bucket (private, with its access policies) — no manual bucket creation needed. Realtime Authorization (RLS on `realtime.messages` for the private channels the app subscribes to) is handled by the same migration.
 3. In **Authentication → Providers**, enable **Google** and **Email** (with email OTP).
 
 ## Environment variables

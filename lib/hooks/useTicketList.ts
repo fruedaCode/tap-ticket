@@ -1,5 +1,6 @@
 'use client'
 import { useCallback, useEffect, useState } from 'react'
+import type { RealtimeChannel } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/client'
 import { fetchTicketList } from '@/lib/queries'
 
@@ -20,12 +21,17 @@ export function useTicketList() {
 
   useEffect(() => {
     reload()
-    const channel = supabase
-      .channel('ticket_list')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'ticket_members' }, reload)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'tickets' }, reload)
-      .subscribe()
-    return () => { supabase.removeChannel(channel) }
+    // user-scoped topic: realtime authorization keys the RLS policy to auth.uid()
+    let channel: RealtimeChannel | undefined
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) return
+      channel = supabase
+        .channel(`ticket_list:${user.id}`, { config: { private: true } })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'ticket_members' }, reload)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'tickets' }, reload)
+        .subscribe()
+    })
+    return () => { if (channel) supabase.removeChannel(channel) }
   }, [reload, supabase])
 
   return { rows, loading, reload }

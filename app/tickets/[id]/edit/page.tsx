@@ -115,7 +115,7 @@ export default function TicketEditPage() {
       for (const item of items) {
         await updateItemFields(supabase, item.id, {
           description: item.description,
-          quantity: num(item.quantity),
+          quantity: Math.max(1, num(item.quantity)),
           price: num(item.price),
           discount_percentage: num(item.discount_percentage),
           discount_amount: num(item.discount_amount),

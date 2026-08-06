@@ -12,3 +12,9 @@ describe('getFinalPrice', () => {
 })
 it('getUnitPrice divides by quantity', () => expect(getUnitPrice(base)).toBe(5))
 it('getUnitThreshold is 1/quantity', () => expect(getUnitThreshold(base)).toBe(0.5))
+
+describe('quantity 0 guards', () => {
+  const zero = { ...base, quantity: 0 }
+  it('getUnitPrice returns 0 instead of Infinity', () => expect(getUnitPrice(zero)).toBe(0))
+  it('getUnitThreshold returns 0 instead of Infinity', () => expect(getUnitThreshold(zero)).toBe(0))
+})

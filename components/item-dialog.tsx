@@ -146,7 +146,7 @@ export function ItemDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            {item.description} — {t('Remaining')}: {titleRemaining}€
+            {item.description} — {t('Remaining')}: {titleRemaining} €
           </DialogTitle>
         </DialogHeader>
 
@@ -181,7 +181,7 @@ export function ItemDialog({
               onChange={setAmount}
             />
             <p className="text-right text-sm">
-              {t('Total')}: {numberToCurrency(liveTotal, lang)}€
+              {t('Total')}: {numberToCurrency(liveTotal, lang)} €
             </p>
             <div className="flex justify-end">
               <Button type="button" disabled={saving} onClick={handleSave}>

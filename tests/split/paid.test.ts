@@ -35,4 +35,11 @@ describe('isItemPaid / getTicketPaidPercentage', () => {
     expect(isItemPaid(sixPack, assignments)).toBe(true)
   })
   it('empty ticket has 0% paid', () => expect(getTicketPaidPercentage([])).toBe(0))
+  it('quantity-0 item produces no NaN in getPercentagePaid', () => {
+    const zero = { ...item, quantity: 0 }
+    const paid = getPercentagePaid(zero, [a('u1', 'unit', 2)])
+    expect(paid).toBe(0)
+    expect(Number.isNaN(paid)).toBe(false)
+    expect(Number.isFinite(getTicketPaidPercentage([{ ...zero, assignments: [a('u1', 'unit', 2)] }]))).toBe(true)
+  })
 })

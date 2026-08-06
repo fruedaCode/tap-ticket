@@ -20,7 +20,7 @@ export function useTicket(ticketId: string) {
   useEffect(() => {
     reload()
     const channel = supabase
-      .channel(`ticket:${ticketId}`)
+      .channel(`ticket:${ticketId}`, { config: { private: true } })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'ticket_items', filter: `ticket_id=eq.${ticketId}` }, reload)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'item_assignments' }, reload)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'ticket_members', filter: `ticket_id=eq.${ticketId}` }, reload)

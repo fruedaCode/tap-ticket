@@ -8,5 +8,6 @@ export const getFinalPrice = (item: PricedItem): number => {
   return item.price
 }
 
-export const getUnitThreshold = (item: Pick<TicketItem, 'quantity'>): number => 1 / item.quantity
-export const getUnitPrice = (item: PricedItem): number => item.price / item.quantity
+export const getUnitThreshold = (item: Pick<TicketItem, 'quantity'>): number =>
+  item.quantity <= 0 ? 0 : 1 / item.quantity
+export const getUnitPrice = (item: PricedItem): number => (item.quantity <= 0 ? 0 : item.price / item.quantity)
