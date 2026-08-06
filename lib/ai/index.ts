@@ -1,3 +1,4 @@
+import 'server-only'
 import { GroqScanner } from './groq'
 import { MockScanner } from './mock'
 import type { TicketScanner } from './types'
