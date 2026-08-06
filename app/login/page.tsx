@@ -1,7 +1,7 @@
 'use client'
 
 import { Suspense, useEffect, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
 import { useI18n } from '@/lib/i18n'
@@ -10,15 +10,13 @@ import { Input } from '@/components/ui/input'
 
 function LoginForm() {
   const { t } = useI18n()
-  const router = useRouter()
   const searchParams = useSearchParams()
   const next = searchParams.get('next') ?? '/tickets'
   const safeNext = next.startsWith('/') && !next.startsWith('//') ? next : '/tickets'
   const error = searchParams.get('error')
 
   const [email, setEmail] = useState('')
-  const [code, setCode] = useState('')
-  const [codeSent, setCodeSent] = useState(false)
+  const [linkSent, setLinkSent] = useState(false)
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
@@ -36,39 +34,27 @@ function LoginForm() {
     if (error) toast.error(error.message)
   }
 
-  const sendCode = async (e: React.FormEvent) => {
+  const sendLink = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     const supabase = createClient()
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { shouldCreateUser: true },
+      options: {
+        shouldCreateUser: true,
+        emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(safeNext)}`,
+      },
     })
     setLoading(false)
     if (error) {
       toast.error(error.message)
     } else {
-      setCodeSent(true)
-    }
-  }
-
-  const validateCode = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    const supabase = createClient()
-    const { error } = await supabase.auth.verifyOtp({ email, token: code, type: 'email' })
-    setLoading(false)
-    if (error) {
-      toast.error(error.message)
-    } else {
-      router.push(safeNext)
-      router.refresh()
+      setLinkSent(true)
     }
   }
 
   const useDifferentEmail = () => {
-    setCodeSent(false)
-    setCode('')
+    setLinkSent(false)
   }
 
   return (
@@ -85,8 +71,8 @@ function LoginForm() {
 
         <div className="space-y-3">
           <p className="text-center text-sm font-medium">{t('Sign in with email')}</p>
-          {!codeSent ? (
-            <form onSubmit={sendCode} className="space-y-3">
+          {!linkSent ? (
+            <form onSubmit={sendLink} className="space-y-3">
               <Input
                 type="email"
                 placeholder="email@example.com"
@@ -94,21 +80,15 @@ function LoginForm() {
                 onChange={(e) => setEmail(e.target.value)}
               />
               <Button type="submit" className="w-full" disabled={loading || !email}>
-                {t('Send code')}
+                {t('Send link')}
               </Button>
             </form>
           ) : (
-            <form onSubmit={validateCode} className="space-y-3">
-              <p className="text-center text-sm text-muted-foreground">{t('Check your email')}</p>
-              <Input
-                inputMode="numeric"
-                placeholder={t('Code')}
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-              />
-              <Button type="submit" className="w-full" disabled={loading || !code}>
-                {t('Validate')}
-              </Button>
+            <div className="space-y-3">
+              <p className="text-center text-sm font-medium">{t('Check your email')}</p>
+              <p className="text-center text-sm text-muted-foreground">
+                {t('Click the link in the email we sent you')}
+              </p>
               <Button
                 type="button"
                 variant="ghost"
@@ -117,7 +97,7 @@ function LoginForm() {
               >
                 {t('Use a different email')}
               </Button>
-            </form>
+            </div>
           )}
         </div>
       </div>
