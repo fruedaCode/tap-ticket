@@ -1,8 +1,11 @@
+// Bump CACHE_NAME on each deploy to invalidate old caches
 const CACHE_NAME = "tapticket-v1";
 
+const MAX_CACHE_ENTRIES = 50;
+
+// Only safe-to-precache assets: the proxy redirects unauthenticated
+// navigations, so HTML pages must be cached at runtime, not at install time.
 const APP_SHELL = [
-  "/tickets",
-  "/login",
   "/manifest.webmanifest",
   "/icons/icon-192.png",
   "/icons/icon-512.png",
@@ -42,18 +45,35 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Navigations: network-first, fall back to the cached app shell offline.
+  // Navigations: network-first, fall back to the cache when offline.
   if (request.mode === "navigate") {
     event.respondWith(
       fetch(request)
         .then((response) => {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+          if (response.ok) {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then((cache) =>
+              cache.keys().then((keys) => {
+                if (keys.length > MAX_CACHE_ENTRIES) {
+                  cache.delete(keys[0]);
+                }
+                return cache.put(request, copy);
+              }),
+            );
+          }
           return response;
         })
         .catch(async () => {
           const cached = await caches.match(request);
-          return cached || caches.match("/tickets");
+          if (cached) return cached;
+          const shell = await caches.match("/tickets");
+          return (
+            shell ||
+            new Response("Offline", {
+              status: 503,
+              headers: { "Content-Type": "text/plain" },
+            })
+          );
         }),
     );
     return;
@@ -69,8 +89,10 @@ self.addEventListener("fetch", (event) => {
         (cached) =>
           cached ||
           fetch(request).then((response) => {
-            const copy = response.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+            if (response.ok) {
+              const copy = response.clone();
+              caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+            }
             return response;
           }),
       ),
