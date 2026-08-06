@@ -31,6 +31,9 @@ export async function updateSession(request: NextRequest) {
   const path = request.nextUrl.pathname
   const isPublic = PUBLIC_PATHS.some((p) => path.startsWith(p))
   if (!user && !isPublic) {
+    if (path.startsWith('/api')) {
+      return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
+    }
     const url = request.nextUrl.clone()
     const next = path + request.nextUrl.search
     url.pathname = '/login'
