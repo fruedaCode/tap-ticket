@@ -1,9 +1,13 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { Pencil } from 'lucide-react'
+import { Pencil, ReceiptText, TriangleAlert, Users } from 'lucide-react'
 import { BottomNav } from '@/components/bottom-nav'
+import { GroupStatusBar } from '@/components/claim/group-status-bar'
+import { memberName } from '@/components/claim/participant-avatar'
+import { ReceiptListSkeleton } from '@/components/claim/receipt-list-skeleton'
+import { TotalFooter } from '@/components/claim/total-footer'
 import { IndividualBill } from '@/components/individual-bill'
 import { ItemDialog } from '@/components/item-dialog'
 import { ShareButton } from '@/components/share-button'
@@ -12,13 +16,20 @@ import { TicketItems } from '@/components/ticket-items'
 import { UsersCarousel } from '@/components/users-carousel'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
-import { Skeleton } from '@/components/ui/skeleton'
 import { numberToCurrency } from '@/lib/currency'
 import { useTicket } from '@/lib/hooks/useTicket'
 import { useI18n } from '@/lib/i18n'
 import { markSeen } from '@/lib/mutations'
 import { getTicketPaidPercentage, groupItemsByUser, type UserBill } from '@/lib/split'
 import { createClient } from '@/lib/supabase/client'
+import type { TicketItemWithAssignments } from '@/lib/types'
+
+function assignmentSignature(item: TicketItemWithAssignments): string {
+  return item.assignments
+    .map((a) => `${a.user_id}:${a.payment_type}:${a.amount}`)
+    .sort()
+    .join('|')
+}
 
 export default function TicketSummaryPage() {
   const { id } = useParams<{ id: string }>()
@@ -32,6 +43,12 @@ export default function TicketSummaryPage() {
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null)
   const [imgUrl, setImgUrl] = useState<string | null>(null)
   const [imgOpen, setImgOpen] = useState(false)
+  const billRef = useRef<HTMLDivElement>(null)
+
+  // live-update feedback: diff assignment signatures between refetches (§3.2)
+  const prevSigs = useRef<Map<string, string> | null>(null)
+  const [flashIds, setFlashIds] = useState<ReadonlySet<string>>(new Set())
+  const [announcement, setAnnouncement] = useState('')
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -56,42 +73,70 @@ export default function TicketSummaryPage() {
       .then(({ data }) => setImgUrl(data?.signedUrl ?? null))
   }, [supabase, ticket?.img_path])
 
+  useEffect(() => {
+    if (!ticket) return
+    const next = new Map(ticket.items.map((i) => [i.id, assignmentSignature(i)]))
+    const prev = prevSigs.current
+    prevSigs.current = next
+    if (!prev) return // first load: nothing to highlight
+    const changed = ticket.items.filter((i) => prev.has(i.id) && prev.get(i.id) !== next.get(i.id))
+    if (changed.length === 0) return
+
+    setFlashIds(new Set(changed.map((i) => i.id)))
+
+    // announce the first newly-claiming participant when determinable
+    const first = changed[0]
+    const prevUsers = new Set(
+      (prev.get(first.id) ?? '')
+        .split('|')
+        .filter(Boolean)
+        .map((s) => s.split(':')[0]),
+    )
+    const newUserId = first.assignments.map((a) => a.user_id).find((u) => !prevUsers.has(u))
+    const newMember = newUserId ? ticket.members.find((m) => m.user_id === newUserId) : undefined
+    setAnnouncement(newMember ? `${memberName(newMember)} ${t('claimed')} ${first.description}` : t('Bill updated'))
+
+    const timer = setTimeout(() => {
+      setFlashIds(new Set())
+      setAnnouncement('')
+    }, 700)
+    return () => clearTimeout(timer)
+  }, [ticket, t])
+
   const bills = useMemo(() => (ticket ? groupItemsByUser(ticket.items) : []), [ticket])
 
   if (loading) {
     return (
-      <div className="mx-auto min-h-dvh max-w-md bg-background pb-24">
-        <Skeleton className="h-52 w-full rounded-none" />
-        <div className="space-y-3 px-4 pt-4">
-          <Skeleton className="h-8 w-2/3" />
-          <Skeleton className="h-4 w-1/3" />
-          <div className="flex gap-3 py-2">
-            {[...Array(4)].map((_, i) => (
-              <Skeleton key={i} className="size-12 rounded-full" />
-            ))}
-          </div>
-          {[...Array(4)].map((_, i) => (
-            <Skeleton key={i} className="h-14 w-full" />
-          ))}
-        </div>
+      <>
+        <ReceiptListSkeleton />
         <BottomNav />
-      </div>
+      </>
     )
   }
 
   if (!ticket) {
     return (
       <div className="mx-auto min-h-dvh max-w-md bg-background pb-24">
-        {error ? (
-          <div className="px-4 pt-24 text-center">
-            <p className="text-muted-foreground">{t('Something went wrong')}</p>
-            <Button variant="outline" className="mt-4" onClick={() => void reload()}>
-              {t('Retry')}
-            </Button>
-          </div>
-        ) : (
-          <p className="px-4 pt-24 text-center text-muted-foreground">{t('Invalid link')}</p>
-        )}
+        <div className="flex flex-col items-center px-4 pt-24 text-center">
+          {error ? (
+            <>
+              <div className="flex size-16 items-center justify-center rounded-full bg-muted">
+                <TriangleAlert className="size-8 text-muted-foreground" aria-hidden />
+              </div>
+              <p className="pt-4 text-muted-foreground">{t('Something went wrong')}</p>
+              <Button variant="outline" className="mt-4 min-h-11" onClick={() => void reload()}>
+                {t('Retry')}
+              </Button>
+            </>
+          ) : (
+            <>
+              <div className="flex size-16 items-center justify-center rounded-full bg-muted">
+                <ReceiptText className="size-8 text-muted-foreground" aria-hidden />
+              </div>
+              <p className="pt-4 text-muted-foreground">{t('Invalid link')}</p>
+            </>
+          )}
+        </div>
         <BottomNav />
       </div>
     )
@@ -109,10 +154,13 @@ export default function TicketSummaryPage() {
 
   const total = ticket.totals?.total_with_tax ?? 0
   const paidPct = getTicketPaidPercentage(ticket.items)
-  const remaining = total * (1 - paidPct)
 
   return (
-    <div className="mx-auto min-h-dvh max-w-md bg-background pb-24">
+    <div className="mx-auto min-h-dvh max-w-md bg-background pb-56">
+      <div aria-live="polite" role="status" className="sr-only">
+        {announcement}
+      </div>
+
       {imgUrl && (
         <button type="button" className="block w-full" onClick={() => setImgOpen(true)}>
           {/* eslint-disable-next-line @next/next/no-img-element -- signed URL from Supabase storage */}
@@ -120,41 +168,67 @@ export default function TicketSummaryPage() {
         </button>
       )}
 
-      <div className="px-4 pt-4">
-        <h1 className="text-2xl font-bold">{ticket.restaurant?.name ?? t('Ticket')}</h1>
+      <div className="px-4 pt-4 pb-3">
+        <h1 className="text-2xl font-bold tracking-[-0.02em]">{ticket.restaurant?.name ?? t('Ticket')}</h1>
         <div className="flex items-baseline justify-between pt-1">
           <p className="text-sm text-muted-foreground">{ticket.invoice?.date}</p>
-          <p className="font-medium">
+          <p className="font-medium tabular-nums">
             {t('Total')}: {numberToCurrency(total, lang)} €
           </p>
         </div>
       </div>
 
-      <UsersCarousel members={ticket.members} selected={selected} onSelect={setSelectedUserId} />
+      <GroupStatusBar members={ticket.members} paidPercentage={paidPct} connected={!error} />
 
-      <div className="flex flex-col gap-4 px-4 pt-2">
-        <TicketItems items={ticket.items} selectedUserId={selected} onPress={(item) => setSelectedItemId(item.id)} />
+      <p className="px-4 pt-3 text-[13px] font-semibold tracking-[0.06em] text-muted-foreground uppercase">
+        {t('Participants')}
+      </p>
+      <UsersCarousel members={ticket.members} selected={selected} onSelect={setSelectedUserId} currentUserId={userId ?? undefined} />
 
-        <IndividualBill bill={selectedBill} />
-
-        <div className="flex flex-col gap-2">
-          <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
-            <div className="h-full bg-primary transition-all" style={{ width: `${Math.round(paidPct * 100)}%` }} />
+      {ticket.members.length <= 1 && (
+        <div className="mx-4 mt-2 flex flex-col items-center gap-3 rounded-xl border bg-card p-4 text-center">
+          <div className="flex size-12 items-center justify-center rounded-full bg-muted">
+            <Users className="size-6 text-muted-foreground" aria-hidden />
           </div>
-          <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">
-              {t('Total to pay')}: {numberToCurrency(total, lang)} €
-            </span>
-            <span className="font-medium">
-              {t('Remaining')}: {numberToCurrency(remaining, lang)} €
-            </span>
-          </div>
+          <p className="text-sm text-muted-foreground">{t('Splitting solo so far — share the link')}</p>
+          <ShareButton ticket={ticket} />
+        </div>
+      )}
+
+      <div className="flex flex-col gap-4 px-4 pt-4">
+        <section aria-label={t('Items')}>
+          <p className="pb-2 text-[13px] font-semibold tracking-[0.06em] text-muted-foreground uppercase">
+            {t('Items')}
+          </p>
+          {ticket.items.length === 0 ? (
+            <div className="flex flex-col items-center gap-3 rounded-xl border bg-card p-6 text-center">
+              <div className="flex size-12 items-center justify-center rounded-full bg-muted">
+                <ReceiptText className="size-6 text-muted-foreground" aria-hidden />
+              </div>
+              <p className="text-sm text-muted-foreground">{t('No items yet — check the receipt scan')}</p>
+              <Button type="button" variant="outline" className="min-h-11" onClick={() => router.push(`/tickets/${id}/edit`)}>
+                {t('Review receipt')}
+              </Button>
+            </div>
+          ) : (
+            <TicketItems
+              items={ticket.items}
+              selectedUserId={selected}
+              onPress={(item) => setSelectedItemId(item.id)}
+              members={ticket.members}
+              flashIds={flashIds}
+            />
+          )}
+        </section>
+
+        <div ref={billRef} className="scroll-mt-4">
+          <IndividualBill bill={selectedBill} />
         </div>
 
         <div className="flex gap-2">
           <ShareButton ticket={ticket} />
           <TagDialog ticketId={ticket.id} members={ticket.members} />
-          <Button type="button" variant="outline" onClick={() => router.push(`/tickets/${id}/edit`)}>
+          <Button type="button" variant="outline" className="min-h-11" onClick={() => router.push(`/tickets/${id}/edit`)}>
             <Pencil />
             {t('Edit')}
           </Button>
@@ -174,7 +248,10 @@ export default function TicketSummaryPage() {
         </DialogContent>
       </Dialog>
 
-      <BottomNav />
+      <div className="fixed inset-x-0 bottom-0 z-50 mx-auto max-w-md">
+        <TotalFooter bill={selectedBill} onReview={() => billRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })} />
+        <BottomNav className="relative" />
+      </div>
     </div>
   )
 }

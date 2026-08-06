@@ -1,47 +1,47 @@
 'use client'
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { ParticipantAvatar, memberName } from '@/components/claim/participant-avatar'
+import { useI18n } from '@/lib/i18n'
 import type { MemberWithProfile } from '@/lib/types'
 import { cn } from '@/lib/utils'
-
-function initials(name: string): string {
-  const parts = name.trim().split(/\s+/)
-  return parts
-    .slice(0, 2)
-    .map((p) => p[0]?.toUpperCase() ?? '')
-    .join('')
-}
 
 export function UsersCarousel({
   members,
   selected,
   onSelect,
+  currentUserId,
 }: {
   members: MemberWithProfile[]
   selected: string
   onSelect: (userId: string) => void
+  currentUserId?: string
 }) {
+  const { t } = useI18n()
+
+  // "You" first, everyone else keeps their original order
+  const ordered = [...members].sort((a, b) => Number(b.user_id === currentUserId) - Number(a.user_id === currentUserId))
+
   return (
-    <div className="flex gap-3 overflow-x-auto px-4 py-2">
-      {members.map((member) => {
-        const name = member.profile.display_name ?? member.profile.email
+    <div className="flex gap-3 overflow-x-auto px-4 py-2" role="group" aria-label={t('Participants')}>
+      {ordered.map((member) => {
+        const name = memberName(member)
+        const isYou = member.user_id === currentUserId
         return (
           <button
             key={member.user_id}
             type="button"
             onClick={() => onSelect(member.user_id)}
-            className="flex w-16 shrink-0 flex-col items-center gap-1"
+            aria-label={isYou ? `${name} (${t('You')})` : name}
+            aria-pressed={selected === member.user_id}
+            className={cn(
+              'flex min-h-11 w-16 shrink-0 flex-col items-center gap-1 rounded-lg py-1',
+              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+            )}
           >
-            <Avatar
-              className={cn(
-                'size-12 ring-2 ring-transparent transition-all',
-                selected === member.user_id && 'ring-primary',
-              )}
-            >
-              {member.profile.photo_url && <AvatarImage src={member.profile.photo_url} alt={name} />}
-              <AvatarFallback>{initials(name)}</AvatarFallback>
-            </Avatar>
-            <span className="w-full truncate text-center text-xs text-muted-foreground">{name}</span>
+            <ParticipantAvatar member={member} size="lg" selected={selected === member.user_id} />
+            <span className="w-full truncate text-center text-[13px] text-muted-foreground">
+              {isYou ? t('You') : name}
+            </span>
           </button>
         )
       })}

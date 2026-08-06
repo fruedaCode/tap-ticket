@@ -6,7 +6,7 @@ import { Camera, ReceiptText, User } from 'lucide-react'
 import { useI18n } from '@/lib/i18n'
 import { cn } from '@/lib/utils'
 
-export function BottomNav() {
+export function BottomNav({ className }: { className?: string }) {
   const pathname = usePathname()
   const { t } = useI18n()
 
@@ -17,7 +17,9 @@ export function BottomNav() {
   ]
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-50 border-t bg-background pb-[env(safe-area-inset-bottom)]">
+    <nav
+      className={cn('fixed inset-x-0 bottom-0 z-50 border-t bg-background pb-[env(safe-area-inset-bottom)]', className)}
+    >
       <div className="mx-auto flex max-w-md">
         {tabs.map(({ href, label, icon: Icon }) => {
           const active = pathname.startsWith(href)

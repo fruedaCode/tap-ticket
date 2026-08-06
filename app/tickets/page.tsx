@@ -40,7 +40,7 @@ function TicketRow({ row, userId, onOpen }: { row: Row; userId: string | null; o
     >
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          {!row.membership.seen && <span className="size-2 shrink-0 rounded-full bg-red-500" />}
+          {!row.membership.seen && <span className="size-2 shrink-0 rounded-full bg-primary" />}
           <span className="truncate font-medium">{ticket.restaurant?.name ?? t('Ticket')}</span>
         </div>
         <p className="text-sm text-muted-foreground">
