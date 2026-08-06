@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TapTicket
 
-## Getting Started
+Scan a receipt, split the bill. Take a photo of a restaurant ticket and AI digitizes every item; share a link and your friends join from their phones to claim or split items in realtime — everyone sees exactly what they owe.
 
-First, run the development server:
+Built as a **Next.js 16 PWA** backed by **Supabase** (Postgres + Auth + Realtime + Storage), with receipt OCR via **Groq's Llama 4 Scout** vision model.
+
+## Prerequisites
+
+- Node.js 22
+- A [Supabase](https://supabase.com) project
+- A [Groq](https://console.groq.com) API key (optional — see `MOCK_SCAN` below)
+
+## Supabase setup
+
+1. Create a project at [supabase.com](https://supabase.com).
+2. In the **SQL Editor**, run the full contents of `supabase/migrations/0001_init.sql`. This creates the tables, RLS policies, realtime publication, and the `ticket-images` storage bucket (private, with its access policies) — no manual bucket creation needed.
+3. In **Authentication → Providers**, enable **Google** and **Email** (with email OTP).
+
+## Environment variables
+
+Copy `.env.local.example` to `.env.local` and fill it in:
+
+| Variable | Description |
+| --- | --- |
+| `NEXT_PUBLIC_SUPABASE_URL` | Your Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon (public) key |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service-role key (server-only, never exposed to the client) |
+| `GROQ_API_KEY` | Groq API key for receipt scanning |
+| `AI_PROVIDER` | AI provider, defaults to `groq` |
+| `MOCK_SCAN` | Set to `true` to fake scan results in dev — no Groq key needed |
+
+## Development
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- Tests: `npm test`
+- Production build: `npm run build`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Deploy to fly.io
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The app is built with Next.js standalone output and ships with a multi-stage `Dockerfile` and a ready `fly.toml`.
 
-## Learn More
+```bash
+fly launch --no-deploy   # or just edit the provided fly.toml
+```
 
-To learn more about Next.js, take a look at the following resources:
+1. Set the two `NEXT_PUBLIC_*` values under `[build.args]` in `fly.toml`. Next.js inlines `NEXT_PUBLIC_*` variables into the client bundle at build time, so they must be present during `next build` (as Docker build args), not just at runtime.
+2. Set the server-only secrets:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+   ```bash
+   fly secrets set GROQ_API_KEY=… SUPABASE_SERVICE_ROLE_KEY=…
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3. Deploy:
 
-## Deploy on Vercel
+   ```bash
+   fly deploy
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## PWA notes
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The service worker (`public/sw.js`) only registers in production builds. Bump `CACHE_NAME` in `public/sw.js` on any deploy that changes the app shell, so clients drop stale caches.
