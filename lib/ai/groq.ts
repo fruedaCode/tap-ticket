@@ -1,11 +1,17 @@
 import type { InferredTicket } from '@/lib/types'
+import { getLogger } from '@/lib/logger'
 import { parseScanResponse } from './parser'
 import { RESPONSE_SCHEMA, SCAN_PROMPT, type ScanInput, type TicketScanner } from './types'
 
-const MODEL = process.env.GROQ_MODEL ?? 'meta-llama/llama-4-scout-17b-16e-instruct'
+const log = getLogger('groq')
+
+const MODEL = process.env.GROQ_MODEL ?? 'qwen/qwen3.6-27b'
 
 export class GroqScanner implements TicketScanner {
   async scan(input: ScanInput): Promise<InferredTicket> {
+    if (!process.env.GROQ_API_KEY) throw new Error('GROQ_API_KEY is not set')
+    const startedAt = Date.now()
+    log.debug('request', { model: MODEL, imageBytes: Math.round((input.base64.length * 3) / 4) })
     const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -27,8 +33,13 @@ export class GroqScanner implements TicketScanner {
         ],
       }),
     })
-    if (!res.ok) throw new Error(`Groq API error ${res.status}: ${await res.text()}`)
+    if (!res.ok) {
+      const body = (await res.text()).slice(0, 500)
+      log.error('API error', { status: res.status, ms: Date.now() - startedAt, body })
+      throw new Error(`Groq API error ${res.status}: ${body}`)
+    }
     const data = await res.json()
+    log.debug('response ok', { model: MODEL, ms: Date.now() - startedAt, usage: data.usage })
     const raw: string = data.choices?.[0]?.message?.content ?? ''
     return parseScanResponse(raw)
   }

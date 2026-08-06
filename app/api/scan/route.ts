@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getScanner } from '@/lib/ai'
+import { getLogger } from '@/lib/logger'
+
+const log = getLogger('scan')
 
 const ALLOWED_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp'])
 const MAX_BYTES = 10 * 1024 * 1024
@@ -15,11 +18,15 @@ function shareToken(): string {
 // owner-only via is_ticket_owner(name::uuid), which goes false once the ticket row is gone;
 // the tickets delete then cascades members/items (owner delete policy passes for the caller)
 async function cleanupFailedScan(supabase: Awaited<ReturnType<typeof createClient>>, ticketId: string) {
-  await supabase.storage.from('ticket-images').remove([ticketId])
-  await supabase.from('tickets').delete().eq('id', ticketId) // cascades members/items
+  log.warn('rolling back failed scan', { ticketId })
+  const { error: storageError } = await supabase.storage.from('ticket-images').remove([ticketId])
+  if (storageError) log.error('rollback: storage remove failed', { ticketId, error: storageError.message })
+  const { error: deleteError } = await supabase.from('tickets').delete().eq('id', ticketId) // cascades members/items
+  if (deleteError) log.error('rollback: ticket delete failed', { ticketId, error: deleteError.message })
 }
 
 export async function POST(request: Request) {
+  const startedAt = Date.now()
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
@@ -30,6 +37,7 @@ export async function POST(request: Request) {
   if (!ALLOWED_TYPES.has(file.type)) return NextResponse.json({ error: 'unsupported type' }, { status: 415 })
   if (file.size > MAX_BYTES) return NextResponse.json({ error: 'image too large' }, { status: 413 })
 
+  log.info('scan started', { userId: user.id, bytes: file.size, type: file.type })
   const buffer = Buffer.from(await file.arrayBuffer())
 
   // 1) ticket row, id generated route-side, NO .select() (RLS: SELECT requires membership that doesn't exist yet)
@@ -37,13 +45,18 @@ export async function POST(request: Request) {
   const { error: ticketError } = await supabase
     .from('tickets')
     .insert({ id: ticketId, owner_id: user.id, share_token: shareToken(), img_path: '', restaurant: {}, invoice: {}, totals: {} })
-  if (ticketError) return NextResponse.json({ error: ticketError.message }, { status: 500 })
+  if (ticketError) {
+    log.error('ticket insert failed', { ticketId, error: ticketError.message })
+    return NextResponse.json({ error: ticketError.message }, { status: 500 })
+  }
+  log.debug('ticket row created', { ticketId })
 
   // 1.5) owner membership MUST come before any ticket update / items insert (RLS requires membership)
   const { error: memberError } = await supabase
     .from('ticket_members')
     .insert({ ticket_id: ticketId, user_id: user.id, role: 'owner', seen: false })
   if (memberError) {
+    log.error('owner membership insert failed', { ticketId, error: memberError.message })
     await cleanupFailedScan(supabase, ticketId)
     return NextResponse.json({ error: memberError.message }, { status: 500 })
   }
@@ -54,18 +67,23 @@ export async function POST(request: Request) {
     .from('ticket-images')
     .upload(imgPath, buffer, { contentType: file.type })
   if (uploadError) {
+    log.error('image upload failed', { ticketId, error: uploadError.message })
     await cleanupFailedScan(supabase, ticketId)
     return NextResponse.json({ error: uploadError.message }, { status: 500 })
   }
+  log.debug('image uploaded', { ticketId, bytes: file.size })
 
   // 3) AI scan
   let inferred
+  const aiStartedAt = Date.now()
   try {
     inferred = await getScanner().scan({ base64: buffer.toString('base64'), mediaType: file.type as 'image/jpeg' | 'image/png' | 'image/webp' })
   } catch (e) {
+    log.error('AI scan failed', { ticketId, ms: Date.now() - aiStartedAt, error: String(e) })
     await cleanupFailedScan(supabase, ticketId)
     return NextResponse.json({ error: `scan failed: ${e}` }, { status: 502 })
   }
+  log.debug('AI scan ok', { ticketId, ms: Date.now() - aiStartedAt, items: inferred.items.length })
 
   // 4) fill the ticket, items + default owner assignment (owner membership already inserted at 1.5)
   const { error: updateError } = await supabase
@@ -73,6 +91,7 @@ export async function POST(request: Request) {
     .update({ restaurant: inferred.restaurant, invoice: inferred.invoice, totals: inferred.totals, img_path: imgPath })
     .eq('id', ticketId)
   if (updateError) {
+    log.error('ticket update failed', { ticketId, error: updateError.message })
     await cleanupFailedScan(supabase, ticketId)
     return NextResponse.json({ error: updateError.message }, { status: 500 })
   }
@@ -92,6 +111,7 @@ export async function POST(request: Request) {
     )
     .select('id')
   if (itemsError || !items) {
+    log.error('items insert failed', { ticketId, error: itemsError?.message ?? 'no rows returned' })
     await cleanupFailedScan(supabase, ticketId)
     return NextResponse.json({ error: itemsError?.message ?? 'items failed' }, { status: 500 })
   }
@@ -100,9 +120,11 @@ export async function POST(request: Request) {
     .from('item_assignments')
     .insert(items.map((it) => ({ item_id: it.id, user_id: user.id, payment_type: 'unit', amount: 0 })))
   if (assignError) {
+    log.error('assignments insert failed', { ticketId, error: assignError.message })
     await cleanupFailedScan(supabase, ticketId)
     return NextResponse.json({ error: assignError.message }, { status: 500 })
   }
 
+  log.info('scan completed', { ticketId, items: items.length, ms: Date.now() - startedAt })
   return NextResponse.json({ ticketId })
 }

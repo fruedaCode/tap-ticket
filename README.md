@@ -27,7 +27,11 @@ Copy `.env.local.example` to `.env.local` and fill it in:
 | `SUPABASE_SERVICE_ROLE_KEY` | Supabase service-role key (server-only, never exposed to the client) |
 | `GROQ_API_KEY` | Groq API key for receipt scanning |
 | `AI_PROVIDER` | AI provider, defaults to `groq` |
+| `GROQ_MODEL` | Vision model override, defaults to `qwen/qwen3.6-27b` (Groq retires model IDs often — check their [models page](https://console.groq.com/docs/models) if scans start 404ing) |
 | `MOCK_SCAN` | Set to `true` to fake scan results in dev — no Groq key needed |
+| `LOG_LEVEL` | Server log level: `debug` / `info` / `warn` / `error` (default: `debug` in dev, `info` in prod) |
+
+The server logs its effective configuration at startup (which AI provider, which keys are set — never their values) and every scan pipeline step at `debug` level; failures are always logged with the full error.
 
 ## Development
 

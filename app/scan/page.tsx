@@ -45,7 +45,8 @@ export default function ScanPage() {
       formData.append('image', file)
       const res = await fetch('/api/scan', { method: 'POST', body: formData })
       if (!res.ok) {
-        toast.error(t('Error translating ticket'))
+        const detail = ((await res.json().catch(() => null)) as { error?: string } | null)?.error
+        toast.error(t('Error translating ticket'), { description: detail })
         resetCapture()
         return
       }
