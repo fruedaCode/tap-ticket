@@ -743,7 +743,7 @@ create policy "users upload ticket images" on storage.objects for insert to auth
   with check (bucket_id = 'ticket-images'
               and name ~ '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$');
 create policy "owners delete ticket images" on storage.objects for delete to authenticated
-  using (bucket_id = 'ticket-images' and is_ticket_member(name::uuid));
+  using (bucket_id = 'ticket-images' and is_ticket_owner(name::uuid));
 ```
 
 Note: `is_ticket_member` is `security definer` so policies on `ticket_members` don't recurse; `is_ticket_owner` is `security definer` because at owner-row insert time the caller is not yet a member, so the `tickets` select policy would hide the row from a plain `exists` subquery. `protect_ticket_columns` / `protect_member_role` triggers stop members from rewriting `owner_id`/`share_token`/their `role` via the member update policies.
