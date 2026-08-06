@@ -1300,7 +1300,7 @@ export async function unsplitItem(supabase: SupabaseClient, item: TicketItemWith
   const { error } = await supabase.from('ticket_items').update({ split_among: 0 }).eq('id', item.id)
   if (error) throw error
   const { error: aErr } = await supabase.from('item_assignments').upsert(
-    item.assignments.map((a) => ({ item_id: item.id, user_id: a.user_id, payment_type: 'unit' as const, amount: a.amount })),
+    item.assignments.map((a) => ({ item_id: item.id, user_id: a.user_id, payment_type: 'unit' as const, amount: 0 })),
     { onConflict: 'item_id,user_id' },
   )
   if (aErr) throw aErr
