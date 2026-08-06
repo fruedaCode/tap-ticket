@@ -1,12 +1,12 @@
 app = "tapticket"
-primary_region = "mad"
+primary_region = "cdg"
 
 [build]
   dockerfile = "Dockerfile"
 
 [build.args]
-  NEXT_PUBLIC_SUPABASE_URL = "https://<project>.supabase.co"
-  NEXT_PUBLIC_SUPABASE_ANON_KEY = "<anon key>"
+  NEXT_PUBLIC_SUPABASE_URL = "https://mlvbzkpccuyiwisnbaie.supabase.co"
+  NEXT_PUBLIC_SUPABASE_ANON_KEY = "sb_publishable_NaxoAwyzHpjsBFEgYIUADg_R-lfomMf"
 
 [http_service]
   internal_port = 3000
