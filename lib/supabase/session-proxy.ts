@@ -22,6 +22,12 @@ export async function updateSession(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser()
+  // Refresh cookies written to `response` by setAll must survive redirects.
+  const redirectWithCookies = (url: URL) => {
+    const redirect = NextResponse.redirect(url)
+    response.cookies.getAll().forEach((c) => redirect.cookies.set(c.name, c.value))
+    return redirect
+  }
   const path = request.nextUrl.pathname
   const isPublic = PUBLIC_PATHS.some((p) => path.startsWith(p))
   if (!user && !isPublic) {
@@ -29,13 +35,13 @@ export async function updateSession(request: NextRequest) {
     const next = path + request.nextUrl.search
     url.pathname = '/login'
     url.search = `?next=${encodeURIComponent(next)}`
-    return NextResponse.redirect(url)
+    return redirectWithCookies(url)
   }
   if (user && path === '/login') {
     const url = request.nextUrl.clone()
     url.pathname = '/tickets'
     url.search = ''
-    return NextResponse.redirect(url)
+    return redirectWithCookies(url)
   }
   return response
 }

@@ -69,6 +69,8 @@ export const en: Record<string, string> = {
   'Code': 'Code',
   'Continue with Google': 'Continue with Google',
   'Sign in with email': 'Sign in with email',
+  'Login failed': 'Login failed',
+  'Use a different email': 'Use a different email',
   'Copy link': 'Copy link',
   'Link copied': 'Link copied',
   'Scanning ticket': 'Scanning ticket',

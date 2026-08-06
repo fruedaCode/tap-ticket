@@ -17,7 +17,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>('es')
   useEffect(() => {
     const saved = localStorage.getItem('lang') as Lang | null
-    if (saved && dicts[saved]) setLangState(saved)
+    if (saved && dicts[saved]) queueMicrotask(() => setLangState(saved))
   }, [])
   const setLang = (l: Lang) => {
     setLangState(l)

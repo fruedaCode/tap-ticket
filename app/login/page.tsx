@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
@@ -13,24 +13,31 @@ function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const next = searchParams.get('next') ?? '/tickets'
+  const safeNext = next.startsWith('/') && !next.startsWith('//') ? next : '/tickets'
+  const error = searchParams.get('error')
 
   const [email, setEmail] = useState('')
   const [code, setCode] = useState('')
   const [codeSent, setCodeSent] = useState(false)
   const [loading, setLoading] = useState(false)
 
+  useEffect(() => {
+    if (error) toast.error(t('Login failed'))
+  }, [error, t])
+
   const signInWithGoogle = async () => {
     const supabase = createClient()
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
+        redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(safeNext)}`,
       },
     })
     if (error) toast.error(error.message)
   }
 
-  const sendCode = async () => {
+  const sendCode = async (e: React.FormEvent) => {
+    e.preventDefault()
     setLoading(true)
     const supabase = createClient()
     const { error } = await supabase.auth.signInWithOtp({
@@ -45,7 +52,8 @@ function LoginForm() {
     }
   }
 
-  const validateCode = async () => {
+  const validateCode = async (e: React.FormEvent) => {
+    e.preventDefault()
     setLoading(true)
     const supabase = createClient()
     const { error } = await supabase.auth.verifyOtp({ email, token: code, type: 'email' })
@@ -53,9 +61,14 @@ function LoginForm() {
     if (error) {
       toast.error(error.message)
     } else {
-      router.push(next)
+      router.push(safeNext)
       router.refresh()
     }
+  }
+
+  const useDifferentEmail = () => {
+    setCodeSent(false)
+    setCode('')
   }
 
   return (
@@ -73,19 +86,19 @@ function LoginForm() {
         <div className="space-y-3">
           <p className="text-center text-sm font-medium">{t('Sign in with email')}</p>
           {!codeSent ? (
-            <>
+            <form onSubmit={sendCode} className="space-y-3">
               <Input
                 type="email"
                 placeholder="email@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
-              <Button className="w-full" onClick={sendCode} disabled={loading || !email}>
+              <Button type="submit" className="w-full" disabled={loading || !email}>
                 {t('Send code')}
               </Button>
-            </>
+            </form>
           ) : (
-            <>
+            <form onSubmit={validateCode} className="space-y-3">
               <p className="text-center text-sm text-muted-foreground">{t('Check your email')}</p>
               <Input
                 inputMode="numeric"
@@ -93,10 +106,18 @@ function LoginForm() {
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
               />
-              <Button className="w-full" onClick={validateCode} disabled={loading || !code}>
+              <Button type="submit" className="w-full" disabled={loading || !code}>
                 {t('Validate')}
               </Button>
-            </>
+              <Button
+                type="button"
+                variant="ghost"
+                className="w-full"
+                onClick={useDifferentEmail}
+              >
+                {t('Use a different email')}
+              </Button>
+            </form>
           )}
         </div>
       </div>

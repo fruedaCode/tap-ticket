@@ -69,6 +69,8 @@ export const ca: Record<string, string> = {
   'Code': 'Codi',
   'Continue with Google': 'Continua amb Google',
   'Sign in with email': 'Entra amb email',
+  'Login failed': 'Error en iniciar sessió',
+  'Use a different email': 'Fes servir un altre email',
   'Copy link': 'Copia l’enllaç',
   'Link copied': 'Enllaç copiat',
   'Scanning ticket': 'Escanejant tiquet',
