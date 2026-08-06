@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { BottomNav } from '@/components/bottom-nav'
+import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { numberToCurrency } from '@/lib/currency'
 import { useTicketList } from '@/lib/hooks/useTicketList'
@@ -55,7 +56,7 @@ function TicketRow({ row, userId, onOpen }: { row: Row; userId: string | null; o
 }
 
 export default function TicketsPage() {
-  const { rows, loading } = useTicketList()
+  const { rows, loading, error, reload } = useTicketList()
   const { lang, t } = useI18n()
   const router = useRouter()
   const [supabase] = useState(createClient)
@@ -97,6 +98,13 @@ export default function TicketsPage() {
           {[...Array(5)].map((_, i) => (
             <Skeleton key={i} className="h-16 w-full" />
           ))}
+        </div>
+      ) : error ? (
+        <div className="px-4 pt-16 text-center">
+          <p className="text-muted-foreground">{t('Something went wrong')}</p>
+          <Button variant="outline" className="mt-4" onClick={() => void reload()}>
+            {t('Retry')}
+          </Button>
         </div>
       ) : groups.length === 0 ? (
         <p className="px-4 pt-16 text-center text-muted-foreground">{t('No tickets yet')}</p>

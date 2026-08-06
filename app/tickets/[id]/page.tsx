@@ -25,7 +25,7 @@ export default function TicketSummaryPage() {
   const router = useRouter()
   const { lang, t } = useI18n()
   const [supabase] = useState(createClient)
-  const { ticket, loading } = useTicket(id)
+  const { ticket, loading, error, reload } = useTicket(id)
 
   const [userId, setUserId] = useState<string | null>(null)
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
@@ -82,7 +82,16 @@ export default function TicketSummaryPage() {
   if (!ticket) {
     return (
       <div className="mx-auto min-h-dvh max-w-md bg-background pb-24">
-        <p className="px-4 pt-24 text-center text-muted-foreground">{t('Invalid link')}</p>
+        {error ? (
+          <div className="px-4 pt-24 text-center">
+            <p className="text-muted-foreground">{t('Something went wrong')}</p>
+            <Button variant="outline" className="mt-4" onClick={() => void reload()}>
+              {t('Retry')}
+            </Button>
+          </div>
+        ) : (
+          <p className="px-4 pt-24 text-center text-muted-foreground">{t('Invalid link')}</p>
+        )}
         <BottomNav />
       </div>
     )

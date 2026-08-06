@@ -8,10 +8,14 @@ export function useTicket(ticketId: string) {
   const [supabase] = useState(createClient)
   const [ticket, setTicket] = useState<TicketDetail | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
 
   const reload = useCallback(async () => {
     try {
       setTicket(await fetchTicketDetail(supabase, ticketId))
+      setError(false)
+    } catch {
+      setError(true)
     } finally {
       setLoading(false)
     }
@@ -29,5 +33,5 @@ export function useTicket(ticketId: string) {
     return () => { supabase.removeChannel(channel) }
   }, [reload, supabase, ticketId])
 
-  return { ticket, loading, reload }
+  return { ticket, loading, error, reload }
 }

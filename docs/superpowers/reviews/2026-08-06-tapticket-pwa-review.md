@@ -1,143 +1,161 @@
 # TapTicket PWA — Implementation Review
 
-**Date:** 2026-08-06
-**Reviewer:** independent code review (no code changed during review)
+**Round 1:** 2026-08-06 (plan Tasks 1–10 committed, 11 WIP, 12–18 not started)
+**Round 2:** 2026-08-06, after implementation completed through Task 18 — **this document**
+**Reviewer:** independent code review (no code changed during either review)
+
 **Scope reviewed:**
 - Spec: `docs/superpowers/specs/2026-08-05-tapticket-pwa-design.md`
 - Plan: `docs/superpowers/plans/2026-08-05-tapticket-pwa.md`
-- All implemented code in this repo (committed through `2ce0529` + 2 untracked WIP files)
+- All code at commit `10d32c5` (`fix: final review findings`), working tree clean
 - Cross-checked against the RN original at `/Users/fernando/development/workspace/personal/ticket-splitter`
 
-**Verification run during review:** `npm test` → 29 passed / 6 files. `npm run build` → **fails** (8 TS errors, see §2).
+**Verification run during this review:**
+
+| Gate | Result |
+|---|---|
+| `npm test` | ✅ 32 passed / 6 files |
+| `npm run build` | ✅ clean — TypeScript passes, 13 routes emitted (`/`, `/account`, `/api/account`, `/api/scan`, `/auth/callback`, `/join`, `/login`, `/manifest.webmanifest`, `/scan`, `/tickets`, `/tickets/[id]`, `/tickets/[id]/edit`, `/_not-found`) + Proxy |
+| `docker build` | ⚠️ **not verified** — Docker daemon is not running on this machine |
+| Live Supabase run | ✅ **run locally by the developer** against a real Supabase project + real Groq key (`MOCK_SCAN=false`) |
 
 ---
 
 ## Verdict
 
-The spec and plan are a faithful translation of the original request; no misreading of requirements was found. Tasks **1–10 are committed**, **Task 11 is written but uncommitted and does not compile**, **Tasks 12–18 are not started**. The code that exists closely tracks the RN original and is mostly high quality. There is one blocking defect, one real design bug in the scan pipeline, and several RN-parity decisions that need confirming.
+Round 1's blocking build failure and all four coded bugs are fixed, and Tasks 11–18 are complete: every spec'd route exists, the PWA layer (manifest, service worker, icons) is in place, and Docker/fly.io config plus a real README are committed. Several fixes went beyond what was asked — storage policies were tightened from member-scope to owner-scope, Realtime Authorization policies were added for private channels, and quantity-0 guards were added to the split library with tests.
+
+**The app is feature-complete against spec and plan, and it runs.** The developer has exercised it locally against a real Supabase project with a real Groq key, so the migration, auth, the scan pipeline and the RLS write-ordering in `/api/scan` are all confirmed working in practice — not just on paper. What remains is a short list of code improvements (§2, §3), two verification gaps that single-machine testing does not reach (multi-account flows and `docker build`, §2.1), and four open decisions (§4).
 
 ---
 
-## 1. Requirement coverage
+## 1. Round 1 findings — resolution status
 
-| Original requirement | Status |
-|---|---|
-| Next.js PWA (not React Native) | Next 16.3 App Router ✅ — **PWA layer absent**: no manifest, no service worker, not installable (Task 16) |
-| Scan ticket with AI, good provider | ✅ Groq + `llama-4-scout-17b-16e-instruct` behind a `TicketScanner` interface, switchable via `AI_PROVIDER`, `MOCK_SCAN` for dev |
-| Join via shared link | ✅ `share_token` + `join_ticket()` RPC — **`/join` page not built** |
-| Join because registered + someone adds them | ✅ `add_member_by_email()` RPC + `addMemberByEmail` — **`tag-dialog` UI not built** |
-| Share the link to the digitized ticket | Backend ready — `share-button.tsx` not built |
-| Assign item to you, or partially | ✅ math fully ported and unit-tested (`unit` / `percentage` assignments) — **item dialog UI not built** |
-| Mimic the RN implementation | ✅ mostly 1:1 — see §4 |
-| No Firebase; Supabase instead | ✅ zero Firebase/RevenueCat references anywhere |
-| Deploy as Docker image on fly.io | ❌ not started — no `Dockerfile`, no `fly.toml`, `next.config.ts` still lacks `output: "standalone"` |
+| # | Round 1 finding | Status | Where |
+|---|---|---|---|
+| 2.1 | Build failed: 8 TS errors from `any[]` embed inference | ✅ Fixed | Explicit `TicketListRow` / `TicketListItem` types + `as unknown as Ticket` cast in `lib/queries.ts:5-10,54` |
+| 2.2 | Nothing run against a real backend | ✅ Resolved — run locally against a real project (see §2.1 for what local testing does not cover) | `.env.local` holds real credentials as of 2026-08-06 16:41 |
+| 3.1 | Scan failure left orphan tickets | ✅ Fixed | `cleanupFailedScan()` in `app/api/scan/route.ts:17-20`, called on all 5 failure branches; storage-remove-before-row ordering is correct given the now owner-only delete policy |
+| 3.2 | Success toast was the premium ad string | ✅ Fixed | `'Successfully added'` → `'Ticket añadido con éxito'` in all 3 dicts (`8440e76`) |
+| 3.3 | `/api/*` got a 307 to `/login` instead of 401 | ✅ Fixed | `lib/supabase/session-proxy.ts:37-39` returns `401 {error:'unauthorized'}` for `/api` paths |
+| 3.4a | `deleteTicket` removed the row before the image | ✅ Fixed | `427e83f` — image first, then row |
+| 3.4b | `shareToken()` modulo bias | ⏸️ Not addressed (cosmetic, no action needed) | `app/api/scan/route.ts` |
+| 4.1 | List uses `created_at`, RN uses `invoice.date` | ⏸️ **Decision pending** | `app/tickets/page.tsx:32,71,110` unchanged — see §4 |
+| 4.2 | List row shows total + your paid; RN shows only yours | ⏸️ **Decision pending** | see §4 |
+| 4.3 | `numberToCurrency` EPSILON deviates from RN | ⏸️ **Decision pending** | `lib/currency.ts:2` unchanged — see §4 |
+| 4.4 | `isItemPaid` float-tolerance change | ✅ Kept intentionally (improvement) | `lib/split/paid.ts:14` |
+| 4.5 | Plan Task 12 missed 4 RN item-dialog details | ✅ All 4 implemented | `components/item-dialog.tsx` — icon-only toggle (`User`/`Users`, lines 153-172), `Remaining: <amount> €` title (93-96,149), live `Total:` line (98-100,183-185), both Split and Unsplit buttons always shown (200-207); plan text patched in `8440e76` |
+| 5a | Spec says owner-only ticket update; SQL allows any member | ❌ **Still open** | `supabase/migrations/0001_init.sql:183` — see §4 |
+| 5b | `"owners delete ticket images"` policy actually checked membership | ✅ Fixed | Now `is_ticket_owner(name::uuid)` (line 226); upload policy also tightened to owner (line 224) |
+| 5c | Only 3 of 7 spec'd routes existed | ✅ Fixed | All 7 exist |
+| 5d | README was create-next-app boilerplate | ✅ Fixed | Real setup, env-var table, Supabase steps, fly.io deploy notes |
+| 6.1 | Data hooks have no error handling | ⚠️ **Partially** — see §2.2 | `lib/hooks/useTicket.ts`, `lib/hooks/useTicketList.ts` still contain no `catch` |
+| 6.2 | Realtime fan-out | ⏸️ Unchanged behaviour, now authorized | Private channels + user-scoped list topic added (`useTicketList.ts:29`) |
+| 6.3 | No `onAuthStateChange` listener | ❌ **Still open** — zero occurrences in the codebase | see §3.3 |
+| 6.4 | `queries.ts`/`mutations.ts` untyped `SupabaseClient` | ⚠️ Worked around, not fixed | see §2.3 |
+| 6.5 | No tests for queries/mutations/RLS/routes | ❌ **Still open** | 32 tests, all still in `lib/split` + `currency` + AI parser |
 
-Genuine improvement over RN: the AI key is server-side only (`lib/ai/index.ts` is `server-only`, scanning goes through `app/api/scan/route.ts`). RN shipped `EXPO_PUBLIC_TOGETHER_API_KEY` in the app bundle.
+### Also delivered in this round (not requested in Round 1)
+
+- **Tasks 12–15**: summary page, edit page, scan page, join page, account page, `api/account` (with receipt-image cleanup before `deleteUser`, `app/api/account/route.ts:14-20`), plus `ticket-items`, `item-dialog`, `users-carousel`, `individual-bill`, `tag-dialog`, `share-button`, `language-picker`.
+- **Task 16 (PWA)**: `app/manifest.ts`, hand-rolled `public/sw.js` (network-first navigations, cache-first static), `components/service-worker-registration.tsx` wired in `app/layout.tsx:42`, `appleWebApp` metadata, 192/512 icons.
+- **Task 17**: `Dockerfile` (multi-stage, standalone), `.dockerignore`, `fly.toml`, `output: "standalone"` in `next.config.ts`.
+- **Realtime Authorization**: RLS policies on `realtime.messages` for the `ticket:<uuid>` and `ticket_list:<uuid>` topics (`0001_init.sql:228-244`), matching the `{ config: { private: true } }` channels.
+- **`protect_owner_membership` trigger** (`0001_init.sql:249-262`) — stops the owner membership row being deleted while ticket and profile still exist.
+- **Quantity-0 guards** in the split library, with 3 new tests (`getUnitPrice`/`getUnitThreshold` return 0 instead of `Infinity`; no `NaN` in `getPercentagePaid`).
+- **i18n**: 87 keys, identical key sets across es/en/ca. Every `t()` call site in `app/` and `components/` resolves to an existing key (verified by extraction).
 
 ---
 
-## 2. Blocking
+## 2. Open items, ranked
 
-### 2.1 `npm run build` fails — 8 TypeScript errors
+### 2.1 Verification gaps that a local single-user run does not close
 
+The app has been run locally against a real Supabase project with a real Groq key, which confirms the parts hardest to get right on paper: the migration applies, auth works, and the `/api/scan` RLS write-ordering plus real Groq inference succeed end to end.
+
+Two things local single-user testing cannot reach, worth an explicit pass before relying on them:
+
+**a) Multi-account and cross-session paths.** `join_ticket` via share link from a second account, `add_member_by_email`, member removal, and — most importantly — **realtime propagating between two sessions**. Both hooks open channels with `{ config: { private: true } }` (`useTicket.ts:23`, `useTicketList.ts:29`), so they depend on the new `realtime.messages` policies (`0001_init.sql:228-244`). Under Realtime Authorization, a topic the policy does not grant simply fails to subscribe — and **neither hook surfaces subscription status**, so dead realtime is indistinguishable from a quiet app when you are the only user. The policies read correctly (the `ticket:` regex guard makes the `::uuid` cast safe, `substring(realtime.topic() from 8)` strips exactly `ticket:`, and the two SELECT policies OR together), but a single-session run would not reveal a failure here.
+
+Concretely: two browsers, two accounts, one ticket — claim an item in A and confirm it appears in B without a reload, and check the console for subscribe errors.
+
+**b) `docker build`.** The daemon is not running on this machine, so the Task 17 Step 4 gate is unconfirmed. One command once Docker is up:
+
+```bash
+docker build --build-arg NEXT_PUBLIC_SUPABASE_URL=https://placeholder.supabase.co \
+             --build-arg NEXT_PUBLIC_SUPABASE_ANON_KEY=placeholder -t tapticket .
 ```
-app/tickets/page.tsx(32,32): error TS2339: Property 'created_at' does not exist on type 'any[]'.
-app/tickets/page.tsx(37,36): error TS2339: Property 'id' does not exist on type 'any[]'.
-app/tickets/page.tsx(43,58): error TS2339: Property 'restaurant' does not exist on type 'any[]'.
-app/tickets/page.tsx(50,56): error TS2339: Property 'totals' does not exist on type 'any[]'.
-app/tickets/page.tsx(71,40): error TS2339: Property 'created_at' does not exist on type 'any[]'.
-app/tickets/page.tsx(110,52): error TS2339: Property 'created_at' does not exist on type 'any[]'.
-app/tickets/page.tsx(110,85): error TS2339: Property 'created_at' does not exist on type 'any[]'.
-app/tickets/page.tsx(112,46): error TS2339: Property 'id' does not exist on type 'any[]'.
-```
 
-**Root cause is `lib/queries.ts:35`, not the page.** On an untyped `SupabaseClient`, `select('ticket_id, seen, role, tickets(*)')` infers the embedded relation as `any[]` (cardinality is unknown), so `row.ticket` is typed as an array.
+### 2.2 Data-hook failures produce misleading UI, plus unhandled rejections
 
-**Fix:** generate DB types from `supabase/migrations/0001_init.sql` (`supabase gen types typescript`) and parameterize `SupabaseClient<Database>` in `lib/queries.ts` and `lib/mutations.ts`. Both files are currently fully untyped; generated types remove this whole class of error. A local narrowing of the embed would unblock the build but leaves the rest untyped.
+Neither hook has a `catch` (confirmed: zero `catch`/`error` occurrences in `lib/hooks/`). `reload()` is `async` with `try/finally` only, and is called bare inside `useEffect`, so any throw becomes an **unhandled promise rejection**. Consequences:
 
-### 2.2 Nothing has run against a real backend
+- **Ticket summary** (`app/tickets/[id]/page.tsx:82-89`): `ticket` stays `null` → renders `t('Invalid link')`. A dropped network connection or an RLS denial is presented to the user as a bad share link.
+- **Ticket list** (`app/tickets/page.tsx:101`): `rows` stays `[]` → renders `t('No tickets yet')`. **A load failure is indistinguishable from an empty account** — the worst version of this bug, because the user has no reason to retry.
 
-`.env.local` contains only placeholders. The schema, RLS policies, both RPCs, Realtime, and the storage policies are entirely unverified. `supabase/migrations/0001_init.sql` is the highest-risk file in the repo (recursive-policy hazards, `security definer` helpers, the write-ordering constraints the scan route works around). Task 18's manual smoke checklist has not been executed.
+Add `error` to both hooks' return values, set it in a `catch`, and give each page a distinct error state with a retry affordance. While there, reconsider `t('Invalid link')` as the not-found copy on the summary and edit pages (`app/tickets/[id]/edit/page.tsx:144`) — a dedicated `'Ticket not found'` key would be clearer.
 
----
+### 2.3 Type safety in the data layer is manual, not structural
 
-## 3. Real bugs in committed code
+The Round 1 build failure was resolved by hand-writing `TicketListRow` / `TicketListItem` and casting: `ticket: m.tickets as unknown as Ticket` (`lib/queries.ts:54`), `items: ((items ?? []) as TicketListItem[])` (line 55). This compiles and the shapes are correct today, but the cast defeats the compiler precisely where the schema meets the code — rename a column in the migration and nothing will complain until runtime.
 
-### 3.1 Orphaned tickets on scan failure — `app/api/scan/route.ts:28-53`
+Durable fix remains: `supabase gen types typescript` from the migration, then `SupabaseClient<Database>` throughout `lib/queries.ts` and `lib/mutations.ts`, and delete the casts.
 
-The route inserts the ticket row, inserts owner membership, and uploads the image **before** calling the AI. If the scan throws (the 502 branch), all three writes remain. The user gets a permanent ghost ticket with `restaurant: {}`, `totals: {}`, `img_path: ''` and zero items, indistinguishable from a real one in the list. The RN app only persisted after inference succeeded.
+### 2.4 No tests below the pure-function layer
 
-The write ordering itself is forced by RLS and is correct — the missing piece is a rollback on the failure path (delete the ticket row; cascades clean up members/items) plus removal of the uploaded object. Apply the same treatment to the later failure branches (`updateError`, `itemsError`), which currently also abandon a half-built ticket.
-
-### 3.2 The scan success toast is a premium ad — `lib/i18n/{es,en,ca}.ts`
-
-`'Successfully added'` was ported verbatim from RN, where its value is:
-
-> *"Ten en cuenta que esta versión gratuita de la aplicación tiene una precisión limitada para el escaneo de tickets de restaurante. Para una mayor precisión, considera actualizar a nuestra versión premium."*
-
-Monetization was explicitly dropped, yet plan Task 14 prescribes `toast.success(t('Successfully added'))` after a scan. The intended key is `'Success'` → `'Agregado con éxito'`. Present in all three dictionaries; either repoint Task 14 to `'Success'` or rewrite the `'Successfully added'` values.
-
-### 3.3 API routes sit behind the HTML auth guard — `proxy.ts:10`
-
-The matcher covers `/api/*`, so an unauthenticated `POST /api/scan` receives a 307 to `/login` and the client gets HTML back. The route's own `401 {error:'unauthorized'}` is unreachable. Exclude `/api` from the redirect branch (or return 401 for `/api` paths) so client error handling can distinguish auth failure from scan failure.
-
-### 3.4 Minor
-
-- `deleteTicket` (`lib/mutations.ts:62`) deletes the DB row before the storage object; a failed `remove()` orphans the image in a private bucket with no lifecycle rule. Remove the object first, or tolerate/report the failure.
-- `shareToken()` (`app/api/scan/route.ts:9`) has slight modulo bias (`b % 62` over 0–255). Harmless for a 20-char token; noted only for completeness.
+32 tests, all still covering `lib/split`, `lib/currency`, `lib/ai/parser`. Untested: `lib/queries.ts`, `lib/mutations.ts`, `app/api/scan/route.ts` (including its new 5-branch rollback), `app/api/account/route.ts`, and every RLS policy. The scan route remains the highest-consequence untested code — a rollback that itself fails leaves exactly the orphan state §3.1 was meant to eliminate, and nothing would catch that regression.
 
 ---
 
-## 4. RN parity
+## 3. New findings from this pass
 
-### Verified 1:1 (no action needed)
+### 3.1 Service worker cache eviction can evict the app shell
 
-- `services/utils/ticket-utils.ts` → `lib/split/*`: `getFinalPrice`, `getPercentagePaid`, `getUnitThreshold`, `getUnitPrice`, `calculateMaxUnitsAvailable`, `calculateMaxPercentageAvailable`, `groupItemsByUser` (RN's `groupItemsByEmail`, rekeyed from `email` to `user_id`).
-- AI prompt string and `RESPONSE_SCHEMA` are byte-for-byte RN's (`services/ai/InferenceService.ts`, `services/types.ts`).
-- `parseScanResponse` is a faithful port of RN's `convertResponse` / `sanitizeString` (`services/ai/OpenAI.ts`).
-- Provider swap Together AI / `Llama-Vision-Free` → Groq / `llama-4-scout`, same `temperature: 0` and `top_p: 0.7`.
-- i18n: `es`/`en`/`ca` all have identical 76-key sets. 4 premium/contact keys dropped, 16 added. `ca` is now more complete than RN's original (which had only 28 keys).
+`public/sw.js:56-61` — when the cache exceeds `MAX_CACHE_ENTRIES`, it deletes `keys[0]`. Cache Storage keys are in insertion order, and the three `APP_SHELL` entries (`/manifest.webmanifest`, both icons) are inserted **first** at install. So the first three evictions remove the precached shell rather than the oldest navigation, quietly degrading the offline experience the precache exists to provide. Filter eviction to navigation requests, or keep the shell in a separate cache that is never evicted.
 
-### Divergences — decide and reconcile
+### 3.2 Authenticated page HTML is cached and survives sign-out
 
-1. **Ticket list uses the wrong date.** RN groups *and sorts* by `ticket.invoice.date` (the date printed on the receipt) and omits the year when it equals the current year — see `app/(authenticated)/(tabs)/tickets/index.tsx:45-50` in the RN repo. The port uses `created_at` (`app/tickets/page.tsx:71` and `:110`). These differ whenever a receipt is scanned days later. The plan specified `created_at`, so this is a plan-level decision, not an implementation slip.
-2. **List row shows more than RN.** RN's row shows only *your* paid amount on the right. The port shows ticket total *and* your paid sum. Arguably better, but not a mimic.
-3. **`numberToCurrency` is not the "exact port" the plan claims.** `lib/currency.ts:2` adds `Number.EPSILON`, so `1.005 → "1.01"`; RN's `Math.round(num*100)/100` yields `"1.00"`. The plan's own test forced this. Only affects exact `.xx5` values — but the plan text should stop claiming exactness.
-4. **`isItemPaid` semantics changed, for the better.** RN's `getFinalPrice(item) === getFinalPrice(item) * getPercentagePaid(item)` misreports a fully-assigned quantity-6 item as unpaid due to float summation; the port's `|1 - pct| < 1e-9` fixes it (regression test at `tests/split/paid.test.ts:32`). Side effect: RN returns `true` for a zero-price item, the port returns `false`, so a free item never renders as paid. `getTicketPaidPercentage` also gained a divide-by-zero guard (RN returns `NaN` for an empty ticket). `clampZero` in `lib/split/max.ts` is a further addition preventing negative maxima. All three are improvements — keep them, but record them as intentional.
-5. **Plan Task 12's item-dialog spec is incomplete.** Checked against RN `components/tickets/ItemPressDialogContent.tsx` and `ItemPaymentTypeToggle.tsx`:
-   - RN's view toggle is **icon-only** (`person-outline` / `people-outline`), not the `t('Units')` / `t('Percentage')` text labels the plan prescribes.
-   - RN's dialog **title** is `` `${t('Remaining')}: ${numberToCurrency(maxAvailable × unitPrice)}€` `` (percentage view uses `maxPercentage × item.price`).
-   - RN shows **both** Split and Unsplit buttons unconditionally in the Split view; the plan hides Unsplit unless `split_among > 0`.
-   - RN renders a live `` `${t('Total')}: ${amount × (unit ? unitPrice : item.price)}€` `` line above Save; the plan omits it.
-   - RN's input mode follows `currentPayer.paymentType` (not the toggle), and switching payment type converts the amount via `getUnitThreshold` — the plan captures this correctly.
+`public/sw.js:49-64` caches navigation responses, including authenticated pages, and nothing clears the cache on sign-out. Data risk is low — pages are client components that fetch from Supabase at runtime, so the cached HTML holds no ticket content — but on a shared device the offline fallback (`caches.match('/tickets')`, line 69) can render a previous account's shell. Clearing `CACHE_NAME` in `handleSignOut` (`app/account/page.tsx:78-81`) closes it.
 
-   This dialog is the core interaction of the app; patch the plan before building it.
+### 3.3 Still no `onAuthStateChange` listener
 
----
+Confirmed absent across `app/`, `lib/`, `components/`. A sign-out or token revocation in another tab is not reflected until the next navigation reaches the proxy, and an expired refresh token surfaces as the misleading empty/`Invalid link` states of §2.2 rather than as a redirect to `/login`.
 
-## 5. Spec ↔ implementation drift
+### 3.4 `<html lang>` is hard-coded to `es`
 
-- **Ticket update rights.** Spec §RLS says `tickets` update/delete = owner. `0001_init.sql` grants `"tickets member update"` to every member, relying on the `protect_ticket_columns` trigger to guard `id` / `owner_id` / `share_token`. So any member can rewrite the restaurant name and totals. This matches RN's permissiveness and the spec's own `ticket_items` reasoning, but contradicts the spec text. Pick one and update the other.
-- **Storage delete policy is misnamed and over-permissive.** The policy called `"owners delete ticket images"` actually checks `is_ticket_member(name::uuid)`, so any member can delete the receipt photo. Probably not intended given the name.
-- **Routes.** Spec lists 7 pages; 3 exist (`/login`, `/tickets`, plus the `/` redirect and `/auth/callback`).
-- **README.** Still the `create-next-app` boilerplate. The Supabase setup procedure (apply the migration, enable Google + email OTP) is promised in Task 17 Step 3 and exists nowhere else.
+`app/layout.tsx:34` pins `lang="es"` while `I18nProvider` can switch the UI to `en`/`ca`. This is what the plan specified, so it is not a deviation — but it misreports the document language to screen readers and translation tooling for non-Spanish users. A one-line effect syncing `document.documentElement.lang` in the provider fixes it.
+
+### 3.5 `fly.toml` ships placeholder build args
+
+`fly.toml` `[build.args]` contains literal `https://<project>.supabase.co` and `<anon key>`. Because Next inlines `NEXT_PUBLIC_*` at build time, deploying as-is produces an image whose client bundle points at a nonexistent Supabase project — and the failure appears at runtime in the browser, not during `fly deploy`. The README documents the step, so this is a documented prerequisite rather than a defect; flagging it because the failure mode is confusing.
+
+### 3.6 Minor
+
+- `'Copy link'` exists in all three dictionaries but is never used — `share-button.tsx:22` only toasts `'Link copied'`. Harmless dead key.
+- `components/item-dialog.tsx:89` floors the stepper max (`Math.floor(max + 1e-9)`). Correct for a ±1 stepper, but it means a fractional remainder (e.g. 0.5 units left on a split item) is not claimable from the "my part" view. RN had the same practical limitation with `delta={1}`, so this is parity, not a regression.
+- `app/scan/page.tsx:47-51` collapses every non-OK response into `t('Error translating ticket')`. A 413 (image too large) and a 502 (AI failure) are actionable differently; distinguishing at least "too large" would help users.
 
 ---
 
-## 6. Quality notes (non-blocking)
+## 4. Decisions still pending (not bugs — your call)
 
-- **No error states in the data hooks.** If `fetchTicketDetail` throws — a non-member opening a ticket URL, network failure — `lib/hooks/useTicket.ts:12-18` clears `loading` and leaves `ticket` as `null`, so the page renders blank with no message. Same in `useTicketList`. Every consumer will need an error branch that does not currently exist.
-- **Realtime fan-out.** `item_assignments` is subscribed unfiltered (documented as intentional and correct at this scale), but `useTicketList` also subscribes to *all* `tickets` and `ticket_members` events, each triggering a full multi-query refetch. Fine for a handful of users; watch it if the app grows.
-- **No `onAuthStateChange` listener,** so a sign-out in another tab is not reflected until the next navigation hits the proxy.
-- **Test coverage is exactly the plan's scope** (split lib, currency, AI parser — 29 tests). Nothing covers `queries.ts`, `mutations.ts`, the RLS policies, or the scan route. The scan route's RLS-ordering sequence is the most fragile code in the repo and is untested.
+These were raised in Round 1 and are unchanged in the code. Each needs a decision, then either a code change or a note in the spec so the divergence is deliberate and recorded.
+
+1. **List date source.** RN groups *and sorts* by `ticket.invoice.date` (the date printed on the receipt) and omits the year when it is the current year. The port uses `created_at` (`app/tickets/page.tsx:32,71,110`). These diverge whenever a receipt is scanned days after the meal. The plan specified `created_at`.
+2. **List row content.** RN shows only *your* paid amount. The port shows ticket total *and* your paid sum. Arguably better; not a mimic.
+3. **`numberToCurrency` rounding.** `lib/currency.ts:2` adds `Number.EPSILON`, so `1.005 → "1.01"`; RN yields `"1.00"`. Only exact `.xx5` values differ. Keep it (and drop the plan's "exact port" wording) or match RN.
+4. **Who may edit a ticket.** `0001_init.sql:183` grants `"tickets member update"` to every member — any participant can rewrite the restaurant name, invoice fields and totals (identity columns are protected by `protect_ticket_columns`). The spec's RLS section says owner-only. This matches RN's permissiveness and the spec's own reasoning for `ticket_items`; reconcile the two documents either way.
 
 ---
 
-## 7. Recommended order to resume
+## 5. Ship checklist
 
-1. Fix the `lib/queries.ts` typing (preferably via generated DB types) so `npm run build` is green, then commit Task 11 (`app/tickets/page.tsx`, `components/bottom-nav.tsx`).
-2. Wire a real Supabase project and apply `supabase/migrations/0001_init.sql`. Until RLS / RPCs / Realtime are exercised, every later task builds on unverified foundations.
-3. Add the scan-failure rollback (§3.1) and fix the success-toast string (§3.2).
-4. Patch plan Task 12 with the four RN dialog details (§4.5), then build the summary screen and item dialog.
-5. Decide the two parity questions — `invoice.date` vs `created_at` for the list, and member-vs-owner ticket edit rights — and reconcile spec, migration, and code.
-6. Continue with Tasks 13–17 (edit, scan, join/account, PWA, Docker/fly.io/README) and finish with Task 18's verification gates: `npm test`, `npm run build`, `docker build`, manual smoke.
+1. ~~Create the Supabase project, apply the migration, fill `.env.local`~~ — **done**, app runs locally.
+2. **Run the two-account half of plan Task 18 Step 4** (§2.1a): share link → second account joins → tag by email → confirm both sessions update live, console clear of realtime subscribe errors.
+3. **Run `docker build`** with the placeholder build args (§2.1b), then `fly deploy` with real `[build.args]` and `fly secrets set GROQ_API_KEY=… SUPABASE_SERVICE_ROLE_KEY=…`.
+4. **Add error states to both data hooks** (§2.2) — the highest-value code change left, because its absence turns every backend failure into a silent lie about the data.
+5. Generate DB types and drop the casts in `lib/queries.ts` (§2.3).
+6. Fix SW cache eviction and clear the cache on sign-out (§3.1, §3.2).
+7. Add an `onAuthStateChange` listener (§3.3).
+8. Settle the four pending decisions in §4 and update spec or code to match.
+9. Optional but valuable: integration tests against a local Supabase for the scan route's rollback path and the RLS policies (§2.4).
