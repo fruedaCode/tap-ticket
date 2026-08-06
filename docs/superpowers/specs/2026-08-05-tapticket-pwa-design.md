@@ -80,7 +80,7 @@ ticket_members  (ticket_id -> tickets on delete cascade, user_id -> profiles,
 
 **RLS:**
 - `profiles`: any authenticated user can read (needed for member display); users update only their own row.
-- `tickets`: select = caller is a member; insert = authenticated (owner_id = caller); update/delete = owner.
+- `tickets`: select = caller is a member; insert = authenticated (owner_id = caller); update = any member (content columns only — a trigger protects id/owner_id/share_token); delete = owner.
 - `ticket_items`, `item_assignments`: select = caller is member of the parent ticket; insert/update/delete = caller is member of the parent ticket (mirrors the RN model where every participant edits assignments).
 - `ticket_members`: select = caller is member of that ticket; no direct client insert/update/delete except marking own `seen` (RPCs handle membership changes).
 

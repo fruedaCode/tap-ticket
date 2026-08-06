@@ -50,7 +50,7 @@ export const en: Record<string, string> = {
   'Remaining': 'Remaining',
   'Mine': 'I have',
   'Success': 'Successfully added',
-  'Successfully added': 'Please note that this free version of the app has limited accuracy for ticket scanning. For improved precision, consider upgrading to our premium version.',
+  'Successfully added': 'Ticket added successfully',
   'Validate': 'Validate',
   'Search': 'Search',
   'Tag': 'Tag',

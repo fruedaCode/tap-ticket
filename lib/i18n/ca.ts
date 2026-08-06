@@ -50,7 +50,7 @@ export const ca: Record<string, string> = {
   'Remaining': 'Pendents',
   'Mine': 'Tinc',
   'Success': 'Afegit amb èxit',
-  'Successfully added': "Tingues en compte que aquesta versió gratuïta de l'aplicació té una precisió limitada per a l'escaneig de tiquets de restaurant. Per a una major precisió, considera actualitzar a la nostra versió premium.",
+  'Successfully added': 'Tiquet afegit amb èxit',
   'Validate': 'Validar',
   'Search': 'Buscar',
   'Tag': 'Etiquetar',

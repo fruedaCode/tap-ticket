@@ -1389,9 +1389,11 @@ Behavior:
 Props: `item: TicketItemWithAssignments`, `userId` (current user), `onClose`.
 Local state: `view: 'mine' | 'split'`, `amount` initialized from the current user's assignment (display value: if `split_among > 0` → `amount * split_among` parts, else units).
 
-- Toggle "My part" / "Split" (shadcn tabs or two buttons): labels `t('Units')` / `t('Percentage')`.
-- **My part:** numeric stepper (− / value / +). Label: if split → `t('My share')` with max = `(calculateMaxPercentageAvailable(item, othersAssignments) + ownAmount) * split_among` displayed as parts of `split_among`; else `t('Units')` with max = `calculateMaxUnitsAvailable(item, othersAssignments) + ownUnits`. "others" = assignments excluding current user. Save → `setItemAmount(supabase, item.id, userId, split_among > 0 ? 'percentage' : 'unit', split_among > 0 ? value / split_among : value)`.
-- **Split:** stepper N ≥ 2 → `splitItem(supabase, item, n, userId)`. If `item.split_among > 0`: show `t('This item has been split in') + N + t('Parts')` and an "Unsplit" button → `unsplitItem`.
+RN-parity details (from `components/tickets/ItemPressDialogContent.tsx` in the original app — verified by independent review):
+- **View toggle is icon-only** (`person` / `people` lucide icons — "My part" vs "Split"), not text labels.
+- **Dialog title shows the remaining amount**: `t('Remaining')` + `: ` + `numberToCurrency(maxAvailable × unitPrice, lang)` + `€` in "mine"/units view (percentage/split view: `maxPercentage × getFinalPrice(item)`).
+- **My part:** numeric stepper (− / value / +). Label: if split → `t('My share')` with max = `(calculateMaxPercentageAvailable(item, othersAssignments) + ownAmount) * split_among` displayed as parts of `split_among`; else `t('Units')` with max = `calculateMaxUnitsAvailable(item, othersAssignments) + ownUnits`. "others" = assignments excluding current user. Show a live total line above Save: `t('Total')` + `: ` + `numberToCurrency(value × (units ? getUnitPrice(item) : getFinalPrice(item)), lang)` + `€` — for percentage view use `value × getFinalPrice(item)` where value is the 0..1 fraction. Save → `setItemAmount(supabase, item.id, userId, split_among > 0 ? 'percentage' : 'unit', split_among > 0 ? value / split_among : value)`.
+- **Split:** stepper N ≥ 2 → `splitItem(supabase, item, n, userId)`. If `item.split_among > 0` show `t('This item has been split in') + N + t('Parts')`. **Both "Split" and "Unsplit" buttons are shown in this view** (RN shows both unconditionally; Unsplit → `unsplitItem`).
 - After each mutation, parent refetches via realtime (no manual reload needed).
 
 - [ ] **Step 4: `components/individual-bill.tsx`** — props `bill: UserBill`; header `t('Your bill')`, lines with description / unit / amount, footer total `t('Total')` + `numberToCurrency(bill.total, lang) €`.

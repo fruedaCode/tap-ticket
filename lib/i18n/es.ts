@@ -50,7 +50,7 @@ export const es: Record<string, string> = {
   'Remaining': 'Pendientes',
   'Mine': 'Tengo',
   'Success': 'Agregado con éxito',
-  'Successfully added': 'Ten en cuenta que esta versión gratuita de la aplicación tiene una precisión limitada para el escaneo de tickets de restaurante. Para una mayor precisión, considera actualizar a nuestra versión premium.',
+  'Successfully added': 'Ticket añadido con éxito',
   'Validate': 'Validar',
   'Search': 'Buscar',
   'Tag': 'Etiquetar',
