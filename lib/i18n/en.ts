@@ -75,6 +75,7 @@ export const en: Record<string, string> = {
   'Copy link': 'Copy link',
   'Link copied': 'Link copied',
   'Scanning ticket': 'Scanning ticket',
+  'Joining ticket': 'Joining ticket',
   'Remove': 'Remove',
   'Type': 'Type',
   'Operation number': 'Operation number',

@@ -75,6 +75,7 @@ export const ca: Record<string, string> = {
   'Copy link': 'Copia l’enllaç',
   'Link copied': 'Enllaç copiat',
   'Scanning ticket': 'Escanejant tiquet',
+  'Joining ticket': 'Unint-te al tiquet',
   'Remove': 'Elimina',
   'Type': 'Tipus',
   'Operation number': 'Número d’operació',

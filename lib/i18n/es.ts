@@ -75,6 +75,7 @@ export const es: Record<string, string> = {
   'Copy link': 'Copiar enlace',
   'Link copied': 'Enlace copiado',
   'Scanning ticket': 'Escaneando ticket',
+  'Joining ticket': 'Uniéndote al ticket',
   'Remove': 'Eliminar',
   'Type': 'Tipo',
   'Operation number': 'Número de operación',
