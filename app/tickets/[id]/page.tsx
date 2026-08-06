@@ -19,7 +19,6 @@ import { useI18n } from '@/lib/i18n'
 import { markSeen } from '@/lib/mutations'
 import { getTicketPaidPercentage, groupItemsByUser, type UserBill } from '@/lib/split'
 import { createClient } from '@/lib/supabase/client'
-import type { TicketItemWithAssignments } from '@/lib/types'
 
 export default function TicketSummaryPage() {
   const { id } = useParams<{ id: string }>()
@@ -30,7 +29,7 @@ export default function TicketSummaryPage() {
 
   const [userId, setUserId] = useState<string | null>(null)
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
-  const [selectedItem, setSelectedItem] = useState<TicketItemWithAssignments | null>(null)
+  const [selectedItemId, setSelectedItemId] = useState<string | null>(null)
   const [imgUrl, setImgUrl] = useState<string | null>(null)
   const [imgOpen, setImgOpen] = useState(false)
 
@@ -95,6 +94,10 @@ export default function TicketSummaryPage() {
   const emptyBill: UserBill = { userId: selected, items: [], total: 0 }
   const selectedBill = bills.find((b) => b.userId === selected) ?? emptyBill
 
+  // derive the live item so realtime reloads are reflected in the open dialog;
+  // if the item was deleted, the dialog is treated as closed
+  const selectedItem = selectedItemId ? (ticket.items.find((i) => i.id === selectedItemId) ?? null) : null
+
   const total = ticket.totals?.total_with_tax ?? 0
   const paidPct = getTicketPaidPercentage(ticket.items)
   const remaining = total * (1 - paidPct)
@@ -121,7 +124,7 @@ export default function TicketSummaryPage() {
       <UsersCarousel members={ticket.members} selected={selected} onSelect={setSelectedUserId} />
 
       <div className="flex flex-col gap-4 px-4 pt-2">
-        <TicketItems items={ticket.items} selectedUserId={selected} onPress={setSelectedItem} />
+        <TicketItems items={ticket.items} selectedUserId={selected} onPress={(item) => setSelectedItemId(item.id)} />
 
         <IndividualBill bill={selectedBill} />
 
@@ -150,7 +153,7 @@ export default function TicketSummaryPage() {
       </div>
 
       {selectedItem && userId && (
-        <ItemDialog item={selectedItem} userId={userId} onClose={() => setSelectedItem(null)} />
+        <ItemDialog item={selectedItem} userId={userId} onClose={() => setSelectedItemId(null)} />
       )}
 
       <Dialog open={imgOpen} onOpenChange={setImgOpen}>

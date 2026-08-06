@@ -88,10 +88,12 @@ export function ItemDialog({
 
   const maxAmount = isSplit ? Math.floor(maxFraction * item.split_among + 1e-9) : Math.floor(maxUnits + 1e-9)
 
+  // title shows the genuinely unassigned remainder across ALL assignments (RN renderMaxAvailable);
+  // the stepper max above intentionally adds the user's own share back
   const titleRemaining =
     view === 'split' || isSplit
-      ? numberToCurrency(maxFraction * getFinalPrice(item), lang)
-      : numberToCurrency(maxUnits * getUnitPrice(item), lang)
+      ? numberToCurrency(calculateMaxPercentageAvailable(item, item.assignments) * getFinalPrice(item), lang)
+      : numberToCurrency(calculateMaxUnitsAvailable(item, item.assignments) * getUnitPrice(item), lang)
 
   const liveTotal = isSplit
     ? (amount / item.split_among) * getFinalPrice(item)

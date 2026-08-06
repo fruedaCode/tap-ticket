@@ -18,6 +18,7 @@ export const ca: Record<string, string> = {
   'Total': 'Total',
   'Your bill': 'La teva factura',
   'Save': 'Desar',
+  'Error': 'Error',
   'es': 'Espanyol',
   'en': 'Anglès',
   'ca': 'Català',
