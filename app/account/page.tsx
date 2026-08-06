@@ -96,7 +96,7 @@ export default function AccountPage() {
 
   if (loading) {
     return (
-      <div className="mx-auto min-h-dvh max-w-md bg-background pb-24">
+      <div className="mx-auto w-full min-h-dvh max-w-md bg-background pb-24">
         <div className="space-y-4 px-4 pt-6">
           <Skeleton className="h-6 w-1/3" />
           <Skeleton className="size-16 rounded-full" />
@@ -111,7 +111,7 @@ export default function AccountPage() {
   const initial = (displayName || email || '?').charAt(0).toUpperCase()
 
   return (
-    <div className="mx-auto min-h-dvh max-w-md bg-background pb-24">
+    <div className="mx-auto w-full min-h-dvh max-w-md bg-background pb-24">
       <div className="flex flex-col gap-6 px-4 pt-6">
         <h1 className="text-2xl font-bold">{t('My account')}</h1>
 

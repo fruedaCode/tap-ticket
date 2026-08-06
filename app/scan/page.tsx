@@ -62,7 +62,7 @@ export default function ScanPage() {
   }
 
   return (
-    <div className="mx-auto flex min-h-dvh max-w-md flex-col bg-background pb-24">
+    <div className="mx-auto flex w-full min-h-dvh max-w-md flex-col bg-background pb-24">
       <h1 className="px-4 pb-2 pt-6 text-2xl font-bold">{t('Import')}</h1>
 
       <div className="flex flex-1 items-center justify-center px-4">

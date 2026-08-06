@@ -117,7 +117,7 @@ export default function TicketSummaryPage() {
 
   if (!ticket) {
     return (
-      <div className="mx-auto min-h-dvh max-w-md bg-background pb-24">
+      <div className="mx-auto w-full min-h-dvh max-w-md bg-background pb-24">
         <div className="flex flex-col items-center px-4 pt-24 text-center">
           {error ? (
             <>
@@ -159,7 +159,7 @@ export default function TicketSummaryPage() {
   const paidPct = getTicketPaidPercentage(ticket.items)
 
   return (
-    <div className="mx-auto min-h-dvh max-w-md bg-background pb-56">
+    <div className="mx-auto w-full min-h-dvh max-w-md bg-background pb-56">
       <div aria-live="polite" role="status" className="sr-only">
         {announcement}
       </div>

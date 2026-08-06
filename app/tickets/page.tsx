@@ -90,7 +90,7 @@ export default function TicketsPage() {
   }
 
   return (
-    <div className="mx-auto min-h-dvh max-w-md bg-background pb-24">
+    <div className="mx-auto w-full min-h-dvh max-w-md bg-background pb-24">
       <h1 className="px-4 pb-2 pt-6 text-2xl font-bold">{t('My tickets')}</h1>
 
       {loading ? (

@@ -143,7 +143,7 @@ export default function TicketEditPage() {
 
   if (!loading && !ticket) {
     return (
-      <div className="mx-auto min-h-dvh max-w-md bg-background pb-24">
+      <div className="mx-auto w-full min-h-dvh max-w-md bg-background pb-24">
         <p className="px-4 pt-24 text-center text-muted-foreground">{t('Invalid link')}</p>
         <BottomNav />
       </div>
@@ -152,7 +152,7 @@ export default function TicketEditPage() {
 
   if (loading || !ticket || !restaurant || !invoice || !totals || !items) {
     return (
-      <div className="mx-auto min-h-dvh max-w-md bg-background pb-24">
+      <div className="mx-auto w-full min-h-dvh max-w-md bg-background pb-24">
         <div className="space-y-4 px-4 pt-6">
           <Skeleton className="h-6 w-1/3" />
           <Skeleton className="h-10 w-full" />
@@ -170,7 +170,7 @@ export default function TicketEditPage() {
   const isOwner = userId !== null && ticket.owner_id === userId
 
   return (
-    <div className="mx-auto min-h-dvh max-w-md bg-background pb-24">
+    <div className="mx-auto w-full min-h-dvh max-w-md bg-background pb-24">
       <div className="flex flex-col gap-6 px-4 pt-6">
         <h1 className="text-2xl font-bold">{t('Edit')}</h1>
 
