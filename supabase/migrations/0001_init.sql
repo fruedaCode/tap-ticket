@@ -220,6 +220,7 @@ create policy "members read ticket images" on storage.objects for select to auth
   using (bucket_id = 'ticket-images' and is_ticket_member(name::uuid));
 create policy "users upload ticket images" on storage.objects for insert to authenticated
   with check (bucket_id = 'ticket-images'
-              and name ~ '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$');
+              and name ~ '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+              and is_ticket_owner(name::uuid));
 create policy "owners delete ticket images" on storage.objects for delete to authenticated
   using (bucket_id = 'ticket-images' and is_ticket_owner(name::uuid));
