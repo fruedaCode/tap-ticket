@@ -11,11 +11,12 @@ function shareToken(): string {
   return [...bytes].map((b) => TOKEN_ALPHABET[b % 62]).join('')
 }
 
-// roll back a half-finished scan: the tickets delete cascades members/items (owner delete policy
-// passes for the caller); the storage remove passes via the member-based delete policy
+// roll back a half-finished scan: the storage remove must come FIRST — the delete policy is
+// owner-only via is_ticket_owner(name::uuid), which goes false once the ticket row is gone;
+// the tickets delete then cascades members/items (owner delete policy passes for the caller)
 async function cleanupFailedScan(supabase: Awaited<ReturnType<typeof createClient>>, ticketId: string) {
-  await supabase.from('tickets').delete().eq('id', ticketId) // cascades members/items
   await supabase.storage.from('ticket-images').remove([ticketId])
+  await supabase.from('tickets').delete().eq('id', ticketId) // cascades members/items
 }
 
 export async function POST(request: Request) {
