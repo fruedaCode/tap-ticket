@@ -1,5 +1,13 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
-import type { TicketDetail, TicketItemWithAssignments, MemberWithProfile } from '@/lib/types'
+import type { ItemAssignment, Ticket, TicketDetail, TicketItem, TicketItemWithAssignments, MemberWithProfile } from '@/lib/types'
+
+// list rows embed assignments as `item_assignments` (supabase join), not `assignments`
+export type TicketListItem = TicketItem & { item_assignments: ItemAssignment[] }
+export type TicketListRow = {
+  membership: { ticket_id: string; seen: boolean; role: 'owner' | 'member' }
+  ticket: Ticket
+  items: TicketListItem[]
+}
 
 export async function fetchTicketDetail(supabase: SupabaseClient, ticketId: string): Promise<TicketDetail> {
   const { data: ticket, error } = await supabase.from('tickets').select('*').eq('id', ticketId).single()
@@ -27,7 +35,7 @@ export async function fetchTicketDetail(supabase: SupabaseClient, ticketId: stri
   }
 }
 
-export async function fetchTicketList(supabase: SupabaseClient) {
+export async function fetchTicketList(supabase: SupabaseClient): Promise<TicketListRow[]> {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return []
   const { data: memberships, error } = await supabase
@@ -43,7 +51,7 @@ export async function fetchTicketList(supabase: SupabaseClient) {
     : { data: [] }
   return rows.map((m) => ({
     membership: { ticket_id: m.ticket_id, seen: m.seen, role: m.role },
-    ticket: m.tickets,
-    items: (items ?? []).filter((i) => i.ticket_id === m.ticket_id),
+    ticket: m.tickets as unknown as Ticket,
+    items: ((items ?? []) as TicketListItem[]).filter((i) => i.ticket_id === m.ticket_id),
   }))
 }
