@@ -14,6 +14,8 @@ export const getPercentagePaid = (item: Item, assignments: ItemAssignment[], use
 export const isItemPaid = (item: Item, assignments: ItemAssignment[]): boolean =>
   Math.abs(1 - getPercentagePaid(item, assignments)) < 1e-9
 
+export const getTicketTotal = (items: Item[]): number => sumBy(items, (it) => getFinalPrice(it))
+
 export const getTicketPaidPercentage = (
   items: Array<Item & { assignments: ItemAssignment[] }>,
 ): number => {

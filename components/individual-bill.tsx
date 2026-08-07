@@ -5,8 +5,17 @@ import { numberToCurrency } from '@/lib/currency'
 import { useI18n } from '@/lib/i18n'
 import type { UserBill } from '@/lib/split'
 
-export function IndividualBill({ bill, settled = false }: { bill: UserBill; settled?: boolean }) {
+export function IndividualBill({
+  bill,
+  settled = false,
+  paid = 0,
+}: {
+  bill: UserBill
+  settled?: boolean
+  paid?: number
+}) {
   const { lang, t } = useI18n()
+  const remaining = Math.max(0, bill.total - paid)
 
   return (
     <div className="rounded-xl border bg-card p-4">
@@ -34,6 +43,17 @@ export function IndividualBill({ bill, settled = false }: { bill: UserBill; sett
         <span>{t('Total')}</span>
         <span>{numberToCurrency(bill.total, lang)} €</span>
       </div>
+      {bill.total > 0 && (
+        <div className="flex justify-between text-sm">
+          <span className="text-muted-foreground">{t('Paid')}</span>
+          <span className="tabular-nums">
+            {numberToCurrency(Math.min(paid, bill.total), lang)} €
+            <span className="text-muted-foreground">
+              {' '}({numberToCurrency(remaining, lang)} € {t('pending')})
+            </span>
+          </span>
+        </div>
+      )}
     </div>
   )
 }

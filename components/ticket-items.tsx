@@ -9,12 +9,14 @@ export function TicketItems({
   onPress,
   members = [],
   flashIds,
+  settledItemIds,
 }: {
   items: TicketItemWithAssignments[]
   selectedUserId: string
   onPress: (item: TicketItemWithAssignments) => void
   members?: MemberWithProfile[]
   flashIds?: ReadonlySet<string>
+  settledItemIds?: ReadonlySet<string>
 }) {
   return (
     <div className="divide-y divide-border overflow-hidden rounded-xl border bg-card">
@@ -26,6 +28,7 @@ export function TicketItems({
           members={members}
           onPress={onPress}
           flash={flashIds?.has(item.id) ?? false}
+          settled={settledItemIds?.has(item.id) ?? false}
         />
       ))}
     </div>

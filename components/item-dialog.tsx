@@ -62,10 +62,12 @@ function Stepper({
 export function ItemDialog({
   item,
   userId,
+  coveredClaims,
   onClose,
 }: {
   item: TicketItemWithAssignments
   userId: string
+  coveredClaims: ReadonlySet<string>
   onClose: () => void
 }) {
   const { lang, t } = useI18n()
@@ -79,17 +81,22 @@ export function ItemDialog({
   const ownUnits = own ? (own.payment_type === 'unit' ? own.amount : own.amount / getUnitThreshold(item)) : 0
   const ownFraction = own ? (own.payment_type === 'unit' ? own.amount * getUnitThreshold(item) : own.amount) : 0
 
-  const maxUnits = calculateMaxUnitsAvailable(item, others) + ownUnits
-  const maxFraction = calculateMaxPercentageAvailable(item, others) + ownFraction
+  // max for the current user: quantity minus what OTHERS hold (own claim is already headroom)
+  const maxUnits = calculateMaxUnitsAvailable(item, others)
+  const maxFraction = calculateMaxPercentageAvailable(item, others)
 
   // display value: parts (of split_among) when the item is split, units otherwise
-  const [amount, setAmount] = useState(() => (isSplit ? ownFraction * item.split_among : ownUnits))
+  const initialAmount = isSplit ? ownFraction * item.split_among : ownUnits
+  const [amount, setAmount] = useState(initialAmount)
+  // a claim covered by the user's payments cannot be reduced (the DB trigger mirrors this)
+  const ownLocked = coveredClaims.has(`${item.id}:${userId}`)
+  // split/unsplit rewrites every assignment on the item — blocked when any claim on it is already paid for
+  const splitLocked = item.assignments.some((a) => a.amount > 0 && coveredClaims.has(`${item.id}:${a.user_id}`))
   const [splitAmong, setSplitAmong] = useState(isSplit ? item.split_among : 2)
 
   const maxAmount = isSplit ? Math.floor(maxFraction * item.split_among + 1e-9) : Math.floor(maxUnits + 1e-9)
 
-  // title shows the genuinely unassigned remainder across ALL assignments (RN renderMaxAvailable);
-  // the stepper max above intentionally adds the user's own share back
+  // title shows the genuinely unassigned remainder across ALL assignments (RN renderMaxAvailable)
   const titleRemaining =
     view === 'split' || isSplit
       ? numberToCurrency(calculateMaxPercentageAvailable(item, item.assignments) * getFinalPrice(item), lang)
@@ -176,10 +183,13 @@ export function ItemDialog({
             <Stepper
               label={isSplit ? t('My share') : t('Units')}
               value={amount}
-              min={0}
+              min={ownLocked ? initialAmount : 0}
               max={maxAmount}
               onChange={setAmount}
             />
+            {ownLocked && initialAmount > 0 && (
+              <p className="text-[13px] text-muted-foreground">{t('Settled shares are locked')}</p>
+            )}
             <p className="text-right text-sm">
               {t('Total')}: {numberToCurrency(liveTotal, lang)} €
             </p>
@@ -197,11 +207,14 @@ export function ItemDialog({
               </p>
             )}
             <Stepper label={t('Divide among')} value={splitAmong} min={2} max={99} onChange={setSplitAmong} />
+            {splitLocked && (
+              <p className="text-[13px] text-muted-foreground">{t('Settled shares are locked')}</p>
+            )}
             <div className="flex justify-end gap-2">
-              <Button type="button" variant="outline" disabled={saving} onClick={handleUnsplit}>
+              <Button type="button" variant="outline" disabled={saving || splitLocked} onClick={handleUnsplit}>
                 {t('Unsplit')}
               </Button>
-              <Button type="button" disabled={saving} onClick={handleSplit}>
+              <Button type="button" disabled={saving || splitLocked} onClick={handleSplit}>
                 {t('Split')}
               </Button>
             </div>

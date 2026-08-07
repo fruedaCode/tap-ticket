@@ -17,12 +17,15 @@ export function ReceiptItemRow({
   members,
   onPress,
   flash = false,
+  settled = false,
 }: {
   item: TicketItemWithAssignments
   viewerId: string
   members: MemberWithProfile[]
   onPress: (item: TicketItemWithAssignments) => void
   flash?: boolean
+  // fully assigned AND every claimant's share covered by their payments (getSettledItemIds)
+  settled?: boolean
 }) {
   const { lang, t } = useI18n()
 
@@ -52,7 +55,9 @@ export function ReceiptItemRow({
   const amountMuted = !viewerClaims && claimantIds.length > 0
 
   const stateLabel = paid
-    ? t('Covered')
+    ? settled
+      ? t('Settled')
+      : t('Covered')
     : viewerClaims
       ? t('You')
       : claimantIds.length > 0
@@ -70,7 +75,7 @@ export function ReceiptItemRow({
         'active:scale-[0.99] motion-reduce:active:scale-100',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
         viewerClaims && !paid ? 'border-l-primary' : 'border-l-transparent',
-        paid && 'bg-success-subtle/50',
+        paid && (settled ? 'bg-success-subtle' : 'bg-success-subtle/50'),
         flash && 'animate-[row-flash_600ms_ease-out] motion-reduce:animate-none',
       )}
     >
@@ -82,7 +87,7 @@ export function ReceiptItemRow({
         {(paid || claimantIds.length > 0) && (
           <div className="flex flex-wrap items-center gap-2 pt-1.5">
             {paid ? (
-              <ClaimChip variant="covered" label={t('Covered')} />
+              <ClaimChip variant={settled ? 'settled' : 'covered'} label={settled ? t('Settled') : t('Covered')} />
             ) : (
               <>
                 {viewerClaims && <ClaimChip variant="you" label={t('You')} />}

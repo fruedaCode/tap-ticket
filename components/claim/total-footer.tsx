@@ -5,7 +5,7 @@ import { numberToCurrency } from '@/lib/currency'
 import { useI18n } from '@/lib/i18n'
 import type { UserBill } from '@/lib/split'
 
-export function TotalFooter({ bill, onReview }: { bill: UserBill; onReview: () => void }) {
+export function TotalFooter({ bill, onReview, onHistory }: { bill: UserBill; onReview: () => void; onHistory: () => void }) {
   const { lang, t } = useI18n()
   const total = `${numberToCurrency(bill.total, lang)} €`
 
@@ -25,6 +25,9 @@ export function TotalFooter({ bill, onReview }: { bill: UserBill; onReview: () =
         </div>
         <Button type="button" onClick={onReview} className="h-13 w-full text-base">
           {t('Review & settle')}
+        </Button>
+        <Button type="button" variant="ghost" onClick={onHistory} className="mt-1 min-h-11 w-full">
+          {t('Payment history')}
         </Button>
       </div>
     </div>

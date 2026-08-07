@@ -1,6 +1,6 @@
 'use client'
 
-import { Check, Clock, User, Users } from 'lucide-react'
+import { Check, CheckCheck, Clock, User, Users } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 // Status chips always pair color with icon + text (§3.3, non-color-only cues)
@@ -9,6 +9,7 @@ const VARIANTS = {
   other: { className: 'bg-secondary text-secondary-foreground border-border', Icon: User },
   shared: { className: 'bg-warning-subtle text-accent border-accent/40', Icon: Users },
   covered: { className: 'bg-success-subtle text-success border-success/40', Icon: Check },
+  settled: { className: 'bg-success text-white border-success', Icon: CheckCheck },
   left: { className: 'bg-warning-subtle text-accent border-accent/40', Icon: Clock },
 } as const
 

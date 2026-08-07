@@ -8,6 +8,7 @@ import { GroupStatusBar } from '@/components/claim/group-status-bar'
 import { memberName } from '@/components/claim/participant-avatar'
 import { ReceiptListSkeleton } from '@/components/claim/receipt-list-skeleton'
 import { SettleDialog } from '@/components/claim/settle-dialog'
+import { SettlementsDialog } from '@/components/claim/settlements-dialog'
 import { TotalFooter } from '@/components/claim/total-footer'
 import { IndividualBill } from '@/components/individual-bill'
 import { ItemDialog } from '@/components/item-dialog'
@@ -21,7 +22,7 @@ import { numberToCurrency } from '@/lib/currency'
 import { useTicket } from '@/lib/hooks/useTicket'
 import { useI18n } from '@/lib/i18n'
 import { markSeen } from '@/lib/mutations'
-import { getOutstanding, getTicketPaidPercentage, groupItemsByUser, type UserBill } from '@/lib/split'
+import { getActivePaid, getCoveredClaims, getOutstanding, getSettledItemIds, getSettledTotal, getTicketPaidPercentage, getTicketTotal, groupItemsByUser, type UserBill } from '@/lib/split'
 import { createClient } from '@/lib/supabase/client'
 import type { TicketItemWithAssignments } from '@/lib/types'
 
@@ -45,6 +46,7 @@ export default function TicketSummaryPage() {
   const [imgUrl, setImgUrl] = useState<string | null>(null)
   const [imgOpen, setImgOpen] = useState(false)
   const [settleOpen, setSettleOpen] = useState(false)
+  const [historyOpen, setHistoryOpen] = useState(false)
 
   // live-update feedback: diff assignment signatures between refetches (§3.2)
   const prevSigs = useRef<Map<string, string> | null>(null)
@@ -149,14 +151,20 @@ export default function TicketSummaryPage() {
   const emptyBill: UserBill = { userId: selected, items: [], total: 0 }
   const selectedBill = bills.find((b) => b.userId === selected) ?? emptyBill
   const myBill = bills.find((b) => b.userId === userId) ?? { userId: userId ?? '', items: [], total: 0 }
-  const selectedSettled = selectedBill.total > 0 && getOutstanding(selectedBill, ticket.settlements) === 0
+  // a submitted proof counts as paid; rejection reopens the debt
+  const selectedPaid = getActivePaid(ticket.settlements, selected)
+  const selectedSettled = selectedBill.total > 0 && getOutstanding(selectedBill, ticket.settlements) < 0.005
+  const settledItemIds = getSettledItemIds(ticket.items, ticket.settlements)
 
   // derive the live item so realtime reloads are reflected in the open dialog;
   // if the item was deleted, the dialog is treated as closed
   const selectedItem = selectedItemId ? (ticket.items.find((i) => i.id === selectedItemId) ?? null) : null
 
   const total = ticket.totals?.total_with_tax ?? 0
+  const itemsTotal = getTicketTotal(ticket.items)
   const paidPct = getTicketPaidPercentage(ticket.items)
+  const settledAmount = getSettledTotal(ticket.settlements)
+  const coveredClaims = getCoveredClaims(ticket.items, ticket.settlements)
 
   return (
     <div className="mx-auto w-full min-h-dvh max-w-md bg-background pb-56">
@@ -181,7 +189,7 @@ export default function TicketSummaryPage() {
         </div>
       </div>
 
-      <GroupStatusBar members={ticket.members} paidPercentage={paidPct} connected={!error} />
+      <GroupStatusBar members={ticket.members} paidPercentage={paidPct} settledAmount={settledAmount} totalAmount={itemsTotal} connected={!error} />
 
       <p className="px-4 pt-3 text-[13px] font-semibold tracking-[0.06em] text-muted-foreground uppercase">
         {t('Participants')}
@@ -220,11 +228,12 @@ export default function TicketSummaryPage() {
               onPress={(item) => setSelectedItemId(item.id)}
               members={ticket.members}
               flashIds={flashIds}
+              settledItemIds={settledItemIds}
             />
           )}
         </section>
 
-        <IndividualBill bill={selectedBill} settled={selectedSettled} />
+        <IndividualBill bill={selectedBill} settled={selectedSettled} paid={selectedPaid} />
 
         <div className="flex gap-2">
           <ShareButton ticket={ticket} className="min-h-11 flex-1" />
@@ -237,7 +246,7 @@ export default function TicketSummaryPage() {
       </div>
 
       {selectedItem && userId && (
-        <ItemDialog item={selectedItem} userId={userId} onClose={() => setSelectedItemId(null)} />
+        <ItemDialog item={selectedItem} userId={userId} coveredClaims={coveredClaims} onClose={() => setSelectedItemId(null)} />
       )}
 
       {userId && (
@@ -247,6 +256,15 @@ export default function TicketSummaryPage() {
           userId={userId}
           open={settleOpen}
           onClose={() => setSettleOpen(false)}
+        />
+      )}
+
+      {userId && (
+        <SettlementsDialog
+          ticket={ticket}
+          userId={userId}
+          open={historyOpen}
+          onClose={() => setHistoryOpen(false)}
         />
       )}
 
@@ -260,7 +278,7 @@ export default function TicketSummaryPage() {
       </Dialog>
 
       <div className="fixed inset-x-0 bottom-0 z-50 mx-auto max-w-md">
-        <TotalFooter bill={selectedBill} onReview={() => setSettleOpen(true)} />
+        <TotalFooter bill={selectedBill} onReview={() => setSettleOpen(true)} onHistory={() => setHistoryOpen(true)} />
         <BottomNav className="relative" />
       </div>
     </div>
