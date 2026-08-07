@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getScanner } from '@/lib/ai'
 import { getLogger } from '@/lib/logger'
+import { readBillingPlan, getWeeklyUsage } from '@/lib/billing/usage'
 
 const log = getLogger('scan')
 
@@ -30,6 +31,18 @@ export async function POST(request: Request) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
+
+  // Per-user weekly scan quota. Plans + limits live in lib/billing/plans.ts.
+  // Checked before any work so hitting the cap costs no AI call or DB writes.
+  const plan = await readBillingPlan(user.id)
+  const usage = await getWeeklyUsage(user.id, plan)
+  if (usage.limit !== 'unlimited' && usage.remaining <= 0) {
+    log.info('scan limit reached', { userId: user.id, plan, used: usage.count })
+    return NextResponse.json(
+      { error: 'scan_limit_reached', plan, limit: usage.limit, used: usage.count },
+      { status: 402 },
+    )
+  }
 
   const form = await request.formData()
   const file = form.get('image')

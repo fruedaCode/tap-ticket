@@ -1,7 +1,9 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-const PUBLIC_PATHS = ['/login', '/auth']
+// '/plans' is public marketing/pricing; '/api/billing/webhook' must bypass the
+// cookie gate — the Stripe HMAC signature is its authentication.
+const PUBLIC_PATHS = ['/login', '/auth', '/plans', '/api/billing/webhook']
 
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request })
@@ -32,7 +34,8 @@ export async function updateSession(request: NextRequest) {
     return redirect
   }
   const path = request.nextUrl.pathname
-  const isPublic = PUBLIC_PATHS.some((p) => path.startsWith(p))
+  // '/' must match exactly — a prefix check would match every path.
+  const isPublic = PUBLIC_PATHS.some((p) => path.startsWith(p)) || path === '/'
   if (!user && !isPublic) {
     if (path.startsWith('/api')) {
       return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
@@ -43,7 +46,7 @@ export async function updateSession(request: NextRequest) {
     url.search = `?next=${encodeURIComponent(next)}`
     return redirectWithCookies(url)
   }
-  if (user && path === '/login') {
+  if (user && (path === '/login' || path === '/')) {
     const url = request.nextUrl.clone()
     url.pathname = '/tickets'
     url.search = ''

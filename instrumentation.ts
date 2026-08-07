@@ -13,5 +13,7 @@ export async function register() {
     supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL ? 'set' : 'MISSING',
     supabaseAnonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'set' : 'MISSING',
     supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY ? 'set' : 'MISSING',
+    stripeSecretKey: process.env.STRIPE_SECRET_KEY ? 'set' : 'not configured (billing disabled)',
+    stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET ? 'set' : 'not configured',
   })
 }

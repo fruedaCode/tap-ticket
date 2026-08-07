@@ -45,8 +45,15 @@ export default function ScanPage() {
       formData.append('image', file)
       const res = await fetch('/api/scan', { method: 'POST', body: formData })
       if (!res.ok) {
-        const detail = ((await res.json().catch(() => null)) as { error?: string } | null)?.error
-        toast.error(t('Error translating ticket'), { description: detail })
+        const body = (await res.json().catch(() => null)) as { error?: string; limit?: number } | null
+        if (res.status === 402 && body?.error === 'scan_limit_reached') {
+          toast.error(t('Weekly scan limit reached'), {
+            description: t('Upgrade your plan to scan more tickets'),
+            action: { label: t('See plans'), onClick: () => router.push('/plans') },
+          })
+        } else {
+          toast.error(t('Error translating ticket'), { description: body?.error })
+        }
         resetCapture()
         return
       }

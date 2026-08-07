@@ -1,8 +1,9 @@
 'use client'
 
+import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { LogOut, Trash2 } from 'lucide-react'
+import { CreditCard, LogOut, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { BottomNav } from '@/components/bottom-nav'
 import { LanguagePicker } from '@/components/language-picker'
@@ -141,6 +142,15 @@ export default function AccountPage() {
         <section className="flex flex-col gap-1.5">
           <Label>{t('Language')}</Label>
           <LanguagePicker />
+        </section>
+
+        <Separator />
+
+        <section className="flex flex-col gap-3">
+          <Button type="button" variant="outline" nativeButton={false} render={<Link href="/plans" />}>
+            <CreditCard />
+            {t('Plans')}
+          </Button>
         </section>
 
         <Separator />
