@@ -162,4 +162,10 @@ export const en: Record<string, string> = {
   'Cancel subscription?': 'Cancel subscription?',
   'Your subscription will be cancelled immediately and the unused days of the current period will be refunded proportionally': 'Your subscription will be cancelled immediately and the unused days of the current period will be refunded proportionally',
   'Keep plan': 'Keep plan',
+  'Search tickets': 'Search tickets',
+  'All': 'All',
+  'Unread': 'Unread',
+  'Created by me': 'Created by me',
+  'Shared with me': 'Shared with me',
+  'No tickets match your filters': 'No tickets match your filters',
 }

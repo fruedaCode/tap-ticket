@@ -32,7 +32,7 @@ function GoogleIcon({ className }: { className?: string }) {
 }
 
 function LoginForm() {
-  const { t } = useI18n()
+  const { t, lang } = useI18n()
   const searchParams = useSearchParams()
   const next = searchParams.get('next') ?? '/tickets'
   const safeNext = next.startsWith('/') && !next.startsWith('//') ? next : '/tickets'
@@ -65,6 +65,9 @@ function LoginForm() {
       email,
       options: {
         shouldCreateUser: true,
+        // Stored in user_metadata at signup so auth emails can be localized
+        // via {{ .Data.locale }} in the Supabase email templates.
+        data: { locale: lang },
         emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(safeNext)}`,
       },
     })

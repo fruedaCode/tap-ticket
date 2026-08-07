@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>tapticket</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f4f4f5;font-family:Inter,'Geist',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;">
+  {{ $locale := index .Data "locale" }}
+  {{ $heading := "Tu enlace de acceso" }}
+  {{ $intro := "Haz clic en el botón para iniciar sesión en tapticket. El enlace caduca pronto y solo se puede utilizar una vez." }}
+  {{ $button := "Iniciar sesión" }}
+  {{ $fallback := "Si el botón no funciona, copia y pega esta URL en tu navegador:" }}
+  {{ $ignore := "Si no has solicitado este correo, puedes ignorarlo." }}
+  {{ if eq $locale "ca" }}
+    {{ $heading = "El teu enllaç d'accés" }}
+    {{ $intro = "Fes clic al botó per iniciar sessió a tapticket. L'enllaç caduca aviat i només es pot utilitzar una vegada." }}
+    {{ $button = "Inicia sessió" }}
+    {{ $fallback = "Si el botó no funciona, copia i enganxa aquesta URL al navegador:" }}
+    {{ $ignore = "Si no has sol·licitat aquest correu, el pots ignorar." }}
+  {{ else if eq $locale "en" }}
+    {{ $heading = "Your sign-in link" }}
+    {{ $intro = "Click the button below to sign in to tapticket. This link expires shortly and can only be used once." }}
+    {{ $button = "Sign in" }}
+    {{ $fallback = "If the button doesn't work, copy and paste this URL into your browser:" }}
+    {{ $ignore = "If you didn't request this email, you can safely ignore it." }}
+  {{ end }}
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f4f5;">
+    <tr>
+      <td align="center" style="padding:40px 16px;">
+        <table role="presentation" width="480" cellpadding="0" cellspacing="0" style="max-width:480px;width:100%;background-color:#ffffff;border-radius:12px;border:1px solid #e4e4e7;">
+          <tr>
+            <td align="center" style="padding:32px 32px 0 32px;">
+              <p style="margin:0;font-size:28px;font-weight:700;letter-spacing:-1px;color:#450A0A;">tap<span style="color:#DC2626;">ticket</span></p>
+              <p style="margin:4px 0 0 0;font-size:11px;letter-spacing:2px;color:#71717a;">EASY SHARING</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:32px;">
+              <h1 style="margin:0 0 12px 0;font-size:20px;font-weight:600;color:#18181b;">{{ $heading }}</h1>
+              <p style="margin:0 0 24px 0;font-size:14px;line-height:1.6;color:#3f3f46;">{{ $intro }}</p>
+              <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 24px 0;">
+                <tr>
+                  <td align="center" style="border-radius:8px;background-color:#DC2626;">
+                    <a href="{{ .ConfirmationURL }}" target="_blank" style="display:inline-block;padding:14px 32px;font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;border-radius:8px;">{{ $button }}</a>
+                  </td>
+                </tr>
+              </table>
+              <p style="margin:0 0 8px 0;font-size:12px;line-height:1.6;color:#71717a;">{{ $fallback }}</p>
+              <p style="margin:0 0 24px 0;font-size:12px;line-height:1.6;word-break:break-all;"><a href="{{ .ConfirmationURL }}" style="color:#DC2626;">{{ .ConfirmationURL }}</a></p>
+              <p style="margin:0;font-size:12px;line-height:1.6;color:#a1a1aa;">{{ $ignore }}</p>
+            </td>
+          </tr>
+        </table>
+        <p style="margin:24px 0 0 0;font-size:12px;color:#a1a1aa;">tapticket &middot; easy sharing</p>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

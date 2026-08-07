@@ -162,4 +162,10 @@ export const ca: Record<string, string> = {
   'Cancel subscription?': 'Cancel·lar la subscripció?',
   'Your subscription will be cancelled immediately and the unused days of the current period will be refunded proportionally': 'La subscripció es cancel·larà immediatament i els dies no utilitzats del període actual es reembossaran proporcionalment',
   'Keep plan': 'Mantén el pla',
+  'Search tickets': 'Cercar tiquets',
+  'All': 'Tots',
+  'Unread': 'Sense llegir',
+  'Created by me': 'Creats per mi',
+  'Shared with me': 'Compartits amb mi',
+  'No tickets match your filters': 'Cap tiquet coincideix amb els filtres',
 }
