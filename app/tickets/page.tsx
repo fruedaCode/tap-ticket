@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Search } from 'lucide-react'
+import { Camera, Search } from 'lucide-react'
 import { BottomNav } from '@/components/bottom-nav'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -25,6 +25,24 @@ const FILTER_LABELS: Record<Filter, string> = {
   owner: 'Created by me',
   member: 'Shared with me',
 }
+
+const STEPS = [
+  {
+    img: '/steps/snap.svg',
+    title: 'Snap the receipt',
+    body: 'Take a photo of the ticket — AI reads every line item and its price.',
+  },
+  {
+    img: '/steps/share.svg',
+    title: 'Share the link',
+    body: 'Friends join from their phones in seconds — no app install needed.',
+  },
+  {
+    img: '/steps/claim.svg',
+    title: 'Claim your items',
+    body: 'Everyone taps what they had, in realtime. Partial splits are handled for you.',
+  },
+] as const
 
 function formatMoney(amount: number, lang: string) {
   return `${numberToCurrency(amount, lang)} €`
@@ -158,7 +176,33 @@ export default function TicketsPage() {
           </Button>
         </div>
       ) : rows.length === 0 ? (
-        <p className="px-4 pt-16 text-center text-muted-foreground">{t('No tickets yet')}</p>
+        <div className="flex flex-col items-center gap-3 px-4 pt-12 text-center">
+          <div className="flex size-14 items-center justify-center rounded-full bg-muted">
+            <Camera className="size-7 text-muted-foreground" aria-hidden />
+          </div>
+          <p className="font-medium">{t('No tickets yet')}</p>
+          <p className="text-sm text-muted-foreground">{t('Scan a ticket, split the bill')}</p>
+          <Button type="button" className="mt-1 min-h-11" onClick={() => router.push('/scan')}>
+            <Camera className="size-4" aria-hidden />
+            {t('Take picture')}
+          </Button>
+          <ol className="mt-6 w-full space-y-3 text-left">
+            {STEPS.map((step, i) => (
+              <li key={step.title} className="flex items-center gap-3 rounded-xl border bg-card p-3">
+                <img src={step.img} alt="" className="size-12 shrink-0 rounded-lg" />
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
+                      {i + 1}
+                    </span>
+                    <p className="text-sm font-medium">{t(step.title)}</p>
+                  </div>
+                  <p className="mt-0.5 text-xs text-muted-foreground">{t(step.body)}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
       ) : groups.length === 0 ? (
         <p className="px-4 pt-16 text-center text-muted-foreground">{t('No tickets match your filters')}</p>
       ) : (

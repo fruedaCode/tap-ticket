@@ -178,4 +178,10 @@ export const en: Record<string, string> = {
   'Created by me': 'Created by me',
   'Shared with me': 'Shared with me',
   'No tickets match your filters': 'No tickets match your filters',
+  'Snap a photo of your receipt': 'Snap a photo of your receipt',
+  'Upload from gallery': 'Upload from gallery',
+  'Tips for a good scan': 'Tips for a good scan',
+  'Use good, even lighting': 'Use good, even lighting',
+  'Lay the receipt flat, without folds': 'Lay the receipt flat, without folds',
+  'Fit the whole ticket in the frame': 'Fit the whole ticket in the frame',
 }

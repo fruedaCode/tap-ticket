@@ -178,4 +178,10 @@ export const es: Record<string, string> = {
   'Created by me': 'Creados por mí',
   'Shared with me': 'Compartidos conmigo',
   'No tickets match your filters': 'Ningún ticket coincide con los filtros',
+  'Snap a photo of your receipt': 'Haz una foto clara de tu ticket',
+  'Upload from gallery': 'Subir de la galería',
+  'Tips for a good scan': 'Consejos para un buen escaneo',
+  'Use good, even lighting': 'Usa buena luz, sin sombras',
+  'Lay the receipt flat, without folds': 'Pon el ticket plano, sin dobleces',
+  'Fit the whole ticket in the frame': 'Encuadra el ticket completo',
 }

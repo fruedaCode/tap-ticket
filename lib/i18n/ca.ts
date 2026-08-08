@@ -178,4 +178,10 @@ export const ca: Record<string, string> = {
   'Created by me': 'Creats per mi',
   'Shared with me': 'Compartits amb mi',
   'No tickets match your filters': 'Cap tiquet coincideix amb els filtres',
+  'Snap a photo of your receipt': 'Fes una foto clara del teu tiquet',
+  'Upload from gallery': 'Puja de la galeria',
+  'Tips for a good scan': 'Consells per a un bon escaneig',
+  'Use good, even lighting': 'Fes servir bona llum, sense ombres',
+  'Lay the receipt flat, without folds': 'Posa el tiquet pla, sense plecs',
+  'Fit the whole ticket in the frame': 'Emquadra el tiquet sencer',
 }

@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { CreditCard, LogOut, Trash2 } from 'lucide-react'
+import { CreditCard, Loader2, LogOut, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { BottomNav } from '@/components/bottom-nav'
 import { LanguagePicker } from '@/components/language-picker'
@@ -33,7 +33,9 @@ export default function AccountPage() {
   const [email, setEmail] = useState('')
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
   const [displayName, setDisplayName] = useState('')
+  const [savedName, setSavedName] = useState('')
   const [saving, setSaving] = useState(false)
+  const [signingOut, setSigningOut] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
 
@@ -51,12 +53,13 @@ export default function AccountPage() {
         .eq('id', user.id)
         .single()
       setAvatarUrl(profile?.photo_url ?? (user.user_metadata.avatar_url as string | undefined) ?? null)
-      setDisplayName(
+      const name =
         profile?.display_name ??
-          (user.user_metadata.full_name as string | undefined) ??
-          (user.user_metadata.name as string | undefined) ??
-          '',
-      )
+        (user.user_metadata.full_name as string | undefined) ??
+        (user.user_metadata.name as string | undefined) ??
+        ''
+      setDisplayName(name)
+      setSavedName(name)
       setLoading(false)
     })
   }, [supabase, router])
@@ -70,13 +73,17 @@ export default function AccountPage() {
       if (!user) return
       const { error } = await supabase.from('profiles').update({ display_name: displayName }).eq('id', user.id)
       if (error) toast.error(t('Error'))
-      else toast.success(t('Success'))
+      else {
+        setSavedName(displayName)
+        toast.success(t('Success'))
+      }
     } finally {
       setSaving(false)
     }
   }
 
   const handleSignOut = async () => {
+    setSigningOut(true)
     await supabase.auth.signOut()
     router.replace('/login')
   }
@@ -100,7 +107,7 @@ export default function AccountPage() {
       <div className="mx-auto w-full min-h-dvh max-w-md bg-background pb-24">
         <div className="space-y-4 px-4 pt-6">
           <Skeleton className="h-6 w-1/3" />
-          <Skeleton className="size-16 rounded-full" />
+          <Skeleton className="size-20 rounded-full" />
           <Skeleton className="h-10 w-full" />
           <Skeleton className="h-10 w-full" />
         </div>
@@ -117,11 +124,11 @@ export default function AccountPage() {
         <h1 className="text-2xl font-bold">{t('My account')}</h1>
 
         <section className="flex flex-col items-center gap-2">
-          <Avatar className="size-16">
+          <Avatar className="size-20">
             {avatarUrl && <AvatarImage src={avatarUrl} alt={displayName || email} />}
-            <AvatarFallback>{initial}</AvatarFallback>
+            <AvatarFallback className="text-2xl">{initial}</AvatarFallback>
           </Avatar>
-          <p className="font-medium">{displayName || email}</p>
+          {displayName && <p className="font-medium">{displayName}</p>}
           <p className="text-sm text-muted-foreground">{email}</p>
         </section>
 
@@ -132,7 +139,13 @@ export default function AccountPage() {
             <Label htmlFor="display-name">{t('Name')}</Label>
             <Input id="display-name" value={displayName} onChange={(e) => setDisplayName(e.target.value)} />
           </div>
-          <Button type="button" disabled={saving} onClick={handleSaveName}>
+          <Button
+            type="button"
+            className="min-h-11"
+            disabled={saving || displayName.trim() === savedName.trim()}
+            onClick={handleSaveName}
+          >
+            {saving && <Loader2 className="animate-spin" aria-hidden />}
             {t('Save')}
           </Button>
         </section>
@@ -147,8 +160,14 @@ export default function AccountPage() {
         <Separator />
 
         <section className="flex flex-col gap-3">
-          <Button type="button" variant="outline" nativeButton={false} render={<Link href="/plans" />}>
-            <CreditCard />
+          <Button
+            type="button"
+            variant="outline"
+            className="min-h-11"
+            nativeButton={false}
+            render={<Link href="/plans" />}
+          >
+            <CreditCard aria-hidden />
             {t('Plans')}
           </Button>
         </section>
@@ -156,12 +175,18 @@ export default function AccountPage() {
         <Separator />
 
         <section className="flex flex-col gap-3">
-          <Button type="button" variant="outline" onClick={handleSignOut}>
-            <LogOut />
+          <Button type="button" variant="outline" className="min-h-11" disabled={signingOut} onClick={handleSignOut}>
+            {signingOut ? <Loader2 className="animate-spin" aria-hidden /> : <LogOut aria-hidden />}
             {t('Sign-Out')}
           </Button>
-          <Button type="button" variant="destructive" disabled={deleting} onClick={() => setConfirmOpen(true)}>
-            <Trash2 />
+          <Button
+            type="button"
+            variant="destructive"
+            className="min-h-11"
+            disabled={deleting}
+            onClick={() => setConfirmOpen(true)}
+          >
+            <Trash2 aria-hidden />
             {t('Delete account')}
           </Button>
         </section>
@@ -178,8 +203,15 @@ export default function AccountPage() {
             )}
           </p>
           <DialogFooter>
-            <DialogClose render={<Button variant="outline" />}>{t('Cancel')}</DialogClose>
-            <Button type="button" variant="destructive" disabled={deleting} onClick={handleDeleteAccount}>
+            <DialogClose render={<Button variant="outline" className="min-h-11" />}>{t('Cancel')}</DialogClose>
+            <Button
+              type="button"
+              variant="destructive"
+              className="min-h-11"
+              disabled={deleting}
+              onClick={handleDeleteAccount}
+            >
+              {deleting && <Loader2 className="animate-spin" aria-hidden />}
               {t('Confirm')}
             </Button>
           </DialogFooter>

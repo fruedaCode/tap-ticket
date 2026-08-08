@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Camera, Loader2 } from 'lucide-react'
+import { Camera, ImagePlus, Loader2, ReceiptText, ScanLine, Sun } from 'lucide-react'
 import { toast } from 'sonner'
 import { BottomNav } from '@/components/bottom-nav'
 import { Button } from '@/components/ui/button'
@@ -12,7 +12,8 @@ import { useI18n } from '@/lib/i18n'
 export default function ScanPage() {
   const { t } = useI18n()
   const router = useRouter()
-  const inputRef = useRef<HTMLInputElement>(null)
+  const cameraInputRef = useRef<HTMLInputElement>(null)
+  const galleryInputRef = useRef<HTMLInputElement>(null)
 
   const [file, setFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
@@ -27,7 +28,8 @@ export default function ScanPage() {
   const resetCapture = () => {
     setFile(null)
     setPreviewUrl(null)
-    if (inputRef.current) inputRef.current.value = ''
+    if (cameraInputRef.current) cameraInputRef.current.value = ''
+    if (galleryInputRef.current) galleryInputRef.current.value = ''
   }
 
   const onFileSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,23 +74,60 @@ export default function ScanPage() {
     <div className="mx-auto flex w-full min-h-dvh max-w-md flex-col bg-background pb-24">
       <h1 className="px-4 pb-2 pt-6 text-2xl font-bold">{t('Import')}</h1>
 
-      <div className="flex flex-1 items-center justify-center px-4">
+      <div className="flex flex-1 flex-col gap-4 px-4 pt-2">
         <input
-          ref={inputRef}
+          ref={cameraInputRef}
           type="file"
           accept="image/jpeg,image/png,image/webp"
           capture="environment"
           className="hidden"
           onChange={onFileSelected}
         />
-        <Button
-          size="lg"
-          className="h-14 w-full max-w-xs gap-2 text-base"
-          onClick={() => inputRef.current?.click()}
+        <input
+          ref={galleryInputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          className="hidden"
+          onChange={onFileSelected}
+        />
+
+        <button
+          type="button"
+          onClick={() => cameraInputRef.current?.click()}
+          className="flex flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-muted-foreground/25 px-6 py-12 text-center active:bg-muted/50"
         >
-          <Camera className="size-6" />
-          {t('Take picture')}
+          <div className="flex size-16 items-center justify-center rounded-full bg-primary/10">
+            <Camera className="size-8 text-primary" aria-hidden />
+          </div>
+          <p className="text-base font-medium">{t('Take picture')}</p>
+          <p className="text-sm text-muted-foreground">{t('Snap a photo of your receipt')}</p>
+        </button>
+
+        <Button
+          type="button"
+          variant="outline"
+          className="min-h-11 w-full gap-2"
+          onClick={() => galleryInputRef.current?.click()}
+        >
+          <ImagePlus className="size-5" aria-hidden />
+          {t('Upload from gallery')}
         </Button>
+
+        <div className="rounded-xl border bg-card p-4">
+          <p className="mb-3 text-sm font-medium">{t('Tips for a good scan')}</p>
+          <ul className="space-y-2.5">
+            {[
+              { icon: Sun, tip: 'Use good, even lighting' },
+              { icon: ReceiptText, tip: 'Lay the receipt flat, without folds' },
+              { icon: ScanLine, tip: 'Fit the whole ticket in the frame' },
+            ].map(({ icon: Icon, tip }) => (
+              <li key={tip} className="flex items-center gap-2.5 text-sm text-muted-foreground">
+                <Icon className="size-4 shrink-0" aria-hidden />
+                {t(tip)}
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
 
       <Dialog open={previewUrl !== null} onOpenChange={(open) => !open && resetCapture()}>
