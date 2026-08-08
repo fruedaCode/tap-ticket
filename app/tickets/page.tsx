@@ -127,7 +127,7 @@ export default function TicketsPage() {
               className="pl-9"
             />
           </div>
-          <div className="flex gap-2 overflow-x-auto">
+          <div className="flex gap-2 overflow-x-auto scrollbar-hide">
             {FILTERS.map((f) => (
               <Button
                 key={f}
