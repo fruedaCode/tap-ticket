@@ -54,18 +54,22 @@ export default function LandingPage() {
 
       <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col px-4">
         <section className="flex flex-col items-center gap-6 py-16 text-center sm:py-24">
-          <img src="/logo.svg" alt="" className="size-20" aria-hidden="true" />
           <h1 className="max-w-xl text-4xl font-bold tracking-tight sm:text-5xl">
             {t('Scan a ticket, split the bill')}
           </h1>
           <p className="max-w-md text-lg text-muted-foreground">
             {t(
-              'Take a photo of the receipt and AI digitizes every item. Share a link and your friends claim what they had — everyone sees exactly what they owe.',
+              'Snap a photo, share a link, and friends claim what they had — the math is done for you.',
             )}
           </p>
           <Button size="lg" nativeButton={false} render={<Link href="/login" />}>
             {t('Get started')}
           </Button>
+          <img
+            src="/hero.svg"
+            alt={t('A receipt scanned into a phone where friends split the bill')}
+            className="mt-4 w-full max-w-xl rounded-xl"
+          />
         </section>
 
         <section className="pb-16 sm:pb-24">
@@ -126,6 +130,15 @@ export default function LandingPage() {
               )
             })}
           </div>
+        </section>
+
+        <section className="flex flex-col items-center gap-4 pb-16 text-center sm:pb-24">
+          <h2 className="text-2xl font-semibold tracking-tight">
+            {t('Ready to split the next bill?')}
+          </h2>
+          <Button size="lg" nativeButton={false} render={<Link href="/login" />}>
+            {t('Get started')}
+          </Button>
         </section>
       </main>
 

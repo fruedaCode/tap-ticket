@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="A paper receipt being scanned into a phone where friends split the bill">
+  <rect x="8" y="8" width="384" height="284" rx="24" fill="#FDECEA"/>
+  <!-- paper receipt, tilted -->
+  <g transform="rotate(-8 128 150)">
+    <path d="M84 56 H172 V232 L167 240 L162 232 L157 240 L152 232 L147 240 L142 232 L137 240 L132 232 L127 240 L122 232 L117 240 L112 232 L107 240 L102 232 L97 240 L92 232 L87 240 L84 232 Z"
+          transform="translate(4 5)" fill="#450A0A" opacity="0.08"/>
+    <path d="M84 56 H172 V232 L167 240 L162 232 L157 240 L152 232 L147 240 L142 232 L137 240 L132 232 L127 240 L122 232 L117 240 L112 232 L107 240 L102 232 L97 240 L92 232 L87 240 L84 232 Z"
+          fill="#FFFFFF"/>
+    <!-- merchant name -->
+    <rect x="106" y="70" width="44" height="8" rx="4" fill="#450A0A" opacity="0.8"/>
+    <!-- line items -->
+    <rect x="96" y="88" width="40" height="7" rx="3.5" fill="#D9C8C3"/>
+    <rect x="144" y="88" width="14" height="7" rx="3.5" fill="#D9C8C3"/>
+    <rect x="96" y="102" width="32" height="7" rx="3.5" fill="#D9C8C3"/>
+    <rect x="144" y="102" width="14" height="7" rx="3.5" fill="#D9C8C3"/>
+    <rect x="96" y="116" width="36" height="7" rx="3.5" fill="#D9C8C3"/>
+    <rect x="144" y="116" width="14" height="7" rx="3.5" fill="#D9C8C3"/>
+    <line x1="96" y1="134" x2="160" y2="134" stroke="#EBDAD5" stroke-width="2.5" stroke-dasharray="2 5" stroke-linecap="round"/>
+    <!-- total -->
+    <rect x="96" y="142" width="28" height="9" rx="4.5" fill="#DC2626"/>
+    <rect x="136" y="142" width="16" height="9" rx="4.5" fill="#DC2626"/>
+  </g>
+  <!-- scan beam from receipt to phone -->
+  <rect x="172" y="138" width="34" height="4" rx="2" fill="#DC2626" opacity="0.4"/>
+  <circle cx="182" cy="140" r="7" fill="#DC2626"/>
+  <path d="M 192 129 A 16 16 0 1 1 192 151" fill="none" stroke="#DC2626" stroke-width="4" stroke-linecap="round" opacity="0.75"/>
+  <path d="M 200 122 A 26 26 0 1 1 200 158" fill="none" stroke="#DC2626" stroke-width="4" stroke-linecap="round" opacity="0.4"/>
+  <!-- phone -->
+  <rect x="200" y="48" width="128" height="212" rx="22" fill="#450A0A" opacity="0.08" transform="translate(4 5)"/>
+  <rect x="200" y="48" width="128" height="212" rx="22" fill="#450A0A"/>
+  <rect x="208" y="60" width="112" height="188" rx="14" fill="#FFFFFF"/>
+  <!-- screen header -->
+  <rect x="216" y="70" width="22" height="14" rx="4" fill="#DC2626"/>
+  <line x1="223" y1="73" x2="223" y2="81" stroke="#FFFFFF" stroke-width="1.5" stroke-dasharray="1 2.5" stroke-linecap="round" opacity="0.9"/>
+  <circle cx="232" cy="77" r="3" fill="#FFFFFF"/>
+  <rect x="246" y="73" width="42" height="7" rx="3.5" fill="#450A0A" opacity="0.8"/>
+  <line x1="214" y1="94" x2="314" y2="94" stroke="#F0DAD5" stroke-width="2"/>
+  <!-- row 1: claimed -->
+  <rect x="216" y="106" width="52" height="8" rx="4" fill="#D9C8C3"/>
+  <circle cx="300" cy="110" r="10" fill="#DC2626"/>
+  <path d="M295.5 110 l3 3 l6 -6.5" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- row 2: claimed -->
+  <rect x="216" y="128" width="42" height="8" rx="4" fill="#D9C8C3"/>
+  <circle cx="300" cy="132" r="10" fill="#D97706"/>
+  <path d="M295.5 132 l3 3 l6 -6.5" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- row 3: unclaimed -->
+  <rect x="216" y="150" width="48" height="8" rx="4" fill="#D9C8C3"/>
+  <circle cx="300" cy="154" r="10" fill="#FFFFFF" stroke="#D9C8C3" stroke-width="2"/>
+  <path d="M300 150 V158 M296 154 H304" stroke="#C9B5B0" stroke-width="2" stroke-linecap="round"/>
+  <!-- screen footer: total + button -->
+  <line x1="214" y1="172" x2="314" y2="172" stroke="#F0DAD5" stroke-width="2"/>
+  <rect x="216" y="180" width="26" height="8" rx="4" fill="#DC2626"/>
+  <rect x="288" y="180" width="22" height="8" rx="4" fill="#DC2626" opacity="0.6"/>
+  <rect x="216" y="200" width="94" height="18" rx="9" fill="#DC2626"/>
+  <rect x="241" y="206" width="44" height="6" rx="3" fill="#FFFFFF"/>
+  <!-- sparkles -->
+  <g fill="#DC2626">
+    <circle cx="186" cy="216" r="4" opacity="0.5"/>
+    <circle cx="76" cy="96" r="4" opacity="0.35"/>
+    <circle cx="344" cy="120" r="3" opacity="0.35"/>
+  </g>
+</svg>
