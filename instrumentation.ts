@@ -15,5 +15,17 @@ export async function register() {
     supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY ? 'set' : 'MISSING',
     stripeSecretKey: process.env.STRIPE_SECRET_KEY ? 'set' : 'not configured (billing disabled)',
     stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET ? 'set' : 'not configured',
+    posthogKey: process.env.NEXT_PUBLIC_POSTHOG_KEY ? 'set' : 'not configured (analytics disabled)',
+  })
+
+  // Flush pending PostHog events on graceful shutdown.
+  const { shutdownPostHog } = await import('@/lib/posthog/server')
+  const flush = () => {
+    shutdownPostHog().finally(() => process.exit(0))
+  }
+  process.once('SIGTERM', flush)
+  process.once('SIGINT', flush)
+  process.once('beforeExit', () => {
+    shutdownPostHog()
   })
 }

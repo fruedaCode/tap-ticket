@@ -8,6 +8,8 @@ primary_region = "cdg"
   NEXT_PUBLIC_SUPABASE_URL = "https://mlvbzkpccuyiwisnbaie.supabase.co"
   NEXT_PUBLIC_SUPABASE_ANON_KEY = "sb_publishable_NaxoAwyzHpjsBFEgYIUADg_R-lfomMf"
   NEXT_PUBLIC_SITE_URL = "https://tapticket.es"
+  NEXT_PUBLIC_POSTHOG_KEY="phc_rDvqM3daUXqPkWFpfrH5njojea7avHK9fYG7Mv7yGzWq"
+  NEXT_PUBLIC_POSTHOG_HOST="https://eu.i.posthog.com"
 
 [http_service]
   internal_port = 3000

@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="Friends tapping items on a shared receipt to claim them">
+  <rect x="8" y="8" width="384" height="284" rx="24" fill="#FDECEA"/>
+  <!-- shared ticket card -->
+  <rect x="100" y="42" width="200" height="216" rx="16" fill="#450A0A" opacity="0.07"/>
+  <rect x="100" y="38" width="200" height="216" rx="16" fill="#FFFFFF"/>
+  <!-- header -->
+  <rect x="118" y="56" width="34" height="22" rx="5" fill="#DC2626"/>
+  <line x1="127" y1="60" x2="127" y2="74" stroke="#FFFFFF" stroke-width="2" stroke-dasharray="1.5 3.5" stroke-linecap="round" opacity="0.9"/>
+  <circle cx="143" cy="67" r="4" fill="#FFFFFF"/>
+  <rect x="162" y="58" width="68" height="8" rx="4" fill="#450A0A" opacity="0.8"/>
+  <rect x="162" y="70" width="44" height="6" rx="3" fill="#D9C8C3"/>
+  <line x1="116" y1="92" x2="284" y2="92" stroke="#F0DAD5" stroke-width="2.5"/>
+  <!-- row 1: claimed -->
+  <rect x="118" y="110" width="86" height="9" rx="4.5" fill="#D9C8C3"/>
+  <rect x="118" y="125" width="34" height="7" rx="3.5" fill="#EBDDD9"/>
+  <circle cx="262" cy="120" r="15" fill="#DC2626"/>
+  <path d="M255 120 l5 5 l9 -10" fill="none" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- row 2: being tapped -->
+  <rect x="118" y="148" width="70" height="9" rx="4.5" fill="#D9C8C3"/>
+  <rect x="118" y="163" width="34" height="7" rx="3.5" fill="#EBDDD9"/>
+  <circle cx="262" cy="158" r="15" fill="#D97706"/>
+  <path d="M257 148 L257 164 L261.5 159.5 L264 165 L267 163.5 L264.5 158 L270 158 Z" fill="#FFFFFF"/>
+  <path d="M273.9 145.1 A 18 18 0 1 1 251 167" fill="none" stroke="#DC2626" stroke-width="4" stroke-linecap="round" opacity="0.45" transform="translate(0 -4)"/>
+  <path d="M270 149 A 11 11 0 1 1 256 165" fill="none" stroke="#DC2626" stroke-width="4" stroke-linecap="round" opacity="0.8" transform="translate(0 -4)"/>
+  <!-- row 3: unclaimed -->
+  <rect x="118" y="186" width="78" height="9" rx="4.5" fill="#D9C8C3"/>
+  <rect x="118" y="201" width="34" height="7" rx="3.5" fill="#EBDDD9"/>
+  <circle cx="262" cy="196" r="15" fill="#FFFFFF" stroke="#D9C8C3" stroke-width="2.5"/>
+  <path d="M262 190 V202 M256 196 H268" stroke="#C9B5B0" stroke-width="3" stroke-linecap="round"/>
+  <!-- footer: total -->
+  <line x1="116" y1="224" x2="284" y2="224" stroke="#F0DAD5" stroke-width="2.5"/>
+  <rect x="118" y="234" width="40" height="9" rx="4.5" fill="#DC2626"/>
+  <rect x="250" y="234" width="34" height="9" rx="4.5" fill="#DC2626" opacity="0.6"/>
+</svg>

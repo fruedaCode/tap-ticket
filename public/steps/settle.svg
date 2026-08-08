@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="Three friends settling up their shares into one paid bill">
+  <defs>
+    <marker id="settle-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#DC2626"/>
+    </marker>
+  </defs>
+  <rect x="8" y="8" width="384" height="284" rx="24" fill="#FDECEA"/>
+  <!-- friends -->
+  <g>
+    <circle cx="116" cy="76" r="24" fill="#DC2626"/>
+    <circle cx="116" cy="70" r="7" fill="#FFFFFF"/>
+    <path d="M105 90 A 11 11 0 0 1 127 90 Z" fill="#FFFFFF"/>
+    <circle cx="200" cy="62" r="24" fill="#450A0A"/>
+    <circle cx="200" cy="56" r="7" fill="#FFFFFF"/>
+    <path d="M189 76 A 11 11 0 0 1 211 76 Z" fill="#FFFFFF"/>
+    <circle cx="284" cy="76" r="24" fill="#D97706"/>
+    <circle cx="284" cy="70" r="7" fill="#FFFFFF"/>
+    <path d="M273 90 A 11 11 0 0 1 295 90 Z" fill="#FFFFFF"/>
+  </g>
+  <!-- arrows converging on the coin -->
+  <g fill="none" stroke="#DC2626" stroke-width="4" stroke-linecap="round">
+    <path d="M122 100 C 136 134 158 152 182 162" marker-end="url(#settle-arrow)"/>
+    <path d="M200 88 C 200 114 200 136 200 152" marker-end="url(#settle-arrow)"/>
+    <path d="M278 100 C 264 134 242 152 218 162" marker-end="url(#settle-arrow)"/>
+  </g>
+  <!-- settled coin -->
+  <circle cx="200" cy="202" r="36" fill="#DC2626"/>
+  <circle cx="200" cy="202" r="26" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-dasharray="3 7" stroke-linecap="round" opacity="0.7"/>
+  <path d="M187 202 l9 9 l17 -19" fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- sparkles -->
+  <g fill="#DC2626">
+    <circle cx="146" cy="238" r="4" opacity="0.5"/>
+    <circle cx="254" cy="238" r="4" opacity="0.5"/>
+    <circle cx="254" cy="150" r="3" opacity="0.35"/>
+    <circle cx="146" cy="150" r="3" opacity="0.35"/>
+  </g>
+</svg>

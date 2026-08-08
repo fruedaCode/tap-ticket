@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="Camera viewfinder scanning a paper receipt">
+  <rect x="8" y="8" width="384" height="284" rx="24" fill="#FDECEA"/>
+  <!-- receipt -->
+  <g transform="rotate(-7 200 150)">
+    <path d="M140 60 H260 V210 L250 218 L240 210 L230 218 L220 210 L210 218 L200 210 L190 218 L180 210 L170 218 L160 210 L150 218 L140 210 Z"
+          transform="translate(0 7)" fill="#450A0A" opacity="0.08"/>
+    <path d="M140 60 H260 V210 L250 218 L240 210 L230 218 L220 210 L210 218 L200 210 L190 218 L180 210 L170 218 L160 210 L150 218 L140 210 Z"
+          fill="#FFFFFF"/>
+    <!-- merchant name -->
+    <rect x="168" y="76" width="64" height="10" rx="5" fill="#450A0A" opacity="0.8"/>
+    <!-- line items -->
+    <rect x="154" y="98" width="66" height="8" rx="4" fill="#D9C8C3"/>
+    <rect x="232" y="98" width="16" height="8" rx="4" fill="#D9C8C3"/>
+    <rect x="154" y="114" width="52" height="8" rx="4" fill="#D9C8C3"/>
+    <rect x="232" y="114" width="16" height="8" rx="4" fill="#D9C8C3"/>
+    <rect x="154" y="130" width="60" height="8" rx="4" fill="#D9C8C3"/>
+    <rect x="232" y="130" width="16" height="8" rx="4" fill="#D9C8C3"/>
+    <line x1="154" y1="150" x2="248" y2="150" stroke="#EBDAD5" stroke-width="3" stroke-dasharray="2 6" stroke-linecap="round"/>
+    <!-- total -->
+    <rect x="154" y="158" width="42" height="10" rx="5" fill="#DC2626"/>
+    <rect x="226" y="158" width="22" height="10" rx="5" fill="#DC2626"/>
+  </g>
+  <!-- scan line -->
+  <rect x="112" y="140" width="176" height="4" rx="2" fill="#DC2626" opacity="0.4"/>
+  <!-- viewfinder corners -->
+  <g fill="none" stroke="#DC2626" stroke-width="7" stroke-linecap="round">
+    <path d="M100 62 V44 Q100 32 112 32 H132"/>
+    <path d="M268 32 H288 Q300 32 300 44 V62"/>
+    <path d="M100 238 V256 Q100 268 112 268 H132"/>
+    <path d="M268 268 H288 Q300 268 300 256 V238"/>
+  </g>
+</svg>
