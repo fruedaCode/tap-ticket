@@ -19,13 +19,6 @@ export async function register() {
   })
 
   // Flush pending PostHog events on graceful shutdown.
-  const { shutdownPostHog } = await import('@/lib/posthog/server')
-  const flush = () => {
-    shutdownPostHog().finally(() => process.exit(0))
-  }
-  process.once('SIGTERM', flush)
-  process.once('SIGINT', flush)
-  process.once('beforeExit', () => {
-    shutdownPostHog()
-  })
+  const { registerShutdownHooks } = await import('@/lib/posthog/server')
+  registerShutdownHooks()
 }

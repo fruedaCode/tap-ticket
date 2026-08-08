@@ -66,3 +66,19 @@ export async function shutdownPostHog(): Promise<void> {
     log.error('shutdown failed', { error: String(err) })
   }
 }
+
+/**
+ * Flushes pending events on graceful shutdown. Called once from
+ * instrumentation.ts — kept here (behind a dynamic import) so the
+ * Edge compilation of instrumentation.ts never sees process.once.
+ */
+export function registerShutdownHooks(): void {
+  const flush = () => {
+    shutdownPostHog().finally(() => process.exit(0))
+  }
+  process.once('SIGTERM', flush)
+  process.once('SIGINT', flush)
+  process.once('beforeExit', () => {
+    shutdownPostHog()
+  })
+}
