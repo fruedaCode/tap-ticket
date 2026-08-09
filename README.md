@@ -14,6 +14,8 @@ Built as a **Next.js 16 PWA** backed by **Supabase** (Postgres + Auth + Realtime
 
 1. Create a project at [supabase.com](https://supabase.com).
 2. In the **SQL Editor**, run the files in `supabase/migrations/` in filename order, starting with `0001_init.sql`. That first one creates the tables, RLS policies, realtime publication, and the `ticket-images` storage bucket (private, with its access policies) — no manual bucket creation needed. Realtime Authorization (RLS on `realtime.messages` for the private channels the app subscribes to) is handled by the same migration. The later files add settlements, billing and the profile-privacy hardening; the app expects all of them.
+
+   > **Upgrading a live database:** `0006` is the one migration that is not safe to run early. `0005` is additive (it adds `public_member_profiles`, which the current release reads from); `0006` drops the old permissive `profiles read` policy, and any release predating `0005` still queries `profiles` directly for co-member names. Run `0005` → deploy → `0006`. Both files carry the same note. On a fresh database the order doesn't matter.
 3. In **Authentication → Providers**, enable **Google** and **Email** (with email OTP).
 
 ## Environment variables
@@ -111,7 +113,7 @@ The app ships the technical side of GDPR, ePrivacy, LSSI-CE and EU AI Act transp
 - **Data subject rights** — Account → *Download my data* (`GET /api/account/export`, JSON) and
   Account → *Delete account* (`DELETE /api/account`, which also removes receipt images, settlement
   proofs and the Stripe customer).
-- **Data minimization** — migration `0005_profiles_privacy.sql` stops authenticated users from
+- **Data minimization** — migrations `0005_profiles_privacy.sql` + `0006_profiles_read_own.sql` stop authenticated users from
   reading other people's profile rows (email, `stripe_*`); co-member name/avatar comes from the
   `public_member_profiles` view, restricted to users you actually share a ticket with.
 

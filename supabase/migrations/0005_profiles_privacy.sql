@@ -1,13 +1,9 @@
--- GDPR data minimization (Art. 5(1)(c)): the original "profiles read" policy let
--- any authenticated user read every profile row — including email and the Stripe
--- billing columns added in 0003. Users may now read only their own profile row.
+-- GDPR data minimization (Art. 5(1)(c)), part 1 of 2 — ADDITIVE ONLY.
 --
--- Co-member display data (name + avatar) is served instead by the
--- public_member_profiles view below, which exposes three non-sensitive columns
--- and only for users the caller actually shares a ticket with.
-
-drop policy if exists "profiles read" on profiles;
-create policy "profiles read own" on profiles for select to authenticated using (id = auth.uid());
+-- Safe to run against a database still serving the previous release: it only
+-- adds a function and a view, and leaves the permissive "profiles read" policy
+-- in place. 0006 removes that policy and must run only AFTER the release that
+-- reads from the view below is live — see the deploy order note in the README.
 
 -- helper: does the caller share at least one ticket with p_user_id?
 -- security definer so the view can filter rows without the caller needing read
@@ -24,9 +20,10 @@ $$;
 
 -- Display data for rendering co-members on ticket screens. Deliberately NOT a
 -- security_invoker view: it runs with owner rights so it can read past the
--- "profiles read own" policy, and the where clause — evaluated per request via
--- auth.uid() — is what limits the rows. Only id/display_name/photo_url are
--- projected, so email and the stripe_* columns are unreachable through it.
+-- "profiles read own" policy 0006 adds, and the where clause — evaluated per
+-- request via auth.uid() — is what limits the rows. Only id/display_name/
+-- photo_url are projected, so email and the stripe_* columns are unreachable
+-- through it.
 create or replace view public_member_profiles as
   select p.id, p.display_name, p.photo_url
   from profiles p
