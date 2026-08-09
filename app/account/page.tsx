@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { CreditCard, Loader2, LogOut, Trash2 } from 'lucide-react'
+import { CreditCard, Download, Loader2, LogOut, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { BottomNav } from '@/components/bottom-nav'
 import { LanguagePicker } from '@/components/language-picker'
@@ -178,6 +178,10 @@ export default function AccountPage() {
           <Button type="button" variant="outline" className="min-h-11" disabled={signingOut} onClick={handleSignOut}>
             {signingOut ? <Loader2 className="animate-spin" aria-hidden /> : <LogOut aria-hidden />}
             {t('Sign-Out')}
+          </Button>
+          <Button type="button" variant="outline" className="min-h-11" nativeButton={false} render={<a href="/api/account/export" download />}>
+            <Download aria-hidden />
+            {t('Download my data')}
           </Button>
           <Button
             type="button"

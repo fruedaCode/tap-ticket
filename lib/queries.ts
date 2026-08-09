@@ -20,7 +20,7 @@ export async function fetchTicketDetail(supabase: SupabaseClient, ticketId: stri
   const { data: members } = await supabase.from('ticket_members').select('*').eq('ticket_id', ticketId)
   const userIds = (members ?? []).map((m) => m.user_id)
   const { data: profiles } = userIds.length
-    ? await supabase.from('profiles').select('*').in('id', userIds)
+    ? await supabase.from('public_member_profiles').select('*').in('id', userIds)
     : { data: [] }
   const { data: settlements } = await supabase
     .from('settlements')
@@ -35,7 +35,7 @@ export async function fetchTicketDetail(supabase: SupabaseClient, ticketId: stri
     })),
     members: (members ?? []).map((m): MemberWithProfile => ({
       ...m,
-      profile: (profiles ?? []).find((p) => p.id === m.user_id) ?? { id: m.user_id, email: '', display_name: null, photo_url: null },
+      profile: (profiles ?? []).find((p) => p.id === m.user_id) ?? { id: m.user_id, display_name: null, photo_url: null },
     })),
     settlements: settlements ?? [],
   }

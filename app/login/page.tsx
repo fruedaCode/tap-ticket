@@ -1,8 +1,10 @@
 'use client'
 
 import { Suspense, useEffect, useState } from 'react'
+import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { toast } from 'sonner'
+import { LegalFooter } from '@/components/legal-footer'
 import { createClient } from '@/lib/supabase/client'
 import { useI18n } from '@/lib/i18n'
 import { Button } from '@/components/ui/button'
@@ -84,7 +86,7 @@ function LoginForm() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4 dark:bg-black">
+    <div className="flex min-h-screen flex-col items-center justify-center gap-6 bg-zinc-50 px-4 py-8 dark:bg-black">
       <div className="w-full max-w-sm space-y-6 rounded-xl border bg-white p-8 shadow-sm dark:bg-zinc-950">
         <div className="text-center">
           <img src="/logo-lockup.svg" alt="TapTicket" className="mx-auto w-64" />
@@ -131,7 +133,22 @@ function LoginForm() {
             </div>
           )}
         </div>
+
+        {/* GDPR art. 13: the notices must be reachable before an account exists. */}
+        <p className="text-center text-xs text-muted-foreground">
+          {t('By continuing you accept the')}{' '}
+          <Link href="/legal/terms" className="underline underline-offset-4 hover:text-foreground">
+            {t('Terms of service')}
+          </Link>{' '}
+          {t('and the')}{' '}
+          <Link href="/legal/privacy" className="underline underline-offset-4 hover:text-foreground">
+            {t('Privacy policy')}
+          </Link>
+          .
+        </p>
       </div>
+
+      <LegalFooter className="text-xs" />
     </div>
   )
 }

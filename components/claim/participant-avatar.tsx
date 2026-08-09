@@ -24,7 +24,7 @@ function initials(name: string): string {
 }
 
 export function memberName(member: MemberWithProfile): string {
-  return member.profile.display_name ?? member.profile.email
+  return member.profile.display_name ?? '?'
 }
 
 const SIZES = {

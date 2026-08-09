@@ -211,6 +211,9 @@ export default function TicketSummaryPage() {
           <p className="pb-2 text-[13px] font-semibold tracking-[0.06em] text-muted-foreground uppercase">
             {t('Items')}
           </p>
+          <p className="pb-2 text-xs text-muted-foreground">
+            {t('Items extracted by AI — tap Edit to correct any mistake.')}
+          </p>
           {ticket.items.length === 0 ? (
             <div className="flex flex-col items-center gap-3 rounded-xl border bg-card p-6 text-center">
               <div className="flex size-12 items-center justify-center rounded-full bg-muted">

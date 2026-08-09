@@ -18,6 +18,9 @@ export const config = {
   },
   posthog: {
     key: env('NEXT_PUBLIC_POSTHOG_KEY'),
-    host: env('NEXT_PUBLIC_POSTHOG_HOST') || 'https://us.i.posthog.com',
+    // EU default, matching next.config.ts and components/posthog-provider.tsx:
+    // a US default would send server-side events out of the EU, which
+    // /legal/privacy does not declare.
+    host: env('NEXT_PUBLIC_POSTHOG_HOST') || 'https://eu.i.posthog.com',
   },
 }

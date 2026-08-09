@@ -72,7 +72,7 @@ export function TagDialog({ ticketId, members, className }: { ticketId: string; 
 
         <div className="flex flex-col divide-y">
           {members.map((member) => {
-            const name = member.profile.display_name ?? member.profile.email
+            const name = member.profile.display_name ?? '?'
             return (
               <div key={member.user_id} className="flex items-center gap-3 py-2">
                 <Avatar className="size-8">

@@ -5,6 +5,7 @@ import { I18nProvider } from "@/lib/i18n";
 import { Toaster } from "@/components/ui/sonner";
 import { ServiceWorkerRegistration } from "@/components/service-worker-registration";
 import { PostHogProvider } from "@/components/posthog-provider";
+import { ConsentBanner } from "@/components/consent-banner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,6 +40,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <I18nProvider>
           <PostHogProvider>{children}</PostHogProvider>
           <Toaster />
+          <ConsentBanner />
         </I18nProvider>
         <ServiceWorkerRegistration />
       </body>

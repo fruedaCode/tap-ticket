@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { Check } from 'lucide-react'
+import { LegalFooter } from '@/components/legal-footer'
 import { useI18n } from '@/lib/i18n'
 import { Button } from '@/components/ui/button'
 import { PLAN_CATALOGUE, type PlanId } from '@/lib/billing/plans'
@@ -142,8 +143,9 @@ export default function LandingPage() {
         </section>
       </main>
 
-      <footer className="border-t py-6 text-center text-sm text-muted-foreground">
-        TapTicket — {t('easy sharing')}
+      <footer className="flex flex-col items-center gap-3 border-t py-6 text-center text-sm text-muted-foreground">
+        <p>TapTicket — {t('easy sharing')}</p>
+        <LegalFooter />
       </footer>
     </div>
   )

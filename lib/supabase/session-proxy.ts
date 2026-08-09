@@ -1,9 +1,11 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-// '/plans' is public marketing/pricing; '/api/billing/webhook' must bypass the
-// cookie gate — the Stripe HMAC signature is its authentication.
-const PUBLIC_PATHS = ['/login', '/auth', '/plans', '/api/billing/webhook']
+// '/plans' is public marketing/pricing; '/legal' holds the privacy policy, terms,
+// cookie policy and LSSI notice, which must be readable before signing up;
+// '/api/billing/webhook' must bypass the cookie gate — the Stripe HMAC signature
+// is its authentication.
+const PUBLIC_PATHS = ['/login', '/auth', '/plans', '/legal', '/api/billing/webhook']
 
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request })

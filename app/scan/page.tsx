@@ -146,14 +146,19 @@ export default function ScanPage() {
               {t('Scanning ticket')}
             </div>
           ) : (
-            <DialogFooter>
-              <Button variant="outline" onClick={resetCapture} disabled={scanning}>
-                {t('Take another picture')}
-              </Button>
-              <Button onClick={scan} disabled={scanning}>
-                {t('Translate')}
-              </Button>
-            </DialogFooter>
+            <>
+              <p className="text-xs text-muted-foreground">
+                {t('AI (provided by Groq) will read your receipt to extract the items. Results may contain errors — review them before sharing.')}
+              </p>
+              <DialogFooter>
+                <Button variant="outline" onClick={resetCapture} disabled={scanning}>
+                  {t('Take another picture')}
+                </Button>
+                <Button onClick={scan} disabled={scanning}>
+                  {t('Translate')}
+                </Button>
+              </DialogFooter>
+            </>
           )}
         </DialogContent>
       </Dialog>

@@ -16,6 +16,9 @@ export type InferredTicket = { restaurant: Restaurant; invoice: Invoice; items: 
 
 // ---- DB rows ----
 export type Profile = { id: string; email: string; display_name: string | null; photo_url: string | null }
+// co-member display data comes from the public_member_profiles view (migration 0005),
+// which deliberately omits email and billing columns
+export type MemberProfile = Pick<Profile, 'id' | 'display_name' | 'photo_url'>
 export type Ticket = {
   id: string
   owner_id: string
@@ -60,7 +63,7 @@ export type Settlement = {
 
 // ---- View models ----
 export type TicketItemWithAssignments = TicketItem & { assignments: ItemAssignment[] }
-export type MemberWithProfile = TicketMember & { profile: Profile }
+export type MemberWithProfile = TicketMember & { profile: MemberProfile }
 export type TicketDetail = Ticket & {
   items: TicketItemWithAssignments[]
   members: MemberWithProfile[]

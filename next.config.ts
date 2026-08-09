@@ -6,8 +6,11 @@ const nextConfig: NextConfig = {
   // /ingest/decide -> /ingest/decide/, which breaks feature-flag bootstrap.
   skipTrailingSlashRedirect: true,
   async rewrites() {
+    // EU default must match components/posthog-provider.tsx: with an unset
+    // NEXT_PUBLIC_POSTHOG_HOST a US default here would proxy analytics out of
+    // the EU, which /legal/privacy does not declare.
     const posthogHost =
-      process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com";
+      process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://eu.i.posthog.com";
     // PostHog serves static assets (recorder.js, array/<token>/config.js) from
     // a DIFFERENT origin (us-assets.i.posthog.com) than ingest (us.i.posthog.com).
     // Order matters: specific rewrites MUST come before the catch-all.
