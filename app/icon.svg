@@ -1,27 +1,29 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Tap Ticket logo">
-  <!-- App-icon version: red rounded square, white ticket with tap ripple -->
+  <!-- App-icon version: red rounded square, white receipt with tap ripple -->
   <rect width="512" height="512" rx="116" fill="#DC2626"/>
-  <g transform="rotate(-10 256 256)">
-    <!-- ticket body with side notches -->
-    <path d="M 134 171
-             H 378
-             Q 396 171 396 189
-             V 234 A 22 22 0 0 1 396 278
-             V 323 Q 396 341 378 341
-             H 134
-             Q 116 341 116 323
-             V 278 A 22 22 0 0 1 116 234
-             V 189 Q 116 171 134 171 Z"
+  <g transform="rotate(-8 256 256)">
+    <!-- receipt paper, torn bottom edge -->
+    <path d="M 178 116
+             H 334 Q 344 116 344 126
+             V 372
+             L 322 400 L 300 372 L 278 400 L 256 372 L 234 400 L 212 372 L 190 400 L 168 372
+             V 126 Q 168 116 178 116 Z"
           fill="#FFFFFF"/>
-    <!-- tear-off perforation -->
-    <line x1="186" y1="193" x2="186" y2="319"
-          stroke="#DC2626" stroke-width="6" stroke-linecap="round"
-          stroke-dasharray="4 16"/>
+    <!-- header line -->
+    <line x1="206" y1="158" x2="306" y2="158"
+          stroke="#DC2626" stroke-width="20" stroke-linecap="round"/>
+    <!-- itemised lines with amounts -->
+    <g stroke="#DC2626" stroke-width="12" stroke-linecap="round" opacity="0.55">
+      <line x1="196" y1="196" x2="278" y2="196"/>
+      <line x1="298" y1="196" x2="316" y2="196"/>
+      <line x1="196" y1="222" x2="262" y2="222"/>
+      <line x1="288" y1="222" x2="316" y2="222"/>
+    </g>
     <!-- tap ripple: open arcs radiating from the touch point -->
-    <path d="M 301.5 201.9 A 56 56 0 1 1 261.9 241.5"
-          fill="none" stroke="#DC2626" stroke-width="8" stroke-linecap="round" opacity="0.45"/>
-    <path d="M 306.7 221.2 A 36 36 0 1 1 281.2 246.7"
-          fill="none" stroke="#DC2626" stroke-width="8" stroke-linecap="round" opacity="0.75"/>
-    <circle cx="316" cy="256" r="17" fill="#DC2626"/>
+    <path d="M 201.9 278.1 A 66 66 0 0 1 310.1 278.1"
+          fill="none" stroke="#DC2626" stroke-width="13" stroke-linecap="round" opacity="0.45"/>
+    <path d="M 221.6 291.9 A 42 42 0 0 1 290.4 291.9"
+          fill="none" stroke="#DC2626" stroke-width="13" stroke-linecap="round" opacity="0.75"/>
+    <circle cx="256" cy="316" r="16" fill="#DC2626"/>
   </g>
 </svg>

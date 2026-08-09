@@ -5,7 +5,7 @@
 // The pages print these values as-is, so a wrong value is visible rather than
 // silently missing — that is deliberate.
 export const COMPANY = {
-  name: 'FRuedaCode',
+  name: 'TapTicket',
   taxId: '48327703B',
   address: 'C/Murcia 12, Barcelona 08027',
   // Registro Mercantil entry. LSSI-CE art. 10.1(b) only requires this for
