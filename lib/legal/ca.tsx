@@ -92,9 +92,11 @@ export const ca: LegalDocs = {
             UE).
           </li>
           <li>
-            <strong>Groq (Estats Units)</strong>: llegeix la foto del teu tiquet amb un model de visió
-            per IA. Només s&apos;hi envien la foto i una instrucció fixa; no s&apos;hi envien el teu
-            nom, el teu correu ni l&apos;identificador del teu compte.
+            <strong>Mistral AI (França)</strong>: llegeix la foto del teu tiquet amb un model
+            documental d&apos;IA. Només s&apos;hi envien la foto i una instrucció fixa; no s&apos;hi
+            envien el teu nom, el teu correu ni l&apos;identificador del teu compte. Mistral declara
+            que les dades enviades a través de la seva API no es fan servir per entrenar els seus
+            models.
           </li>
           <li>
             <strong>Stripe</strong>: processament de pagaments dels plans de pagament.
@@ -116,21 +118,10 @@ export const ca: LegalDocs = {
           reclamat i el teu saldo en aquell tiquet; no veuen la teva adreça de correu electrònic.
         </p>
 
-        <h2>5. Transferències fora de la UE</h2>
+        <h2>5. On es tracten les teves dades</h2>
         <p>
-          Les fotos dels tiquets s&apos;envien a Groq, que les processa als Estats Units. La garantia
-          adequada d&apos;aquesta transferència, d&apos;acord amb el Capítol V del RGPD, són les
-          Clàusules Contractuals Tipus de la Comissió Europea (Decisió d&apos;Execució (UE) 2021/914,
-          mòdul responsable-encarregat), incorporades al contracte d&apos;encàrrec del tractament
-          subscrit amb Groq. Pots consultar aquest contracte, amb les clàusules mateixes, a{' '}
-          <a
-            href="https://console.groq.com/docs/legal/customer-data-processing-addendum"
-            target="_blank"
-            rel="noreferrer"
-          >
-            console.groq.com/docs/legal/customer-data-processing-addendum
-          </a>
-          . La resta del tractament es fa dins de la UE.
+          Tot el tractament es fa dins de la Unió Europea, inclosa la lectura del teu tiquet per IA.
+          No transferim les teves dades personals fora de la UE ni de l&apos;EEE.
         </p>
 
         <h2>6. Quant de temps les conservem</h2>

@@ -187,7 +187,7 @@ export const ca: Record<string, string> = {
   'uses analytics cookies (PostHog) to measure how the app is used. You can accept or reject them; rejecting limits nothing.': 'fa servir cookies d\'analítica (PostHog) per mesurar com es fa servir l\'app. Pots acceptar-les o rebutjar-les; rebutjar-les no limita res.',
   'Accept': 'Accepta',
   'More information': 'Més informació',
-  'AI (provided by Groq) will read your receipt to extract the items. Results may contain errors — review them before sharing.': 'La IA (proporcionada per Groq) llegirà el teu tiquet per extreure\'n els articles. Els resultats poden contenir errors: revisa\'ls abans de compartir-los.',
+  'AI (provided by Mistral AI) will read your receipt to extract the items. Results may contain errors — review them before sharing.': 'La IA (proporcionada per Mistral AI) llegirà el teu tiquet per extreure\'n els articles. Els resultats poden contenir errors: revisa\'ls abans de compartir-los.',
   'Items extracted by AI — tap Edit to correct any mistake.': 'Articles extrets per IA: toca Edita per corregir qualsevol error.',
   'Download my data': 'Baixa les meves dades',
   'Privacy policy': 'Política de privacitat',

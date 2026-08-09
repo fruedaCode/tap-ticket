@@ -87,9 +87,9 @@ export const en: LegalDocs = {
             <strong>Supabase</strong> — database, authentication and file storage (EU region).
           </li>
           <li>
-            <strong>Groq (United States)</strong> — reads your receipt photo with an AI vision model.
+            <strong>Mistral AI (France)</strong> — reads your receipt photo with an AI document model.
             Only the photo and a fixed instruction are sent; your name, email and account identifier
-            are not.
+            are not. Mistral states that data sent through its API is not used to train its models.
           </li>
           <li>
             <strong>Stripe</strong> — payment processing for paid plans.
@@ -110,21 +110,10 @@ export const en: LegalDocs = {
           ticket — they cannot see your email address.
         </p>
 
-        <h2>5. Transfers outside the EU</h2>
+        <h2>5. Where your data is processed</h2>
         <p>
-          Receipt photos are sent to Groq, which processes them in the United States. The safeguard
-          for that transfer under Chapter V GDPR is the European Commission&apos;s Standard
-          Contractual Clauses (Implementing Decision (EU) 2021/914, controller-to-processor module),
-          incorporated into Groq&apos;s data processing addendum and entered into with them. You can
-          read that addendum, including the clauses themselves, at{' '}
-          <a
-            href="https://console.groq.com/docs/legal/customer-data-processing-addendum"
-            target="_blank"
-            rel="noreferrer"
-          >
-            console.groq.com/docs/legal/customer-data-processing-addendum
-          </a>
-          . All other processing takes place inside the EU.
+          All processing takes place inside the European Union, including the AI reading of your
+          receipt. We do not transfer your personal data outside the EU or the EEA.
         </p>
 
         <h2>6. How long we keep it</h2>

@@ -148,7 +148,7 @@ export default function ScanPage() {
           ) : (
             <>
               <p className="text-xs text-muted-foreground">
-                {t('AI (provided by Groq) will read your receipt to extract the items. Results may contain errors — review them before sharing.')}
+                {t('AI (provided by Mistral AI) will read your receipt to extract the items. Results may contain errors — review them before sharing.')}
               </p>
               <DialogFooter>
                 <Button variant="outline" onClick={resetCapture} disabled={scanning}>

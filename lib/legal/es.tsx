@@ -90,9 +90,10 @@ export const es: LegalDocs = {
             (región UE).
           </li>
           <li>
-            <strong>Groq (Estados Unidos)</strong>: lee la foto de tu ticket con un modelo de visión
-            por IA. Solo se envían la foto y una instrucción fija; no se envían tu nombre, tu correo
-            ni el identificador de tu cuenta.
+            <strong>Mistral AI (Francia)</strong>: lee la foto de tu ticket con un modelo documental
+            de IA. Solo se envían la foto y una instrucción fija; no se envían tu nombre, tu correo
+            ni el identificador de tu cuenta. Mistral declara que los datos enviados a través de su
+            API no se usan para entrenar sus modelos.
           </li>
           <li>
             <strong>Stripe</strong>: procesamiento de pagos de los planes de pago.
@@ -114,21 +115,10 @@ export const es: LegalDocs = {
           saldo en ese ticket; no ven tu dirección de correo electrónico.
         </p>
 
-        <h2>5. Transferencias fuera de la UE</h2>
+        <h2>5. Dónde se tratan tus datos</h2>
         <p>
-          Las fotos de los tickets se envían a Groq, que las procesa en Estados Unidos. La garantía
-          adecuada de esa transferencia, conforme al Capítulo V del RGPD, son las Cláusulas
-          Contractuales Tipo de la Comisión Europea (Decisión de Ejecución (UE) 2021/914, módulo
-          responsable-encargado), incorporadas al contrato de encargo del tratamiento suscrito con
-          Groq. Puedes consultar ese contrato, con las propias cláusulas, en{' '}
-          <a
-            href="https://console.groq.com/docs/legal/customer-data-processing-addendum"
-            target="_blank"
-            rel="noreferrer"
-          >
-            console.groq.com/docs/legal/customer-data-processing-addendum
-          </a>
-          . El resto del tratamiento se realiza dentro de la UE.
+          Todo el tratamiento se realiza dentro de la Unión Europea, incluida la lectura de tu ticket
+          por IA. No transferimos tus datos personales fuera de la UE ni del EEE.
         </p>
 
         <h2>6. Cuánto tiempo los conservamos</h2>
