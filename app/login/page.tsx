@@ -3,12 +3,14 @@
 import { Suspense, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
+import { Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { LegalFooter } from '@/components/legal-footer'
 import { createClient } from '@/lib/supabase/client'
 import { useI18n } from '@/lib/i18n'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 
 function GoogleIcon({ className }: { className?: string }) {
   return (
@@ -89,7 +91,14 @@ function LoginForm() {
     <div className="flex min-h-screen flex-col items-center justify-center gap-6 bg-zinc-50 px-4 py-8 dark:bg-black">
       <div className="w-full max-w-sm space-y-6 rounded-xl border bg-white p-8 shadow-sm dark:bg-zinc-950">
         <div className="text-center">
-          <img src="/logo-lockup.svg" alt="TapTicket" className="mx-auto w-64" />
+          <h1 className="sr-only">{t('Sign in')}</h1>
+          <img
+            src="/logo-lockup.svg"
+            alt="TapTicket"
+            width={424}
+            height={132}
+            className="mx-auto w-64"
+          />
           <p className="mt-1 text-sm text-muted-foreground">EASY SHARING</p>
         </div>
 
@@ -106,13 +115,21 @@ function LoginForm() {
           <p className="text-center text-sm font-medium">{t('Sign in with email')}</p>
           {!linkSent ? (
             <form onSubmit={sendLink} className="space-y-3">
+              <Label htmlFor="email" className="sr-only">
+                {t('Email')}
+              </Label>
               <Input
+                id="email"
+                name="email"
                 type="email"
-                placeholder="email@example.com"
+                autoComplete="email"
+                spellCheck={false}
+                placeholder="name@example.com…"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
               <Button type="submit" className="w-full" disabled={loading || !email}>
+                {loading && <Loader2 className="animate-spin" aria-hidden />}
                 {t('Send link')}
               </Button>
             </form>

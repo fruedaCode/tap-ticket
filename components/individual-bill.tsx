@@ -34,22 +34,22 @@ export function IndividualBill({
             <div key={`${line.description}-${i}`} className="flex items-baseline gap-2 text-sm">
               <span className="w-10 shrink-0 text-muted-foreground">{line.unit}</span>
               <span className="min-w-0 flex-1 truncate">{line.description}</span>
-              <span className="shrink-0">{numberToCurrency(line.amount, lang)} €</span>
+              <span className="shrink-0 tabular-nums">{numberToCurrency(line.amount, lang)}</span>
             </div>
           ))}
       </div>
       <Separator className="my-2" />
       <div className="flex justify-between text-sm font-semibold">
         <span>{t('Total')}</span>
-        <span>{numberToCurrency(bill.total, lang)} €</span>
+        <span className="tabular-nums">{numberToCurrency(bill.total, lang)}</span>
       </div>
       {bill.total > 0 && (
         <div className="flex justify-between text-sm">
           <span className="text-muted-foreground">{t('Paid')}</span>
           <span className="tabular-nums">
-            {numberToCurrency(Math.min(paid, bill.total), lang)} €
+            {numberToCurrency(Math.min(paid, bill.total), lang)}
             <span className="text-muted-foreground">
-              {' '}({numberToCurrency(remaining, lang)} € {t('pending')})
+              {' '}({numberToCurrency(remaining, lang)} {t('pending')})
             </span>
           </span>
         </div>

@@ -7,7 +7,7 @@ import type { UserBill } from '@/lib/split'
 
 export function TotalFooter({ bill, onReview, onHistory }: { bill: UserBill; onReview: () => void; onHistory: () => void }) {
   const { lang, t } = useI18n()
-  const total = `${numberToCurrency(bill.total, lang)} €`
+  const total = numberToCurrency(bill.total, lang)
 
   return (
     <div className="bg-card shadow-[0_-1px_0_0_var(--border)]">

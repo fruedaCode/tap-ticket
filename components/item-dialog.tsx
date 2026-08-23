@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Minus, Plus, User, Users } from 'lucide-react'
+import { Loader2, Minus, Plus, User, Users } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -31,6 +31,7 @@ function Stepper({
   max: number
   onChange: (value: number) => void
 }) {
+  const { t } = useI18n()
   return (
     <div className="flex items-center justify-between gap-4">
       <span className="text-sm font-medium">{label}</span>
@@ -39,16 +40,18 @@ function Stepper({
           type="button"
           variant="outline"
           size="icon"
+          aria-label={t('Decrease quantity')}
           disabled={value <= min}
           onClick={() => onChange(Math.max(min, value - 1))}
         >
           <Minus />
         </Button>
-        <span className="w-8 text-center text-lg font-semibold">{value}</span>
+        <span className="w-8 text-center text-lg font-semibold tabular-nums">{value}</span>
         <Button
           type="button"
           variant="outline"
           size="icon"
+          aria-label={t('Increase quantity')}
           disabled={value >= max}
           onClick={() => onChange(Math.min(max, value + 1))}
         >
@@ -118,7 +121,7 @@ export function ItemDialog({
       )
       onClose()
     } catch {
-      toast.error(t('Error'))
+      toast.error(t('Could not update the item. Try again.'))
     } finally {
       setSaving(false)
     }
@@ -130,7 +133,7 @@ export function ItemDialog({
       await splitItem(supabase, item, splitAmong, userId)
       onClose()
     } catch {
-      toast.error(t('Error'))
+      toast.error(t('Could not update the item. Try again.'))
     } finally {
       setSaving(false)
     }
@@ -142,7 +145,7 @@ export function ItemDialog({
       await unsplitItem(supabase, item)
       onClose()
     } catch {
-      toast.error(t('Error'))
+      toast.error(t('Could not update the item. Try again.'))
     } finally {
       setSaving(false)
     }
@@ -152,8 +155,8 @@ export function ItemDialog({
     <Dialog open onOpenChange={(open) => !open && onClose()}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>
-            {item.description} — {t('Remaining')}: {titleRemaining} €
+          <DialogTitle className="break-words">
+            {item.description} — {t('Remaining')}: {titleRemaining}
           </DialogTitle>
         </DialogHeader>
 
@@ -191,10 +194,11 @@ export function ItemDialog({
               <p className="text-[13px] text-muted-foreground">{t('Settled shares are locked')}</p>
             )}
             <p className="text-right text-sm">
-              {t('Total')}: {numberToCurrency(liveTotal, lang)} €
+              {t('Total')}: {numberToCurrency(liveTotal, lang)}
             </p>
             <div className="flex justify-end">
               <Button type="button" disabled={saving} onClick={handleSave}>
+                {saving && <Loader2 className="animate-spin" aria-hidden />}
                 {t('Save')}
               </Button>
             </div>

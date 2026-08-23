@@ -20,21 +20,25 @@ const PROSE =
   '[&_a]:font-medium [&_a]:text-foreground [&_a]:underline [&_a]:underline-offset-4'
 
 export function LegalPage({ id, children }: { id: LegalDocId; children?: ReactNode }) {
-  const { t } = useI18n()
+  const { t, lang } = useI18n()
   const doc = useLegalDoc(id)
+  // T00:00:00 parses as local time, so the date doesn't shift a day behind UTC.
+  const lastUpdated = new Intl.DateTimeFormat(lang, { dateStyle: 'long' }).format(
+    new Date(`${LAST_UPDATED}T00:00:00`),
+  )
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <header className="mx-auto flex w-full max-w-3xl items-center justify-between px-4 py-4">
         <Link href="/">
-          <img src="/logo-lockup.svg" alt="TapTicket" className="w-40" />
+          <img src="/logo-lockup.svg" alt="TapTicket" width={424} height={132} className="w-40" />
         </Link>
       </header>
 
       <main className="mx-auto w-full max-w-3xl flex-1 px-4 pb-16">
         <h1 className="text-3xl font-bold tracking-tight">{doc.title}</h1>
         <p className="pt-1 text-sm text-muted-foreground">
-          {t('Last updated')}: {LAST_UPDATED}
+          {t('Last updated')}: {lastUpdated}
         </p>
         <article className={PROSE}>{doc.body}</article>
         {children}

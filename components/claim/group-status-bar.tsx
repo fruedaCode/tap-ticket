@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useRef } from 'react'
 import { WifiOff } from 'lucide-react'
 import { AvatarStack } from '@/components/claim/avatar-stack'
 import { numberToCurrency, numberToPercentage } from '@/lib/currency'
@@ -20,13 +21,27 @@ export function GroupStatusBar({
   connected: boolean
 }) {
   const { lang, t } = useI18n()
+  const barRef = useRef<HTMLDivElement>(null)
   const pct = Number(numberToPercentage(paidPercentage))
   // confirmed settlements may exceed the assigned share (overpayment) — cap the bar at 100%
   const settledPct = totalAmount > 0 ? Number(numberToPercentage(Math.min(1, settledAmount / totalAmount))) : 0
-  const money = (n: number) => `${numberToCurrency(n, lang)} €`
+  const money = (n: number) => numberToCurrency(n, lang)
+
+  // the page scrolls the window: pad the scroll container (documentElement) by
+  // the sticky bar's height so focused rows never slide underneath it
+  useEffect(() => {
+    const bar = barRef.current
+    if (!bar) return
+    const root = document.documentElement
+    const prev = root.style.scrollPaddingTop
+    root.style.scrollPaddingTop = `${bar.offsetHeight}px`
+    return () => {
+      root.style.scrollPaddingTop = prev
+    }
+  }, [])
 
   return (
-    <div className="sticky top-0 z-20 border-b border-border bg-background">
+    <div ref={barRef} className="sticky top-0 z-20 border-b border-border bg-background">
       <div className="flex items-center gap-3 px-4 py-2">
         <AvatarStack members={members} max={4} />
         <span className="min-w-0 flex-1 truncate text-[13px] text-muted-foreground">

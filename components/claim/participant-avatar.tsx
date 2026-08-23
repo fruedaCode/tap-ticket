@@ -2,6 +2,7 @@
 
 import { Crown } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { useI18n } from '@/lib/i18n'
 import type { MemberWithProfile } from '@/lib/types'
 import { cn } from '@/lib/utils'
 
@@ -44,6 +45,7 @@ export function ParticipantAvatar({
   selected?: boolean
   className?: string
 }) {
+  const { t } = useI18n()
   const name = memberName(member)
   return (
     <span className={cn('relative inline-flex shrink-0', className)}>
@@ -64,7 +66,8 @@ export function ParticipantAvatar({
       </Avatar>
       {member.role === 'owner' && size !== 'sm' && (
         <Crown
-          aria-label="owner"
+          role="img"
+          aria-label={t('Owner')}
           className="absolute -top-1 -right-1 size-4 rounded-full bg-card p-0.5 text-accent ring-1 ring-border"
         />
       )}

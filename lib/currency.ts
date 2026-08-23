@@ -1,6 +1,7 @@
 export function numberToCurrency(num: number, lang: string): string {
-  const fixed = (Math.round((num + Number.EPSILON) * 100) / 100).toFixed(2)
-  return lang === 'en' ? fixed : fixed.replace('.', ',')
+  // EPSILON pre-round preserves round-half-up (1.005 → 1.01) before Intl formats
+  const rounded = Math.round((num + Number.EPSILON) * 100) / 100
+  return new Intl.NumberFormat(lang, { style: 'currency', currency: 'EUR' }).format(rounded)
 }
 
 export function numberToPercentage(num: number, unit?: string): string | number {

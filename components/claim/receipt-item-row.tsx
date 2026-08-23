@@ -63,7 +63,7 @@ export function ReceiptItemRow({
       : claimantIds.length > 0
         ? otherClaimants.map((id) => nameById.get(id) ?? t('User')).join(', ')
         : t('Tap to claim')
-  const ariaLabel = `${item.description}, ${numberToCurrency(amount, lang)} €, ${stateLabel}`
+  const ariaLabel = `${item.description}, ${numberToCurrency(amount, lang)}, ${stateLabel}`
 
   return (
     <button
@@ -76,13 +76,13 @@ export function ReceiptItemRow({
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
         viewerClaims && !paid ? 'border-l-primary' : 'border-l-transparent',
         paid && (settled ? 'bg-success-subtle' : 'bg-success-subtle/50'),
-        flash && 'animate-[row-flash_600ms_ease-out] motion-reduce:animate-none',
+        flash && 'row-flash animate-[row-flash_600ms_ease-out] motion-reduce:animate-none',
       )}
     >
       <div className="min-w-0 flex-1">
         <p className="truncate text-base font-medium">{item.description}</p>
         <p className="text-[13px] text-muted-foreground tabular-nums">
-          {item.quantity} × {numberToCurrency(getUnitPrice(item), lang)} €
+          {item.quantity} × {numberToCurrency(getUnitPrice(item), lang)}
         </p>
         {(paid || claimantIds.length > 0) && (
           <div className="flex flex-wrap items-center gap-2 pt-1.5">
@@ -110,7 +110,7 @@ export function ReceiptItemRow({
           amountMuted && 'font-normal text-muted-foreground',
         )}
       >
-        {numberToCurrency(amount, lang)} €
+        {numberToCurrency(amount, lang)}
       </span>
       {claimantIds.length === 0 && (
         <ChevronRight className="size-5 shrink-0 text-muted-foreground" aria-hidden />

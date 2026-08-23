@@ -17,7 +17,7 @@ import { TagDialog } from '@/components/tag-dialog'
 import { TicketItems } from '@/components/ticket-items'
 import { UsersCarousel } from '@/components/users-carousel'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import { numberToCurrency } from '@/lib/currency'
 import { useTicket } from '@/lib/hooks/useTicket'
 import { useI18n } from '@/lib/i18n'
@@ -173,7 +173,11 @@ export default function TicketSummaryPage() {
       </div>
 
       {imgUrl && (
-        <button type="button" className="block w-full" onClick={() => setImgOpen(true)}>
+        <button
+          type="button"
+          className="block w-full hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+          onClick={() => setImgOpen(true)}
+        >
           {/* eslint-disable-next-line @next/next/no-img-element -- signed URL from Supabase storage */}
           <img src={imgUrl} alt={ticket.restaurant?.name ?? t('Ticket')} className="h-52 w-full object-cover" />
         </button>
@@ -184,7 +188,7 @@ export default function TicketSummaryPage() {
         <div className="flex items-baseline justify-between pt-1">
           <p className="text-sm text-muted-foreground">{ticket.invoice?.date}</p>
           <p className="font-medium tabular-nums">
-            {t('Total')}: {numberToCurrency(total, lang)} €
+            {t('Total')}: {numberToCurrency(total, lang)}
           </p>
         </div>
       </div>
@@ -242,7 +246,7 @@ export default function TicketSummaryPage() {
           <ShareButton ticket={ticket} className="min-h-11 flex-1" />
           <TagDialog ticketId={ticket.id} members={ticket.members} className="min-h-11 flex-1" />
           <Button type="button" variant="outline" className="min-h-11 flex-1" onClick={() => router.push(`/tickets/${id}/edit`)}>
-            <Pencil />
+            <Pencil aria-hidden />
             {t('Edit')}
           </Button>
         </div>
@@ -273,6 +277,7 @@ export default function TicketSummaryPage() {
 
       <Dialog open={imgOpen} onOpenChange={setImgOpen}>
         <DialogContent className="max-w-[calc(100%-1rem)] p-2 sm:max-w-2xl" onClick={() => setImgOpen(false)}>
+          <DialogTitle className="sr-only">{ticket.restaurant?.name ?? t('Ticket')}</DialogTitle>
           {imgUrl && (
             // eslint-disable-next-line @next/next/no-img-element -- signed URL from Supabase storage
             <img src={imgUrl} alt={ticket.restaurant?.name ?? t('Ticket')} className="max-h-[80dvh] w-full object-contain" />
