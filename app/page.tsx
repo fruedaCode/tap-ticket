@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { Check } from 'lucide-react'
+import { LandingHero } from '@/components/landing-hero'
 import { LegalFooter } from '@/components/legal-footer'
 import { useI18n } from '@/lib/i18n'
 import { Button } from '@/components/ui/button'
@@ -54,29 +55,9 @@ export default function LandingPage() {
       </header>
 
       <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col px-4">
-        <section className="flex flex-col items-center gap-6 py-16 text-center sm:py-24">
-          <h1 className="max-w-xl text-4xl font-bold tracking-tight sm:text-5xl">
-            {t('Scan a ticket, split the bill')}
-          </h1>
-          <p className="max-w-md text-lg text-muted-foreground">
-            {t(
-              'Snap a photo, share a link, and friends claim what they had — the math is done for you.',
-            )}
-          </p>
-          <Button size="lg" nativeButton={false} render={<Link href="/login" />}>
-            {t('Get started')}
-          </Button>
-          <img
-            src="/hero.svg"
-            alt={t('A receipt scanned into a phone where friends split the bill')}
-            width={400}
-            height={300}
-            fetchPriority="high"
-            className="mt-4 w-full max-w-xl rounded-xl"
-          />
-        </section>
+        <LandingHero />
 
-        <section className="pb-16 sm:pb-24">
+        <section id="how-it-works" className="scroll-mt-8 pb-16 sm:pb-24">
           <h2 className="mb-8 text-center text-2xl font-semibold tracking-tight">
             {t('How it works')}
           </h2>
