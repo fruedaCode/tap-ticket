@@ -31,12 +31,12 @@ const STEPS = [
   {
     img: '/steps/snap.svg',
     title: 'Snap the receipt',
-    body: 'Take a photo of the ticket — AI reads every line item and its price.',
+    body: 'Take a photo of the ticket. AI reads every line item and its price.',
   },
   {
     img: '/steps/share.svg',
     title: 'Share the link',
-    body: 'Friends join from their phones in seconds — no app install needed.',
+    body: 'Friends join from their phones in seconds, no app install needed.',
   },
   {
     img: '/steps/claim.svg',
