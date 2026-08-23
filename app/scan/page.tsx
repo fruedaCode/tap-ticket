@@ -6,7 +6,7 @@ import { Camera, ImagePlus, Loader2, ReceiptText, ScanLine, Sun } from 'lucide-r
 import { toast } from 'sonner'
 import { BottomNav } from '@/components/bottom-nav'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogFooter } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogFooter, DialogTitle } from '@/components/ui/dialog'
 import { useI18n } from '@/lib/i18n'
 
 export default function ScanPage() {
@@ -94,7 +94,7 @@ export default function ScanPage() {
         <button
           type="button"
           onClick={() => cameraInputRef.current?.click()}
-          className="flex flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-muted-foreground/25 px-6 py-12 text-center active:bg-muted/50"
+          className="flex flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-muted-foreground/25 px-6 py-12 text-center hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:bg-muted/50"
         >
           <div className="flex size-16 items-center justify-center rounded-full bg-primary/10">
             <Camera className="size-8 text-primary" aria-hidden />
@@ -132,11 +132,14 @@ export default function ScanPage() {
 
       <Dialog open={previewUrl !== null} onOpenChange={(open) => !open && resetCapture()}>
         <DialogContent>
+          <DialogTitle className="sr-only">{t('Ticket')}</DialogTitle>
           {previewUrl && (
             // eslint-disable-next-line @next/next/no-img-element -- local object URL preview, not optimizable
             <img
               src={previewUrl}
               alt={t('Ticket')}
+              width={800}
+              height={1200}
               className="max-h-[60dvh] w-full rounded-lg object-contain"
             />
           )}

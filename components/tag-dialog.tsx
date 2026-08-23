@@ -1,12 +1,13 @@
 'use client'
 
 import { useState } from 'react'
-import { Trash2, UserPlus } from 'lucide-react'
+import { Loader2, Trash2, UserPlus } from 'lucide-react'
 import { toast } from 'sonner'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { useI18n } from '@/lib/i18n'
 import { addMemberByEmail, removeMember } from '@/lib/mutations'
 import { createClient } from '@/lib/supabase/client'
@@ -30,7 +31,7 @@ export function TagDialog({ ticketId, members, className }: { ticketId: string; 
       if (error instanceof Error && error.message.includes('user_not_found')) {
         toast.error(t('User not found'))
       } else {
-        toast.error(t('Error'))
+        toast.error(t('Could not add the participant. Check the email and try again.'))
       }
     } finally {
       setBusy(false)
@@ -58,14 +59,22 @@ export function TagDialog({ ticketId, members, className }: { ticketId: string; 
         </DialogHeader>
 
         <div className="flex gap-2">
+          <Label htmlFor="tag-email" className="sr-only">
+            {t('User email')}
+          </Label>
           <Input
+            id="tag-email"
             type="email"
-            placeholder={t('User email')}
+            name="email"
+            autoComplete="email"
+            spellCheck={false}
+            placeholder="name@example.com…"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
           />
           <Button type="button" disabled={busy || !email.trim()} onClick={handleAdd}>
+            {busy && <Loader2 className="animate-spin" aria-hidden />}
             {t('Confirm')}
           </Button>
         </div>

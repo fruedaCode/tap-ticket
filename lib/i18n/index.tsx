@@ -42,6 +42,9 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('lang', l)
     syncLocaleToUserMetadata(l)
   }
+  useEffect(() => {
+    document.documentElement.lang = lang
+  }, [lang])
   const t = (key: string) => dicts[lang][key] ?? dicts.en[key] ?? key
   return <I18nContext.Provider value={{ lang, setLang, t }}>{children}</I18nContext.Provider>
 }

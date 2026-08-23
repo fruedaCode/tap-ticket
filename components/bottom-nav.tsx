@@ -28,8 +28,8 @@ export function BottomNav({ className }: { className?: string }) {
               key={href}
               href={href}
               className={cn(
-                'flex flex-1 flex-col items-center gap-1 py-2 text-xs',
-                active ? 'text-primary' : 'text-muted-foreground',
+                'flex flex-1 flex-col items-center gap-1 py-2 text-xs transition-colors',
+                active ? 'text-primary' : 'text-muted-foreground hover:text-foreground',
               )}
             >
               <Icon className="size-5" />

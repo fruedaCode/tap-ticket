@@ -31,7 +31,7 @@ export function ConsentBanner() {
         {/* First layer: the AEPD expects it to name the controller, the purpose
             and the third party involved, with the detail one click away. */}
         <p className="text-sm text-muted-foreground">
-          <span className="font-medium text-foreground">{COMPANY.name}</span>{' '}
+          <span className="font-medium text-foreground" translate="no">{COMPANY.name}</span>{' '}
           {t('uses analytics cookies (PostHog) to measure how the app is used. You can accept or reject them; rejecting limits nothing.')}{' '}
           <Link href="/legal/cookies" className="font-medium text-foreground underline underline-offset-4">
             {t('More information')}

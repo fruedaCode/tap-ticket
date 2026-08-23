@@ -93,7 +93,7 @@ function PlansContent() {
       const { url } = (await res.json()) as { url: string }
       window.location.assign(url)
     } catch {
-      toast.error(t('Error'))
+      toast.error(t('Could not process the payment. Try again.'))
       setPending(null)
     }
   }
@@ -111,7 +111,7 @@ function PlansContent() {
       toast.success(t('Plan updated'))
       await loadStatus()
     } catch {
-      toast.error(t('Error'))
+      toast.error(t('Could not process the payment. Try again.'))
     } finally {
       setPending(null)
     }
@@ -127,7 +127,7 @@ function PlansContent() {
       setCancelOpen(false)
       await loadStatus()
     } catch {
-      toast.error(t('Error'))
+      toast.error(t('Something went wrong. Try again.'))
     } finally {
       setPending(null)
     }
@@ -141,7 +141,7 @@ function PlansContent() {
       const { url } = (await res.json()) as { url: string }
       window.location.assign(url)
     } catch {
-      toast.error(t('Error'))
+      toast.error(t('Could not process the payment. Try again.'))
       setPending(null)
     }
   }
@@ -188,14 +188,14 @@ function PlansContent() {
           disabled={pending !== null}
           onClick={() => changePlan(planId)}
         >
-          {isPending && <Loader2 className="animate-spin" />}
+          {isPending && <Loader2 className="animate-spin" aria-hidden="true" />}
           {isUpgrade ? t('Upgrade') : t('Downgrade')}
         </Button>
       )
     }
     return (
       <Button className="w-full" disabled={pending !== null} onClick={() => startCheckout(planId)}>
-        {isPending && <Loader2 className="animate-spin" />}
+        {isPending && <Loader2 className="animate-spin" aria-hidden="true" />}
         {t('Upgrade')}
       </Button>
     )
@@ -236,7 +236,7 @@ function PlansContent() {
                   {status.hasCustomer && status.billingEnabled && (
                     <div className="mt-2 flex flex-col gap-2">
                       <Button variant="outline" disabled={pending !== null} onClick={openPortal}>
-                        {pending === 'portal' && <Loader2 className="animate-spin" />}
+                        {pending === 'portal' && <Loader2 className="animate-spin" aria-hidden="true" />}
                         {t('Manage subscription')}
                       </Button>
                       {hasActiveSubscription && (
@@ -276,7 +276,7 @@ function PlansContent() {
                           </span>
                         )}
                       </p>
-                      <p className="text-lg font-semibold">
+                      <p className="text-lg font-semibold tabular-nums">
                         {formatPrice(plan.priceCents)}
                         <span className="text-sm font-normal text-muted-foreground">
                           {' '}
@@ -285,7 +285,7 @@ function PlansContent() {
                       </p>
                     </div>
                     <p className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Check className="size-4 shrink-0" />
+                      <Check className="size-4 shrink-0" aria-hidden="true" />
                       {plan.weeklyLimit === 'unlimited'
                         ? t('Unlimited scans')
                         : `${plan.weeklyLimit} ${t('scans per week')}`}
@@ -317,7 +317,7 @@ function PlansContent() {
               disabled={pending !== null}
               onClick={cancelSubscription}
             >
-              {pending === 'cancel' && <Loader2 className="animate-spin" />}
+              {pending === 'cancel' && <Loader2 className="animate-spin" aria-hidden="true" />}
               {t('Cancel subscription')}
             </Button>
           </DialogFooter>

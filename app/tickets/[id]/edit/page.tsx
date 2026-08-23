@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { Trash2 } from 'lucide-react'
+import { Loader2, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { BottomNav } from '@/components/bottom-nav'
 import { Button } from '@/components/ui/button'
@@ -94,9 +94,37 @@ export default function TicketEditPage() {
     )
   }, [ticket])
 
+  const [dirty, setDirty] = useState(false)
+
+  const updateRestaurant = (value: Restaurant) => {
+    setDirty(true)
+    setRestaurant(value)
+  }
+
+  const updateInvoice = (value: Invoice) => {
+    setDirty(true)
+    setInvoice(value)
+  }
+
+  const updateTotals = (value: TotalsForm) => {
+    setDirty(true)
+    setTotals(value)
+  }
+
   const setItem = (itemId: string, field: keyof Omit<ItemForm, 'id'>, value: string) => {
+    setDirty(true)
     setItems((prev) => prev?.map((item) => (item.id === itemId ? { ...item, [field]: value } : item)) ?? null)
   }
+
+  // warn before unloading the page with unsaved changes
+  useEffect(() => {
+    if (!dirty) return
+    const onBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault()
+    }
+    window.addEventListener('beforeunload', onBeforeUnload)
+    return () => window.removeEventListener('beforeunload', onBeforeUnload)
+  }, [dirty])
 
   const handleSave = async () => {
     if (!restaurant || !invoice || !totals || !items) return
@@ -123,7 +151,7 @@ export default function TicketEditPage() {
       }
       router.back()
     } catch {
-      toast.error(t('Error'))
+      toast.error(t('Could not save changes. Try again.'))
     } finally {
       setSaving(false)
     }
@@ -136,7 +164,7 @@ export default function TicketEditPage() {
       await deleteTicket(supabase, id, ticket.img_path)
       router.replace('/tickets')
     } catch {
-      toast.error(t('Error'))
+      toast.error(t('Could not delete the ticket. Try again.'))
       setDeleting(false)
     }
   }
@@ -180,32 +208,42 @@ export default function TicketEditPage() {
             <Label htmlFor="restaurant-name">{t('Name')}</Label>
             <Input
               id="restaurant-name"
+              name="restaurant-name"
+              autoComplete="off"
               value={restaurant.name}
-              onChange={(e) => setRestaurant({ ...restaurant, name: e.target.value })}
+              onChange={(e) => updateRestaurant({ ...restaurant, name: e.target.value })}
             />
           </div>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="restaurant-address">{t('Address')}</Label>
             <Input
               id="restaurant-address"
+              name="restaurant-address"
+              autoComplete="off"
               value={restaurant.address}
-              onChange={(e) => setRestaurant({ ...restaurant, address: e.target.value })}
+              onChange={(e) => updateRestaurant({ ...restaurant, address: e.target.value })}
             />
           </div>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="restaurant-phone">{t('Phone')}</Label>
             <Input
               id="restaurant-phone"
+              name="restaurant-phone"
+              type="tel"
+              inputMode="tel"
+              autoComplete="off"
               value={restaurant.phone}
-              onChange={(e) => setRestaurant({ ...restaurant, phone: e.target.value })}
+              onChange={(e) => updateRestaurant({ ...restaurant, phone: e.target.value })}
             />
           </div>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="restaurant-nif">{t('NIF')}</Label>
             <Input
               id="restaurant-nif"
+              name="restaurant-nif"
+              autoComplete="off"
               value={restaurant.NIF}
-              onChange={(e) => setRestaurant({ ...restaurant, NIF: e.target.value })}
+              onChange={(e) => updateRestaurant({ ...restaurant, NIF: e.target.value })}
             />
           </div>
         </section>
@@ -218,40 +256,50 @@ export default function TicketEditPage() {
             <Label htmlFor="invoice-type">{t('Type')}</Label>
             <Input
               id="invoice-type"
+              name="invoice-type"
+              autoComplete="off"
               value={invoice.type}
-              onChange={(e) => setInvoice({ ...invoice, type: e.target.value })}
+              onChange={(e) => updateInvoice({ ...invoice, type: e.target.value })}
             />
           </div>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="invoice-operation-number">{t('Operation number')}</Label>
             <Input
               id="invoice-operation-number"
+              name="invoice-operation-number"
+              autoComplete="off"
               value={invoice.operation_number}
-              onChange={(e) => setInvoice({ ...invoice, operation_number: e.target.value })}
+              onChange={(e) => updateInvoice({ ...invoice, operation_number: e.target.value })}
             />
           </div>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="invoice-table">{t('Table')}</Label>
             <Input
               id="invoice-table"
+              name="invoice-table"
+              autoComplete="off"
               value={invoice.table}
-              onChange={(e) => setInvoice({ ...invoice, table: e.target.value })}
+              onChange={(e) => updateInvoice({ ...invoice, table: e.target.value })}
             />
           </div>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="invoice-date">{t('Date')}</Label>
             <Input
               id="invoice-date"
+              name="invoice-date"
+              autoComplete="off"
               value={invoice.date}
-              onChange={(e) => setInvoice({ ...invoice, date: e.target.value })}
+              onChange={(e) => updateInvoice({ ...invoice, date: e.target.value })}
             />
           </div>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="invoice-cashier">{t('Cashier')}</Label>
             <Input
               id="invoice-cashier"
+              name="invoice-cashier"
+              autoComplete="off"
               value={invoice.cashier}
-              onChange={(e) => setInvoice({ ...invoice, cashier: e.target.value })}
+              onChange={(e) => updateInvoice({ ...invoice, cashier: e.target.value })}
             />
           </div>
         </section>
@@ -266,6 +314,8 @@ export default function TicketEditPage() {
                 <Label htmlFor={`item-${item.id}-description`}>{t('Description')}</Label>
                 <Input
                   id={`item-${item.id}-description`}
+                  name={`item-${item.id}-description`}
+                  autoComplete="off"
                   value={item.description}
                   onChange={(e) => setItem(item.id, 'description', e.target.value)}
                 />
@@ -275,8 +325,10 @@ export default function TicketEditPage() {
                   <Label htmlFor={`item-${item.id}-quantity`}>{t('Units')}</Label>
                   <Input
                     id={`item-${item.id}-quantity`}
+                    name={`item-${item.id}-quantity`}
                     type="number"
                     inputMode="decimal"
+                    autoComplete="off"
                     value={item.quantity}
                     onChange={(e) => setItem(item.id, 'quantity', e.target.value)}
                   />
@@ -285,9 +337,11 @@ export default function TicketEditPage() {
                   <Label htmlFor={`item-${item.id}-price`}>{t('Total')}</Label>
                   <Input
                     id={`item-${item.id}-price`}
+                    name={`item-${item.id}-price`}
                     type="number"
                     inputMode="decimal"
                     step="any"
+                    autoComplete="off"
                     value={item.price}
                     onChange={(e) => setItem(item.id, 'price', e.target.value)}
                   />
@@ -296,9 +350,11 @@ export default function TicketEditPage() {
                   <Label htmlFor={`item-${item.id}-discount-percentage`}>{t('Discount %')}</Label>
                   <Input
                     id={`item-${item.id}-discount-percentage`}
+                    name={`item-${item.id}-discount-percentage`}
                     type="number"
                     inputMode="decimal"
                     step="any"
+                    autoComplete="off"
                     value={item.discount_percentage}
                     onChange={(e) => setItem(item.id, 'discount_percentage', e.target.value)}
                   />
@@ -307,9 +363,11 @@ export default function TicketEditPage() {
                   <Label htmlFor={`item-${item.id}-discount-amount`}>{t('Discount amount')}</Label>
                   <Input
                     id={`item-${item.id}-discount-amount`}
+                    name={`item-${item.id}-discount-amount`}
                     type="number"
                     inputMode="decimal"
                     step="any"
+                    autoComplete="off"
                     value={item.discount_amount}
                     onChange={(e) => setItem(item.id, 'discount_amount', e.target.value)}
                   />
@@ -328,61 +386,72 @@ export default function TicketEditPage() {
               <Label htmlFor="totals-base">{t('Base')}</Label>
               <Input
                 id="totals-base"
+                name="totals-base"
                 type="number"
                 inputMode="decimal"
                 step="any"
+                autoComplete="off"
                 value={totals.base}
-                onChange={(e) => setTotals({ ...totals, base: e.target.value })}
+                onChange={(e) => updateTotals({ ...totals, base: e.target.value })}
               />
             </div>
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="totals-tax-percentage">{t('Tax percentage')}</Label>
               <Input
                 id="totals-tax-percentage"
+                name="totals-tax-percentage"
                 type="number"
                 inputMode="decimal"
                 step="any"
+                autoComplete="off"
                 value={totals.taxPercentage}
-                onChange={(e) => setTotals({ ...totals, taxPercentage: e.target.value })}
+                onChange={(e) => updateTotals({ ...totals, taxPercentage: e.target.value })}
               />
             </div>
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="totals-tax-amount">{t('Tax Amount')}</Label>
               <Input
                 id="totals-tax-amount"
+                name="totals-tax-amount"
                 type="number"
                 inputMode="decimal"
                 step="any"
+                autoComplete="off"
                 value={totals.taxAmount}
-                onChange={(e) => setTotals({ ...totals, taxAmount: e.target.value })}
+                onChange={(e) => updateTotals({ ...totals, taxAmount: e.target.value })}
               />
             </div>
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="totals-without-tax">{t('Total without tax')}</Label>
               <Input
                 id="totals-without-tax"
+                name="totals-without-tax"
                 type="number"
                 inputMode="decimal"
                 step="any"
+                autoComplete="off"
                 value={totals.totalWithoutTax}
-                onChange={(e) => setTotals({ ...totals, totalWithoutTax: e.target.value })}
+                onChange={(e) => updateTotals({ ...totals, totalWithoutTax: e.target.value })}
               />
             </div>
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="totals-with-tax">{t('Total')}</Label>
               <Input
                 id="totals-with-tax"
+                name="totals-with-tax"
                 type="number"
                 inputMode="decimal"
                 step="any"
+                autoComplete="off"
                 value={totals.totalWithTax}
-                onChange={(e) => setTotals({ ...totals, totalWithTax: e.target.value })}
+                onChange={(e) => updateTotals({ ...totals, totalWithTax: e.target.value })}
               />
             </div>
           </div>
         </section>
 
         <Button type="button" disabled={saving} onClick={handleSave}>
+          {saving && <Loader2 className="animate-spin" aria-hidden />}
           {t('Save')}
         </Button>
 
@@ -391,7 +460,7 @@ export default function TicketEditPage() {
             <Separator />
             <section className="flex flex-col gap-3">
               <Button type="button" variant="destructive" disabled={deleting} onClick={() => setConfirmOpen(true)}>
-                <Trash2 />
+                <Trash2 aria-hidden />
                 {t('Delete')}
               </Button>
             </section>

@@ -28,6 +28,8 @@ export function SettlementsDialog({
   const { lang, t } = useI18n()
   const [supabase] = useState(createClient)
   const [proofUrl, setProofUrl] = useState<string | null>(null)
+  const [proofDims, setProofDims] = useState<{ width: number; height: number } | null>(null)
+  const [confirmingId, setConfirmingId] = useState<string | null>(null)
 
   const settlements = [...ticket.settlements].sort((a, b) => b.created_at.localeCompare(a.created_at))
 
@@ -35,25 +37,30 @@ export function SettlementsDialog({
     const member = ticket.members.find((m) => m.user_id === id)
     return member ? memberName(member) : id.slice(0, 8)
   }
-  const money = (n: number) => `${numberToCurrency(n, lang)} €`
+  const money = (n: number) => numberToCurrency(n, lang)
 
   const handleResolve = async (id: string, status: 'confirmed' | 'rejected') => {
     try {
       await resolveSettlement(supabase, id, status)
     } catch {
-      toast.error(t('Error'))
+      toast.error(t('Could not reject the payment. Try again.'))
     }
   }
 
   const handleViewProof = async (settlement: Settlement) => {
     const { data } = await supabase.storage.from('settlement-proofs').createSignedUrl(settlement.proof_path, 3600)
     if (data?.signedUrl) setProofUrl(data.signedUrl)
-    else toast.error(t('Error'))
+    else toast.error(t('Could not load the payment proof. Try again.'))
   }
 
   return (
     <>
-      <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
+      <Dialog open={open} onOpenChange={(o) => {
+        if (!o) {
+          setConfirmingId(null)
+          onClose()
+        }
+      }}>
         <DialogContent className="max-h-[85dvh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{t('Payment history')}</DialogTitle>
@@ -71,11 +78,31 @@ export function SettlementsDialog({
                   <Button type="button" variant="ghost" size="icon-sm" aria-label={t('View proof')} onClick={() => void handleViewProof(s)}>
                     <Eye />
                   </Button>
-                  {/* any member other than the payer may reject (dispute) a pending settlement */}
+                  {/* any member other than the payer may reject (dispute) a pending settlement;
+                      destructive, so the first tap only arms an inline confirm/cancel pair */}
                   {s.status === 'pending' && s.from_user !== userId && (
-                    <Button type="button" variant="ghost" size="icon-sm" aria-label={t('Reject')} onClick={() => void handleResolve(s.id, 'rejected')}>
-                      <X className="text-destructive" />
-                    </Button>
+                    confirmingId === s.id ? (
+                      <>
+                        <Button type="button" variant="ghost" size="sm" onClick={() => setConfirmingId(null)}>
+                          {t('Cancel')}
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => {
+                            setConfirmingId(null)
+                            void handleResolve(s.id, 'rejected')
+                          }}
+                        >
+                          {t('Confirm')}
+                        </Button>
+                      </>
+                    ) : (
+                      <Button type="button" variant="ghost" size="icon-sm" aria-label={t('Reject')} onClick={() => setConfirmingId(s.id)}>
+                        <X className="text-destructive" />
+                      </Button>
+                    )
                   )}
                 </div>
               ))}
@@ -88,7 +115,14 @@ export function SettlementsDialog({
         <DialogContent className="max-w-[calc(100%-1rem)] p-2 sm:max-w-2xl" onClick={() => setProofUrl(null)}>
           {proofUrl && (
             // eslint-disable-next-line @next/next/no-img-element -- signed URL from Supabase storage
-            <img src={proofUrl} alt={t('Payment proof')} className="max-h-[80dvh] w-full object-contain" />
+            <img
+              src={proofUrl}
+              alt={t('Payment proof')}
+              width={proofDims?.width}
+              height={proofDims?.height}
+              onLoad={(e) => setProofDims({ width: e.currentTarget.naturalWidth, height: e.currentTarget.naturalHeight })}
+              className="max-h-[80dvh] w-full object-contain"
+            />
           )}
         </DialogContent>
       </Dialog>

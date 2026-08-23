@@ -64,6 +64,15 @@ export default function AccountPage() {
     })
   }, [supabase, router])
 
+  const nameDirty = displayName.trim() !== savedName.trim()
+
+  useEffect(() => {
+    if (!nameDirty) return
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => e.preventDefault()
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
+  }, [nameDirty])
+
   const handleSaveName = async () => {
     setSaving(true)
     try {
@@ -72,7 +81,7 @@ export default function AccountPage() {
       } = await supabase.auth.getUser()
       if (!user) return
       const { error } = await supabase.from('profiles').update({ display_name: displayName }).eq('id', user.id)
-      if (error) toast.error(t('Error'))
+      if (error) toast.error(t('Could not save changes. Try again.'))
       else {
         setSavedName(displayName)
         toast.success(t('Success'))
@@ -96,7 +105,7 @@ export default function AccountPage() {
       await supabase.auth.signOut()
       router.replace('/login')
     } catch {
-      toast.error(t('Error'))
+      toast.error(t('Something went wrong. Try again.'))
       setDeleting(false)
       setConfirmOpen(false)
     }
@@ -137,7 +146,14 @@ export default function AccountPage() {
         <section className="flex flex-col gap-3">
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="display-name">{t('Name')}</Label>
-            <Input id="display-name" value={displayName} onChange={(e) => setDisplayName(e.target.value)} />
+            <Input
+              id="display-name"
+              name="name"
+              autoComplete="name"
+              spellCheck={false}
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+            />
           </div>
           <Button
             type="button"
@@ -153,8 +169,8 @@ export default function AccountPage() {
         <Separator />
 
         <section className="flex flex-col gap-1.5">
-          <Label>{t('Language')}</Label>
-          <LanguagePicker />
+          <Label htmlFor="language">{t('Language')}</Label>
+          <LanguagePicker id="language" />
         </section>
 
         <Separator />
@@ -216,7 +232,7 @@ export default function AccountPage() {
               onClick={handleDeleteAccount}
             >
               {deleting && <Loader2 className="animate-spin" aria-hidden />}
-              {t('Confirm')}
+              {t('Delete account')}
             </Button>
           </DialogFooter>
         </DialogContent>

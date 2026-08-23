@@ -28,12 +28,12 @@ function JoinTicket() {
   }, [supabase, ticketId, token, router])
 
   return (
-    <div className="flex min-h-dvh items-center justify-center bg-background">
+    <div className="flex min-h-dvh items-center justify-center bg-background" role="status" aria-live="polite">
       {invalid ? (
-        <p className="px-4 text-center text-muted-foreground">{t('Invalid link')}</p>
+        <p className="px-4 text-center text-muted-foreground">{t('Invalid link. Ask for a new one.')}</p>
       ) : (
         <div className="flex items-center gap-2 text-muted-foreground">
-          <Loader2 className="size-5 animate-spin" />
+          <Loader2 className="size-5 animate-spin" aria-hidden="true" />
           {t('Joining ticket')}
         </div>
       )}

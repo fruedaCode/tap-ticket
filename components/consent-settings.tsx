@@ -26,7 +26,7 @@ export function ConsentSettings() {
   return (
     <div className="mt-6 rounded-xl border bg-card p-4">
       <p className="text-sm font-medium">{t('Analytics preference')}</p>
-      <p className="min-h-5 pt-1 text-sm text-muted-foreground">{status}</p>
+      <p className="min-h-5 pt-1 text-sm text-muted-foreground" aria-live="polite">{status}</p>
       <div className="flex flex-wrap gap-2 pt-3">
         <Button variant="outline" className="min-h-11" onClick={() => setConsent('rejected')}>
           {t('Reject analytics')}

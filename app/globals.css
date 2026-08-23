@@ -57,6 +57,7 @@
 }
 
 :root {
+  color-scheme: light;
   --background: oklch(0.971 0.013 17.38);
   --foreground: oklch(0.258 0.089 26.042);
   --card: oklch(1 0 0);
@@ -100,6 +101,7 @@
 }
 
 .dark {
+  color-scheme: dark;
   --background: oklch(0.173 0.032 20.846);
   --foreground: oklch(0.971 0.013 17.38);
   --card: oklch(0.213 0.043 21.379);
@@ -143,10 +145,16 @@
 
 @keyframes row-flash {
   from {
-    background-color: var(--info-subtle);
+    opacity: 0.4;
   }
   to {
-    background-color: transparent;
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .row-flash {
+    animation: none;
   }
 }
 
@@ -165,6 +173,7 @@
     @apply bg-background text-foreground;
   }
   html {
-    @apply font-sans;
+    @apply font-sans touch-manipulation;
+    -webkit-tap-highlight-color: transparent;
   }
 }

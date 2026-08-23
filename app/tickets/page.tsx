@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { Suspense, useEffect, useMemo, useState } from 'react'
+import Link from 'next/link'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { Camera, Search } from 'lucide-react'
 import { BottomNav } from '@/components/bottom-nav'
 import { Button } from '@/components/ui/button'
@@ -45,7 +46,7 @@ const STEPS = [
 ] as const
 
 function formatMoney(amount: number, lang: string) {
-  return `${numberToCurrency(amount, lang)} €`
+  return numberToCurrency(amount, lang)
 }
 
 function getUserPaid(row: Row, userId: string | null): number {
@@ -62,10 +63,10 @@ function TicketRow({ row, userId, onOpen }: { row: Row; userId: string | null; o
   const date = new Date(ticket.created_at)
 
   return (
-    <button
-      type="button"
+    <Link
+      href={`/tickets/${ticket.id}`}
       onClick={() => onOpen(ticket.id)}
-      className="flex w-full items-center gap-3 px-4 py-3 text-left active:bg-muted/50"
+      className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset active:bg-muted/50"
     >
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
@@ -76,22 +77,44 @@ function TicketRow({ row, userId, onOpen }: { row: Row; userId: string | null; o
           {date.toLocaleDateString(lang, { day: 'numeric', month: 'short', year: 'numeric' })}
         </p>
       </div>
-      <div className="text-right">
+      <div className="text-right tabular-nums">
         <p className="font-medium">{formatMoney(ticket.totals?.total_with_tax ?? 0, lang)}</p>
         <p className="text-sm text-muted-foreground">{formatMoney(getUserPaid(row, userId), lang)}</p>
       </div>
-    </button>
+    </Link>
   )
 }
 
 export default function TicketsPage() {
+  return (
+    <Suspense>
+      <TicketsPageContent />
+    </Suspense>
+  )
+}
+
+function TicketsPageContent() {
   const { rows, loading, error, reload } = useTicketList()
   const { lang, t } = useI18n()
   const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
   const [supabase] = useState(createClient)
   const [userId, setUserId] = useState<string | null>(null)
   const [query, setQuery] = useState('')
-  const [filter, setFilter] = useState<Filter>('all')
+  const [filter, setFilter] = useState<Filter>(() => {
+    const param = searchParams.get('filter')
+    return FILTERS.includes(param as Filter) ? (param as Filter) : 'all'
+  })
+
+  // keep the active filter in the URL so it survives reloads and back navigation
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString())
+    if (filter === 'all') params.delete('filter')
+    else params.set('filter', filter)
+    const qs = params.toString()
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false })
+  }, [filter, pathname, router, searchParams])
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => setUserId(user?.id ?? null))
@@ -127,7 +150,6 @@ export default function TicketsPage() {
 
   const openTicket = (ticketId: string) => {
     if (userId) void markSeen(supabase, ticketId, userId)
-    router.push(`/tickets/${ticketId}`)
   }
 
   return (
@@ -141,7 +163,8 @@ export default function TicketsPage() {
             <Input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder={t('Search tickets')}
+              aria-label={t('Search tickets')}
+              placeholder={`${t('Search tickets')}…`}
               className="pl-9"
             />
           </div>
@@ -182,7 +205,7 @@ export default function TicketsPage() {
           </div>
           <p className="font-medium">{t('No tickets yet')}</p>
           <p className="text-sm text-muted-foreground">{t('Scan a ticket, split the bill')}</p>
-          <Button type="button" className="mt-1 min-h-11" onClick={() => router.push('/scan')}>
+          <Button className="mt-1 min-h-11" nativeButton={false} render={<Link href="/scan" />}>
             <Camera className="size-4" aria-hidden />
             {t('Take picture')}
           </Button>

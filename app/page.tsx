@@ -47,7 +47,7 @@ export default function LandingPage() {
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <header className="mx-auto flex w-full max-w-4xl items-center justify-between px-4 py-4">
-        <img src="/logo-lockup.svg" alt="TapTicket" className="w-40" />
+        <img src="/logo-lockup.svg" alt="TapTicket" width={424} height={132} className="w-40" />
         <Button variant="outline" nativeButton={false} render={<Link href="/login" />}>
           {t('Sign in')}
         </Button>
@@ -69,6 +69,9 @@ export default function LandingPage() {
           <img
             src="/hero.svg"
             alt={t('A receipt scanned into a phone where friends split the bill')}
+            width={400}
+            height={300}
+            fetchPriority="high"
             className="mt-4 w-full max-w-xl rounded-xl"
           />
         </section>
@@ -80,7 +83,14 @@ export default function LandingPage() {
           <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {STEPS.map((step, i) => (
               <li key={step.title} className="rounded-xl border bg-card p-4">
-                <img src={step.img} alt={t(step.title)} className="mb-3 w-full rounded-lg" />
+                <img
+                  src={step.img}
+                  alt={t(step.title)}
+                  width={400}
+                  height={300}
+                  loading="lazy"
+                  className="mb-3 w-full rounded-lg"
+                />
                 <div className="flex items-center gap-2">
                   <div className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
                     {i + 1}
@@ -114,7 +124,7 @@ export default function LandingPage() {
                     </p>
                   </div>
                   <p className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Check className="size-4 shrink-0" />
+                    <Check className="size-4 shrink-0" aria-hidden="true" />
                     {plan.weeklyLimit === 'unlimited'
                       ? t('Unlimited scans')
                       : `${plan.weeklyLimit} ${t('scans per week')}`}
@@ -144,7 +154,9 @@ export default function LandingPage() {
       </main>
 
       <footer className="flex flex-col items-center gap-3 border-t py-6 text-center text-sm text-muted-foreground">
-        <p>TapTicket — {t('easy sharing')}</p>
+        <p>
+          <span translate="no">TapTicket</span> — {t('easy sharing')}
+        </p>
         <LegalFooter />
       </footer>
     </div>

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { Camera } from 'lucide-react'
+import { Camera, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -64,9 +64,10 @@ function SettleBody({
 
   const [file, setFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const [previewDims, setPreviewDims] = useState<{ width: number; height: number } | null>(null)
   const [busy, setBusy] = useState(false)
 
-  const money = (n: number) => `${numberToCurrency(n, lang)} €`
+  const money = (n: number) => numberToCurrency(n, lang)
 
   useEffect(() => {
     return () => {
@@ -93,7 +94,7 @@ function SettleBody({
       // closing unmounts this body, so no form state needs resetting
       onSettled()
     } catch {
-      toast.error(t('Error'))
+      toast.error(t('Could not record the payment. Try again.'))
     } finally {
       setBusy(false)
     }
@@ -128,9 +129,10 @@ function SettleBody({
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <Label>{t('Payment proof')}</Label>
+              <Label htmlFor="settle-proof">{t('Payment proof')}</Label>
               <input
                 ref={inputRef}
+                id="settle-proof"
                 type="file"
                 accept="image/jpeg,image/png,image/webp"
                 capture="environment"
@@ -140,11 +142,18 @@ function SettleBody({
               {previewUrl ? (
                 <button type="button" className="block w-full" onClick={() => inputRef.current?.click()}>
                   {/* eslint-disable-next-line @next/next/no-img-element -- local object URL preview, not optimizable */}
-                  <img src={previewUrl} alt={t('Payment proof')} className="max-h-48 w-full rounded-lg object-contain" />
+                  <img
+                    src={previewUrl}
+                    alt={t('Payment proof')}
+                    width={previewDims?.width}
+                    height={previewDims?.height}
+                    onLoad={(e) => setPreviewDims({ width: e.currentTarget.naturalWidth, height: e.currentTarget.naturalHeight })}
+                    className="max-h-48 w-full rounded-lg object-contain"
+                  />
                 </button>
               ) : (
                 <Button type="button" variant="outline" className="min-h-11" onClick={() => inputRef.current?.click()}>
-                  <Camera />
+                  <Camera aria-hidden />
                   {t('Add proof photo')}
                 </Button>
               )}
@@ -156,6 +165,7 @@ function SettleBody({
               disabled={busy || !file}
               onClick={handleMarkPaid}
             >
+              {busy && <Loader2 className="animate-spin" aria-hidden />}
               {t('Mark as paid')}
             </Button>
           </div>
