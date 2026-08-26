@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { Camera, Search } from 'lucide-react'
 import { BottomNav } from '@/components/bottom-nav'
+import { FeedbackPromptCard } from '@/components/feedback-prompt-card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -226,22 +227,27 @@ function TicketsPageContent() {
             ))}
           </ol>
         </div>
-      ) : groups.length === 0 ? (
-        <p className="px-4 pt-16 text-center text-muted-foreground">{t('No tickets match your filters')}</p>
       ) : (
-        groups.map((group) => (
-          <section key={group.label}>
-            <h2 className="px-4 pb-1 pt-4 text-sm font-semibold capitalize text-muted-foreground">{group.label}</h2>
-            <div className="divide-y">
-              {group.rows
-                .slice()
-                .sort((a, b) => +new Date(b.ticket.created_at) - +new Date(a.ticket.created_at))
-                .map((row) => (
-                  <TicketRow key={row.ticket.id} row={row} userId={userId} onOpen={openTicket} />
-                ))}
-            </div>
-          </section>
-        ))
+        <>
+          <FeedbackPromptCard ownedTickets={rows.filter((row) => row.membership.role === 'owner').length} />
+          {groups.length === 0 ? (
+            <p className="px-4 pt-16 text-center text-muted-foreground">{t('No tickets match your filters')}</p>
+          ) : (
+            groups.map((group) => (
+              <section key={group.label}>
+                <h2 className="px-4 pb-1 pt-4 text-sm font-semibold capitalize text-muted-foreground">{group.label}</h2>
+                <div className="divide-y">
+                  {group.rows
+                    .slice()
+                    .sort((a, b) => +new Date(b.ticket.created_at) - +new Date(a.ticket.created_at))
+                    .map((row) => (
+                      <TicketRow key={row.ticket.id} row={row} userId={userId} onOpen={openTicket} />
+                    ))}
+                </div>
+              </section>
+            ))
+          )}
+        </>
       )}
 
       <BottomNav />

@@ -3,9 +3,10 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { CreditCard, Download, Loader2, LogOut, Trash2 } from 'lucide-react'
+import { CreditCard, Download, Loader2, LogOut, MessageSquareHeart, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { BottomNav } from '@/components/bottom-nav'
+import { FeedbackDialog } from '@/components/feedback-dialog'
 import { LanguagePicker } from '@/components/language-picker'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -23,6 +24,19 @@ import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useI18n } from '@/lib/i18n'
 import { createClient } from '@/lib/supabase/client'
+import type { PlanId } from '@/lib/billing/plans'
+
+type BillingInfo = {
+  plan: PlanId
+  extraScans: number
+  usage: { count: number; limit: number | 'unlimited' }
+}
+
+const PLAN_NAME_KEY: Record<PlanId, string> = {
+  free: 'Free',
+  standard: 'Standard',
+  pro: 'Pro',
+}
 
 export default function AccountPage() {
   const router = useRouter()
@@ -38,6 +52,8 @@ export default function AccountPage() {
   const [signingOut, setSigningOut] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
+  const [feedbackOpen, setFeedbackOpen] = useState(false)
+  const [billing, setBilling] = useState<BillingInfo | null>(null)
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data: { user } }) => {
@@ -47,11 +63,10 @@ export default function AccountPage() {
         return
       }
       setEmail(user.email ?? '')
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('display_name, photo_url')
-        .eq('id', user.id)
-        .single()
+      const [{ data: profile }, billingRes] = await Promise.all([
+        supabase.from('profiles').select('display_name, photo_url').eq('id', user.id).single(),
+        fetch('/api/billing/status').catch(() => null),
+      ])
       setAvatarUrl(profile?.photo_url ?? (user.user_metadata.avatar_url as string | undefined) ?? null)
       const name =
         profile?.display_name ??
@@ -60,6 +75,7 @@ export default function AccountPage() {
         ''
       setDisplayName(name)
       setSavedName(name)
+      if (billingRes?.ok) setBilling((await billingRes.json()) as BillingInfo)
       setLoading(false)
     })
   }, [supabase, router])
@@ -137,11 +153,30 @@ export default function AccountPage() {
             {avatarUrl && <AvatarImage src={avatarUrl} alt={displayName || email} />}
             <AvatarFallback className="text-2xl">{initial}</AvatarFallback>
           </Avatar>
-          {displayName && <p className="font-medium">{displayName}</p>}
-          <p className="text-sm text-muted-foreground">{email}</p>
+          {displayName && <p className="max-w-full break-words text-center font-medium">{displayName}</p>}
+          <p className="max-w-full break-all text-center text-sm text-muted-foreground">{email}</p>
         </section>
 
         <Separator />
+
+        {billing && (
+          <>
+            <section className="flex flex-col gap-1 rounded-lg border p-4">
+              <p className="text-sm font-medium">
+                {t('Current plan')}: {t(PLAN_NAME_KEY[billing.plan])}
+              </p>
+              <p className="text-sm tabular-nums text-muted-foreground">
+                {billing.usage.limit === 'unlimited'
+                  ? t('Unlimited scans')
+                  : `${t('Scans this week')}: ${billing.usage.count} / ${billing.usage.limit}`}
+              </p>
+              <p className="text-sm tabular-nums text-muted-foreground">
+                {t('Bonus scans')}: {billing.extraScans}
+              </p>
+            </section>
+            <Separator />
+          </>
+        )}
 
         <section className="flex flex-col gap-3">
           <div className="flex flex-col gap-1.5">
@@ -186,6 +221,15 @@ export default function AccountPage() {
             <CreditCard aria-hidden />
             {t('Plans')}
           </Button>
+          <Button
+            type="button"
+            variant="outline"
+            className="min-h-11"
+            onClick={() => setFeedbackOpen(true)}
+          >
+            <MessageSquareHeart aria-hidden />
+            {t('Send feedback')}
+          </Button>
         </section>
 
         <Separator />
@@ -193,7 +237,7 @@ export default function AccountPage() {
         <section className="flex flex-col gap-3">
           <Button type="button" variant="outline" className="min-h-11" disabled={signingOut} onClick={handleSignOut}>
             {signingOut ? <Loader2 className="animate-spin" aria-hidden /> : <LogOut aria-hidden />}
-            {t('Sign-Out')}
+            {t('Sign out')}
           </Button>
           <Button type="button" variant="outline" className="min-h-11" nativeButton={false} render={<a href="/api/account/export" download />}>
             <Download aria-hidden />
@@ -211,6 +255,8 @@ export default function AccountPage() {
           </Button>
         </section>
       </div>
+
+      <FeedbackDialog open={feedbackOpen} onOpenChange={setFeedbackOpen} />
 
       <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
         <DialogContent>

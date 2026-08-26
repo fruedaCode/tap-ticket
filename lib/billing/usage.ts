@@ -69,6 +69,7 @@ export type BillingSnapshot = {
   stripeCustomerId: string | null
   subscriptionStatus: string | null
   currentPeriodEnd: Date | null
+  extraScans: number
   usage: WeeklyUsage
 }
 
@@ -79,7 +80,7 @@ export async function readBillingSnapshot(
 ): Promise<BillingSnapshot> {
   const { data } = await userSupabase
     .from('profiles')
-    .select('plan, stripe_customer_id, subscription_status, subscription_current_period_end')
+    .select('plan, stripe_customer_id, subscription_status, subscription_current_period_end, extra_scans')
     .eq('id', userId)
     .maybeSingle()
 
@@ -92,6 +93,7 @@ export async function readBillingSnapshot(
     currentPeriodEnd: data?.subscription_current_period_end
       ? new Date(data.subscription_current_period_end as string)
       : null,
+    extraScans: (data?.extra_scans as number | undefined) ?? 0,
     usage,
   }
 }

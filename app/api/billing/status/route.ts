@@ -19,6 +19,7 @@ export async function GET() {
     currentPeriodEnd: snapshot.currentPeriodEnd?.toISOString() ?? null,
     hasCustomer: snapshot.stripeCustomerId !== null,
     billingEnabled: isStripeConfigured(),
+    extraScans: snapshot.extraScans,
     usage: {
       count: snapshot.usage.count,
       limit: snapshot.usage.limit === 'unlimited' ? 'unlimited' : snapshot.usage.limit,

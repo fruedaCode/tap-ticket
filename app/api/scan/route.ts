@@ -18,12 +18,16 @@ function shareToken(): string {
 // roll back a half-finished scan: the storage remove must come FIRST — the delete policy is
 // owner-only via is_ticket_owner(name::uuid), which goes false once the ticket row is gone;
 // the tickets delete then cascades members/items (owner delete policy passes for the caller)
-async function cleanupFailedScan(supabase: Awaited<ReturnType<typeof createClient>>, ticketId: string) {
+async function cleanupFailedScan(supabase: Awaited<ReturnType<typeof createClient>>, ticketId: string, refundCredit = false) {
   log.warn('rolling back failed scan', { ticketId })
   const { error: storageError } = await supabase.storage.from('ticket-images').remove([ticketId])
   if (storageError) log.error('rollback: storage remove failed', { ticketId, error: storageError.message })
   const { error: deleteError } = await supabase.from('tickets').delete().eq('id', ticketId) // cascades members/items
   if (deleteError) log.error('rollback: ticket delete failed', { ticketId, error: deleteError.message })
+  if (refundCredit) {
+    const { error: refundError } = await supabase.rpc('refund_extra_scan')
+    if (refundError) log.error('rollback: credit refund failed', { ticketId, error: refundError.message })
+  }
 }
 
 export async function POST(request: Request) {
@@ -36,13 +40,7 @@ export async function POST(request: Request) {
   // Checked before any work so hitting the cap costs no AI call or DB writes.
   const plan = await readBillingPlan(user.id)
   const usage = await getWeeklyUsage(user.id, plan)
-  if (usage.limit !== 'unlimited' && usage.remaining <= 0) {
-    log.info('scan limit reached', { userId: user.id, plan, used: usage.count })
-    return NextResponse.json(
-      { error: 'scan_limit_reached', plan, limit: usage.limit, used: usage.count },
-      { status: 402 },
-    )
-  }
+  const overQuota = usage.limit !== 'unlimited' && usage.remaining <= 0
 
   const form = await request.formData()
   const file = form.get('image')
@@ -64,6 +62,24 @@ export async function POST(request: Request) {
     tripId = tripIdField
   }
 
+  // Over the weekly quota: fall back to one-time credits earned via feedback
+  // rewards. Consumed only after input validation so bad requests never burn a
+  // credit; consume_extra_scan decrements atomically, and every failure path
+  // below refunds the credit via cleanupFailedScan.
+  let creditConsumed = false
+  if (overQuota) {
+    const { data: consumed } = await supabase.rpc('consume_extra_scan')
+    if (!consumed) {
+      log.info('scan limit reached', { userId: user.id, plan, used: usage.count })
+      return NextResponse.json(
+        { error: 'scan_limit_reached', plan, limit: usage.limit, used: usage.count },
+        { status: 402 },
+      )
+    }
+    creditConsumed = true
+    log.info('extra scan credit consumed', { userId: user.id })
+  }
+
   log.info('scan started', { userId: user.id, bytes: file.size, type: file.type })
   const buffer = Buffer.from(await file.arrayBuffer())
 
@@ -74,6 +90,7 @@ export async function POST(request: Request) {
     .insert({ id: ticketId, owner_id: user.id, share_token: shareToken(), img_path: '', restaurant: {}, invoice: {}, totals: {}, trip_id: tripId })
   if (ticketError) {
     log.error('ticket insert failed', { ticketId, error: ticketError.message })
+    if (creditConsumed) await supabase.rpc('refund_extra_scan')
     return NextResponse.json({ error: ticketError.message }, { status: 500 })
   }
   log.debug('ticket row created', { ticketId })
@@ -84,7 +101,7 @@ export async function POST(request: Request) {
     .insert({ ticket_id: ticketId, user_id: user.id, role: 'owner', seen: false })
   if (memberError) {
     log.error('owner membership insert failed', { ticketId, error: memberError.message })
-    await cleanupFailedScan(supabase, ticketId)
+    await cleanupFailedScan(supabase, ticketId, creditConsumed)
     return NextResponse.json({ error: memberError.message }, { status: 500 })
   }
 
@@ -95,7 +112,7 @@ export async function POST(request: Request) {
     .upload(imgPath, buffer, { contentType: file.type })
   if (uploadError) {
     log.error('image upload failed', { ticketId, error: uploadError.message })
-    await cleanupFailedScan(supabase, ticketId)
+    await cleanupFailedScan(supabase, ticketId, creditConsumed)
     return NextResponse.json({ error: uploadError.message }, { status: 500 })
   }
   log.debug('image uploaded', { ticketId, bytes: file.size })
@@ -107,7 +124,7 @@ export async function POST(request: Request) {
     inferred = await getScanner().scan({ base64: buffer.toString('base64'), mediaType: file.type as 'image/jpeg' | 'image/png' | 'image/webp' })
   } catch (e) {
     log.error('AI scan failed', { ticketId, ms: Date.now() - aiStartedAt, error: String(e) })
-    await cleanupFailedScan(supabase, ticketId)
+    await cleanupFailedScan(supabase, ticketId, creditConsumed)
     return NextResponse.json({ error: `scan failed: ${e}` }, { status: 502 })
   }
   log.debug('AI scan ok', { ticketId, ms: Date.now() - aiStartedAt, items: inferred.items.length })
@@ -119,7 +136,7 @@ export async function POST(request: Request) {
     .eq('id', ticketId)
   if (updateError) {
     log.error('ticket update failed', { ticketId, error: updateError.message })
-    await cleanupFailedScan(supabase, ticketId)
+    await cleanupFailedScan(supabase, ticketId, creditConsumed)
     return NextResponse.json({ error: updateError.message }, { status: 500 })
   }
 
@@ -139,7 +156,7 @@ export async function POST(request: Request) {
     .select('id')
   if (itemsError || !items) {
     log.error('items insert failed', { ticketId, error: itemsError?.message ?? 'no rows returned' })
-    await cleanupFailedScan(supabase, ticketId)
+    await cleanupFailedScan(supabase, ticketId, creditConsumed)
     return NextResponse.json({ error: itemsError?.message ?? 'items failed' }, { status: 500 })
   }
 
@@ -148,7 +165,7 @@ export async function POST(request: Request) {
     .insert(items.map((it) => ({ item_id: it.id, user_id: user.id, payment_type: 'unit', amount: 0 })))
   if (assignError) {
     log.error('assignments insert failed', { ticketId, error: assignError.message })
-    await cleanupFailedScan(supabase, ticketId)
+    await cleanupFailedScan(supabase, ticketId, creditConsumed)
     return NextResponse.json({ error: assignError.message }, { status: 500 })
   }
 

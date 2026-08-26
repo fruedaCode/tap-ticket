@@ -28,6 +28,7 @@ type BillingStatus = {
   currentPeriodEnd: string | null
   hasCustomer: boolean
   billingEnabled: boolean
+  extraScans: number
   usage: { count: number; limit: number | 'unlimited'; remaining: number | 'unlimited' }
 }
 
@@ -228,6 +229,11 @@ function PlansContent() {
                       ? t('Unlimited scans')
                       : `${t('Scans this week')}: ${status.usage.count} / ${status.usage.limit}`}
                   </p>
+                  {status.extraScans > 0 && (
+                    <p className="text-sm text-muted-foreground">
+                      {t('Bonus scans')}: {status.extraScans}
+                    </p>
+                  )}
                   {status.currentPeriodEnd && status.subscriptionStatus === 'active' && (
                     <p className="text-sm text-muted-foreground">
                       {t('Renews on')}: {new Date(status.currentPeriodEnd).toLocaleDateString(lang)}
