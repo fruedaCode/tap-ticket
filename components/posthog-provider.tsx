@@ -139,7 +139,12 @@ function IdentityTracker() {
   const lastIdentifiedRef = useRef<string | null>(null)
 
   useEffect(() => {
-    if (consent !== 'accepted') return
+    if (consent !== 'accepted') {
+      // a rejection wiped PostHog's stored identity, so the dedupe below must
+      // not survive it — re-accepting consent has to identify again
+      lastIdentifiedRef.current = null
+      return
+    }
     const supabase = createClient()
 
     const syncIdentity = (user: { id: string; email?: string } | null) => {
