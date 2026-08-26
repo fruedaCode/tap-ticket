@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>tapticket</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f4f4f5;font-family:Inter,'Geist',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;">
+  {{ $locale := index .Data "locale" }}
+  {{ $heading := "Te han invitado a tapticket" }}
+  {{ $intro := "Alguien te ha invitado a compartir un ticket en tapticket. Haz clic en el botón para crear tu cuenta y unirte. El enlace caduca pronto y solo se puede utilizar una vez." }}
+  {{ $button := "Aceptar invitación" }}
+  {{ $fallback := "Si el botón no funciona, copia y pega esta URL en tu navegador:" }}
+  {{ $ignore := "Si no esperabas esta invitación, puedes ignorar este correo." }}
+  {{ if eq $locale "ca" }}
+    {{ $heading = "T'han convidat a tapticket" }}
+    {{ $intro = "Algú t'ha convidat a compartir un tiquet a tapticket. Fes clic al botó per crear el teu compte i unir-t'hi. L'enllaç caduca aviat i només es pot utilitzar una vegada." }}
+    {{ $button = "Accepta la invitació" }}
+    {{ $fallback = "Si el botó no funciona, copia i enganxa aquesta URL al navegador:" }}
+    {{ $ignore = "Si no esperaves aquesta invitació, pots ignorar aquest correu." }}
+  {{ else if eq $locale "en" }}
+    {{ $heading = "You've been invited to tapticket" }}
+    {{ $intro = "Someone invited you to share a ticket on tapticket. Click the button below to create your account and join. This link expires shortly and can only be used once." }}
+    {{ $button = "Accept invitation" }}
+    {{ $fallback = "If the button doesn't work, copy and paste this URL into your browser:" }}
+    {{ $ignore = "If you weren't expecting this invitation, you can safely ignore this email." }}
+  {{ end }}
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f4f5;">
+    <tr>
+      <td align="center" style="padding:40px 16px;">
+        <table role="presentation" width="480" cellpadding="0" cellspacing="0" style="max-width:480px;width:100%;background-color:#ffffff;border-radius:12px;border:1px solid #e4e4e7;">
+          <tr>
+            <td align="center" style="padding:32px 32px 0 32px;">
+              <p style="margin:0;font-size:28px;font-weight:700;letter-spacing:-1px;color:#450A0A;">tap<span style="color:#DC2626;">ticket</span></p>
+              <p style="margin:4px 0 0 0;font-size:11px;letter-spacing:2px;color:#71717a;">EASY SHARING</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:32px;">
+              <h1 style="margin:0 0 12px 0;font-size:20px;font-weight:600;color:#18181b;">{{ $heading }}</h1>
+              <p style="margin:0 0 24px 0;font-size:14px;line-height:1.6;color:#3f3f46;">{{ $intro }}</p>
+              <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 24px 0;">
+                <tr>
+                  <td align="center" style="border-radius:8px;background-color:#DC2626;">
+                    <a href="{{ .ConfirmationURL }}" target="_blank" style="display:inline-block;padding:14px 32px;font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;border-radius:8px;">{{ $button }}</a>
+                  </td>
+                </tr>
+              </table>
+              <p style="margin:0 0 8px 0;font-size:12px;line-height:1.6;color:#71717a;">{{ $fallback }}</p>
+              <p style="margin:0 0 24px 0;font-size:12px;line-height:1.6;word-break:break-all;"><a href="{{ .ConfirmationURL }}" style="color:#DC2626;">{{ .ConfirmationURL }}</a></p>
+              <p style="margin:0;font-size:12px;line-height:1.6;color:#a1a1aa;">{{ $ignore }}</p>
+            </td>
+          </tr>
+        </table>
+        <p style="margin:24px 0 0 0;font-size:12px;color:#a1a1aa;">tapticket &middot; easy sharing</p>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

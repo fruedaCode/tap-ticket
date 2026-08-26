@@ -1,8 +1,9 @@
 # Supabase Auth email templates
 
 Branded, localized email templates for Supabase Auth. The app signs users in
-with a magic link (`signInWithOtp` in `app/login/page.tsx`), so only the
-**Magic Link** template is in use today.
+with a magic link (`signInWithOtp` in `app/login/page.tsx`) and invites
+unregistered emails (`inviteUserByEmail` in `app/api/members/route.ts`), so the
+**Magic Link** and **Invite user** templates are in use.
 
 ## How localization works
 
@@ -35,6 +36,18 @@ dashboard:
 
 4. Replace the body with the contents of `magic-link.html` and save.
 5. Send yourself a magic link to verify the rendering in a real inbox.
+
+For the **Invite user** template (sent when someone tags an unregistered email):
+
+1. Select the **Invite user** template in the same dashboard section.
+2. Set the subject to:
+
+   ```
+   {{ $locale := index .Data "locale" }}{{ if eq $locale "ca" }}T'han convidat a tapticket{{ else if eq $locale "en" }}You've been invited to tapticket{{ else }}Te han invitado a tapticket{{ end }}
+   ```
+
+3. Replace the body with the contents of `invite.html` and save.
+4. Tag an unregistered email on a ticket or trip to verify the flow end to end.
 
 ## Local development
 

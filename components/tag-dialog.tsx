@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useI18n } from '@/lib/i18n'
-import { addMemberByEmail, removeMember } from '@/lib/mutations'
+import { removeMember } from '@/lib/mutations'
 import { createClient } from '@/lib/supabase/client'
 import type { MemberWithProfile } from '@/lib/types'
 
@@ -24,15 +24,18 @@ export function TagDialog({ ticketId, members, className }: { ticketId: string; 
     if (!trimmed) return
     setBusy(true)
     try {
-      await addMemberByEmail(supabase, ticketId, trimmed)
+      // server decides: registered emails are added, unknown ones get an invite
+      const res = await fetch('/api/members', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ticketId, email: trimmed }),
+      })
+      if (!res.ok) throw new Error('add_failed')
+      const { invited } = (await res.json()) as { invited: boolean }
       setEmail('')
-      toast.success(t('Success'))
-    } catch (error) {
-      if (error instanceof Error && error.message.includes('user_not_found')) {
-        toast.error(t('User not found'))
-      } else {
-        toast.error(t('Could not add the participant. Check the email and try again.'))
-      }
+      toast.success(t(invited ? 'Invitation sent' : 'Success'))
+    } catch {
+      toast.error(t('Could not add the participant. Check the email and try again.'))
     } finally {
       setBusy(false)
     }

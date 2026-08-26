@@ -84,11 +84,6 @@ export async function joinTicket(supabase: SupabaseClient, ticketId: string, tok
   if (error) throw error
 }
 
-export async function addMemberByEmail(supabase: SupabaseClient, ticketId: string, email: string) {
-  const { error } = await supabase.rpc('add_member_by_email', { p_ticket_id: ticketId, p_email: email })
-  if (error) throw error
-}
-
 // ---- trips ----
 
 // creates the trip and its initial member set in one rpc; returns the new trip id
@@ -98,8 +93,8 @@ export async function createTrip(supabase: SupabaseClient, name: string, memberI
   return data as string
 }
 
-export async function addTripMemberByEmail(supabase: SupabaseClient, tripId: string, email: string) {
-  const { error } = await supabase.rpc('add_trip_member_by_email', { p_trip_id: tripId, p_email: email })
+export async function joinTrip(supabase: SupabaseClient, tripId: string, token: string) {
+  const { error } = await supabase.rpc('join_trip', { p_trip_id: tripId, p_token: token })
   if (error) throw error
 }
 

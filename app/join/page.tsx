@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
 import { useI18n } from '@/lib/i18n'
-import { joinTicket } from '@/lib/mutations'
+import { joinTicket, joinTrip } from '@/lib/mutations'
 import { createClient } from '@/lib/supabase/client'
 
 function JoinTicket() {
@@ -15,17 +15,17 @@ function JoinTicket() {
   const [invalid, setInvalid] = useState(false)
 
   const ticketId = searchParams.get('ticketId')
+  const tripId = searchParams.get('tripId')
   const token = searchParams.get('token')
 
   useEffect(() => {
-    if (!ticketId || !token) {
+    if (!token || (!ticketId && !tripId)) {
       setInvalid(true)
       return
     }
-    joinTicket(supabase, ticketId, token)
-      .then(() => router.replace(`/tickets/${ticketId}`))
-      .catch(() => setInvalid(true))
-  }, [supabase, ticketId, token, router])
+    const join = ticketId ? joinTicket(supabase, ticketId, token).then(() => router.replace(`/tickets/${ticketId}`)) : joinTrip(supabase, tripId!, token).then(() => router.replace(`/trips/${tripId}`))
+    join.catch(() => setInvalid(true))
+  }, [supabase, ticketId, tripId, token, router])
 
   return (
     <div className="flex min-h-dvh items-center justify-center bg-background" role="status" aria-live="polite">
@@ -34,7 +34,7 @@ function JoinTicket() {
       ) : (
         <div className="flex items-center gap-2 text-muted-foreground">
           <Loader2 className="size-5 animate-spin" aria-hidden="true" />
-          {t('Joining ticket')}
+          {ticketId ? t('Joining ticket') : t('Joining trip')}
         </div>
       )}
     </div>
