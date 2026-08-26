@@ -14,7 +14,12 @@ export async function GET(request: Request) {
   if (code) {
     const supabase = await createClient()
     const { error } = await supabase.auth.exchangeCodeForSession(code)
-    if (!error) return NextResponse.redirect(`${origin}${next}`)
+    if (error) return NextResponse.redirect(`${origin}/login?error=auth`)
+    return NextResponse.redirect(`${origin}${next}`)
   }
-  return NextResponse.redirect(`${origin}/login?error=auth`)
+  // invite links use the implicit flow: the session arrives in the URL fragment
+  // (#access_token=...), which never reaches the server. Forward to next — the
+  // browser inherits the fragment through the redirect and the client-side
+  // supabase picks the session up there.
+  return NextResponse.redirect(`${origin}${next}`)
 }

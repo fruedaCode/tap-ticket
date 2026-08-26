@@ -23,8 +23,27 @@ function JoinTicket() {
       setInvalid(true)
       return
     }
-    const join = ticketId ? joinTicket(supabase, ticketId, token).then(() => router.replace(`/tickets/${ticketId}`)) : joinTrip(supabase, tripId!, token).then(() => router.replace(`/trips/${tripId}`))
-    join.catch(() => setInvalid(true))
+    const run = async () => {
+      // getSession() awaits client init, which processes the #access_token
+      // fragment that invite links carry — without this the rpc races it
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
+      if (!session) {
+        // anonymous share-link visitor — sign in first, then come back
+        const here = `${window.location.pathname}${window.location.search}`
+        router.replace(`/login?next=${encodeURIComponent(here)}`)
+        return
+      }
+      try {
+        if (ticketId) await joinTicket(supabase, ticketId, token)
+        else await joinTrip(supabase, tripId!, token)
+        router.replace(ticketId ? `/tickets/${ticketId}` : `/trips/${tripId}`)
+      } catch {
+        setInvalid(true)
+      }
+    }
+    run()
   }, [supabase, ticketId, tripId, token, router])
 
   return (
