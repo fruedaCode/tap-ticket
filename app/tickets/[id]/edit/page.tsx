@@ -1,9 +1,11 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 import { Loader2, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
+import { BackButton } from '@/components/back-button'
 import { BottomNav } from '@/components/bottom-nav'
 import { Button } from '@/components/ui/button'
 import {
@@ -199,7 +201,10 @@ export default function TicketEditPage() {
 
   return (
     <div className="mx-auto w-full min-h-dvh max-w-md bg-background pb-24">
-      <div className="flex flex-col gap-6 px-4 pt-6">
+      <div className="px-2 pt-2">
+        <BackButton href={`/tickets/${id}`} />
+      </div>
+      <div className="flex flex-col gap-6 px-4 pt-4">
         <h1 className="text-2xl font-bold">{t('Edit')}</h1>
 
         <section className="flex flex-col gap-3">
@@ -450,10 +455,15 @@ export default function TicketEditPage() {
           </div>
         </section>
 
-        <Button type="button" disabled={saving} onClick={handleSave}>
-          {saving && <Loader2 className="animate-spin" aria-hidden />}
-          {t('Save')}
-        </Button>
+        <div className="flex gap-2">
+          <Button type="button" variant="outline" nativeButton={false} render={<Link href={`/tickets/${id}`} />}>
+            {t('Cancel')}
+          </Button>
+          <Button type="button" className="flex-1" disabled={saving} onClick={handleSave}>
+            {saving && <Loader2 className="animate-spin" aria-hidden />}
+            {t('Save')}
+          </Button>
+        </div>
 
         {isOwner && (
           <>

@@ -27,6 +27,7 @@ export type Ticket = {
   invoice: Invoice
   totals: Totals
   img_path: string
+  trip_id: string | null
   created_at: string
 }
 export type TicketItem = {
@@ -49,6 +50,14 @@ export type ItemAssignment = {
 }
 export type MemberRole = 'owner' | 'member'
 export type TicketMember = { ticket_id: string; user_id: string; role: MemberRole; seen: boolean }
+export type Trip = {
+  id: string
+  owner_id: string
+  name: string
+  created_at: string
+  updated_at: string
+}
+export type TripMember = { trip_id: string; user_id: string; role: MemberRole }
 export type SettlementStatus = 'pending' | 'confirmed' | 'rejected'
 export type Settlement = {
   id: string
@@ -68,4 +77,32 @@ export type TicketDetail = Ticket & {
   items: TicketItemWithAssignments[]
   members: MemberWithProfile[]
   settlements: Settlement[]
+}
+
+// ---- Trip view models (aggregation computed by lib/trips/overview.ts) ----
+export type TripMemberWithProfile = TripMember & { profile: MemberProfile }
+export type TripTicketStatus = 'complete' | 'partial' | 'open'
+export type TripTicketSummary = {
+  ticket: Ticket
+  // ISO date: parsed invoice.date with created_at fallback; null when neither parses
+  date: string | null
+  total: number
+  assigned: number
+  status: TripTicketStatus
+}
+export type TripMemberShare = {
+  member: TripMemberWithProfile
+  share: number
+  share_pct: number // fraction 0..1, like getTicketPaidPercentage
+}
+export type TripOverview = {
+  trip: Trip
+  total: number
+  assigned: number
+  unassigned: number
+  progress_pct: number // fraction 0..1
+  date_start: string | null // ISO; null when no ticket has a parseable date
+  date_end: string | null
+  members: TripMemberShare[] // every trip member, even with share 0
+  tickets: TripTicketSummary[] // sorted by date desc, undated tickets last
 }

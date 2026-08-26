@@ -89,6 +89,43 @@ export async function addMemberByEmail(supabase: SupabaseClient, ticketId: strin
   if (error) throw error
 }
 
+// ---- trips ----
+
+// creates the trip and its initial member set in one rpc; returns the new trip id
+export async function createTrip(supabase: SupabaseClient, name: string, memberIds: string[]): Promise<string> {
+  const { data, error } = await supabase.rpc('create_trip', { p_name: name, p_member_ids: memberIds })
+  if (error) throw error
+  return data as string
+}
+
+export async function addTripMemberByEmail(supabase: SupabaseClient, tripId: string, email: string) {
+  const { error } = await supabase.rpc('add_trip_member_by_email', { p_trip_id: tripId, p_email: email })
+  if (error) throw error
+}
+
+// leave (own row) or owner removes a member; their item assignments are kept
+export async function removeTripMember(supabase: SupabaseClient, tripId: string, userId: string) {
+  const { error } = await supabase.from('trip_members').delete().eq('trip_id', tripId).eq('user_id', userId)
+  if (error) throw error
+}
+
+export async function renameTrip(supabase: SupabaseClient, tripId: string, name: string) {
+  const { error } = await supabase.from('trips').update({ name, updated_at: new Date().toISOString() }).eq('id', tripId)
+  if (error) throw error
+}
+
+// owner only; tickets are detached (trip_id set null by the FK), not deleted
+export async function deleteTrip(supabase: SupabaseClient, tripId: string) {
+  const { error } = await supabase.from('trips').delete().eq('id', tripId)
+  if (error) throw error
+}
+
+// move a ticket into a trip (or detach with null); RLS only allows trips the actor belongs to
+export async function setTicketTrip(supabase: SupabaseClient, ticketId: string, tripId: string | null) {
+  const { error } = await supabase.from('tickets').update({ trip_id: tripId }).eq('id', ticketId)
+  if (error) throw error
+}
+
 const PROOF_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp'])
 const MAX_PROOF_BYTES = 10 * 1024 * 1024
 

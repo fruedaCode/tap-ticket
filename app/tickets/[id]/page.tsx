@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { Pencil, ReceiptText, TriangleAlert, Users } from 'lucide-react'
+import { BackButton } from '@/components/back-button'
 import { BottomNav } from '@/components/bottom-nav'
 import { GroupStatusBar } from '@/components/claim/group-status-bar'
 import { memberName } from '@/components/claim/participant-avatar'
@@ -15,6 +16,7 @@ import { ItemDialog } from '@/components/item-dialog'
 import { ShareButton } from '@/components/share-button'
 import { TagDialog } from '@/components/tag-dialog'
 import { TicketItems } from '@/components/ticket-items'
+import { TripPickerDialog } from '@/components/trip-picker-dialog'
 import { UsersCarousel } from '@/components/users-carousel'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
@@ -172,6 +174,10 @@ export default function TicketSummaryPage() {
         {announcement}
       </div>
 
+      <div className="px-2 pt-2">
+        <BackButton href={ticket.trip_id ? `/trips/${ticket.trip_id}` : '/tickets'} />
+      </div>
+
       {imgUrl && (
         <button
           type="button"
@@ -245,6 +251,7 @@ export default function TicketSummaryPage() {
         <div className="flex gap-2">
           <ShareButton ticket={ticket} className="min-h-11 flex-1" />
           <TagDialog ticketId={ticket.id} members={ticket.members} className="min-h-11 flex-1" />
+          <TripPickerDialog ticketId={ticket.id} tripId={ticket.trip_id} className="min-h-11 flex-1" />
           <Button type="button" variant="outline" className="min-h-11 flex-1" onClick={() => router.push(`/tickets/${id}/edit`)}>
             <Pencil aria-hidden />
             {t('Edit')}

@@ -50,6 +50,20 @@ export async function POST(request: Request) {
   if (!ALLOWED_TYPES.has(file.type)) return NextResponse.json({ error: 'unsupported type' }, { status: 415 })
   if (file.size > MAX_BYTES) return NextResponse.json({ error: 'image too large' }, { status: 413 })
 
+  // optional trip: scan directly into a trip — caller must be a member
+  const tripIdField = form.get('trip_id')
+  let tripId: string | null = null
+  if (typeof tripIdField === 'string' && tripIdField) {
+    const { data: membership } = await supabase
+      .from('trip_members')
+      .select('trip_id')
+      .eq('trip_id', tripIdField)
+      .eq('user_id', user.id)
+      .maybeSingle()
+    if (!membership) return NextResponse.json({ error: 'not_a_trip_member' }, { status: 403 })
+    tripId = tripIdField
+  }
+
   log.info('scan started', { userId: user.id, bytes: file.size, type: file.type })
   const buffer = Buffer.from(await file.arrayBuffer())
 
@@ -57,7 +71,7 @@ export async function POST(request: Request) {
   const ticketId = crypto.randomUUID()
   const { error: ticketError } = await supabase
     .from('tickets')
-    .insert({ id: ticketId, owner_id: user.id, share_token: shareToken(), img_path: '', restaurant: {}, invoice: {}, totals: {} })
+    .insert({ id: ticketId, owner_id: user.id, share_token: shareToken(), img_path: '', restaurant: {}, invoice: {}, totals: {}, trip_id: tripId })
   if (ticketError) {
     log.error('ticket insert failed', { ticketId, error: ticketError.message })
     return NextResponse.json({ error: ticketError.message }, { status: 500 })

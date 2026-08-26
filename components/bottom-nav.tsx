@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Camera, ReceiptText, User } from 'lucide-react'
+import { Camera, Plane, ReceiptText, User } from 'lucide-react'
 import { useI18n } from '@/lib/i18n'
 import { cn } from '@/lib/utils'
 
@@ -12,6 +12,7 @@ export function BottomNav({ className }: { className?: string }) {
 
   const tabs = [
     { href: '/tickets', label: t('My tickets'), icon: ReceiptText },
+    { href: '/trips', label: t('Trips'), icon: Plane },
     { href: '/scan', label: t('Import'), icon: Camera },
     { href: '/account', label: t('My account'), icon: User },
   ]

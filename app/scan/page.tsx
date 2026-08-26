@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { Suspense, useEffect, useRef, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Camera, ImagePlus, Loader2, ReceiptText, ScanLine, Sun } from 'lucide-react'
 import { toast } from 'sonner'
 import { BottomNav } from '@/components/bottom-nav'
@@ -10,8 +10,19 @@ import { Dialog, DialogContent, DialogFooter, DialogTitle } from '@/components/u
 import { useI18n } from '@/lib/i18n'
 
 export default function ScanPage() {
+  return (
+    <Suspense>
+      <ScanPageContent />
+    </Suspense>
+  )
+}
+
+function ScanPageContent() {
   const { t } = useI18n()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  // when set, the scanned ticket is attached to this trip and we return to it
+  const tripId = searchParams.get('tripId')
   const cameraInputRef = useRef<HTMLInputElement>(null)
   const galleryInputRef = useRef<HTMLInputElement>(null)
 
@@ -45,6 +56,7 @@ export default function ScanPage() {
     try {
       const formData = new FormData()
       formData.append('image', file)
+      if (tripId) formData.append('trip_id', tripId)
       const res = await fetch('/api/scan', { method: 'POST', body: formData })
       if (!res.ok) {
         const body = (await res.json().catch(() => null)) as { error?: string; limit?: number } | null
@@ -61,7 +73,7 @@ export default function ScanPage() {
       }
       const { ticketId } = (await res.json()) as { ticketId: string }
       toast.success(t('Successfully added'))
-      router.replace(`/tickets/${ticketId}`)
+      router.replace(tripId ? `/trips/${tripId}` : `/tickets/${ticketId}`)
     } catch {
       toast.error(t('Error translating ticket'))
       resetCapture()
