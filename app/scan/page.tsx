@@ -26,7 +26,7 @@ function ScanPageContent() {
   const tripId = searchParams.get('tripId')
   const cameraInputRef = useRef<HTMLInputElement>(null)
   const galleryInputRef = useRef<HTMLInputElement>(null)
-  const { openCamera, notifyFileSelected } = useCameraPermissionHint()
+  const { openCamera, notifyFileSelected } = useCameraPermissionHint({ probeOnMount: true })
 
   const [file, setFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
