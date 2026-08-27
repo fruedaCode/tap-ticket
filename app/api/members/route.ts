@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient as createServerClient } from '@/lib/supabase/server'
 import { getAdminSupabase } from '@/lib/supabase/admin'
+import { sendAddedToTicketPush } from '@/lib/push'
 
 // Add-or-invite: if the email is registered, add them as a member; otherwise
 // send a signup invitation whose link lands them on the ticket/trip.
@@ -25,8 +26,8 @@ export async function POST(request: Request) {
   // RLS ("tickets member read" / "trips member read") hides the row for
   // non-members, so a missing row is the membership check
   const { data: target } = isTicket
-    ? await supabase.from('tickets').select('share_token').eq('id', ticketId).maybeSingle()
-    : await supabase.from('trips').select('share_token').eq('id', tripId).maybeSingle()
+    ? await supabase.from('tickets').select('share_token, title').eq('id', ticketId).maybeSingle()
+    : await supabase.from('trips').select('share_token, title').eq('id', tripId).maybeSingle()
   if (!target) return NextResponse.json({ error: 'forbidden' }, { status: 403 })
 
   const admin = getAdminSupabase()
@@ -38,7 +39,19 @@ export async function POST(request: Request) {
     .ilike('email', email.replace(/[%_\\]/g, '\\$&'))
     .maybeSingle()
 
+  // A profile row alone doesn't mean "signed up": inviteUserByEmail creates
+  // the auth.users/profiles rows as soon as an invite is sent, so someone who
+  // was invited before but never signed in would otherwise be added silently.
+  // Treat them as unregistered and re-send the invitation email instead.
+  let signedUp = false
   if (profile) {
+    const {
+      data: { user: invitee },
+    } = await admin.auth.admin.getUserById(profile.id)
+    signedUp = !!invitee?.last_sign_in_at
+  }
+
+  if (profile && signedUp) {
     // already registered — add them directly; the rpc re-checks caller membership
     const { error } = isTicket
       ? await supabase.rpc('add_member_by_email', { p_ticket_id: ticketId, p_email: email })
@@ -47,6 +60,12 @@ export async function POST(request: Request) {
       console.error('members: failed to add member', error)
       return NextResponse.json({ error: 'add_failed' }, { status: 500 })
     }
+    // best-effort push notification; no-op when the member has no subscription
+    await sendAddedToTicketPush(admin, profile.id, {
+      kind: isTicket ? 'ticket' : 'trip',
+      id: isTicket ? ticketId : tripId,
+      title: target.title,
+    })
     return NextResponse.json({ ok: true, invited: false })
   }
 

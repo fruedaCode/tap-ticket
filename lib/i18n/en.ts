@@ -277,4 +277,12 @@ export const en: Record<string, string> = {
   'Bonus scans': 'Bonus scans',
   'Enjoying Tap Ticket?': 'Enjoying Tap Ticket?',
   'Dismiss': 'Dismiss',
+  'Enable notifications': 'Enable notifications',
+  'Get notified when you are added to a ticket or trip': 'Get notified when you are added to a ticket or trip',
+  'Could not enable notifications': 'Could not enable notifications',
+  'Could not update notifications. Try again.': 'Could not update notifications. Try again.',
+  'Notifications': 'Notifications',
+  'Turn notifications on': 'Turn notifications on',
+  'Turn notifications off': 'Turn notifications off',
+  'Notifications are blocked in your browser settings': 'Notifications are blocked in your browser settings',
 }

@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { CreditCard, Download, Loader2, LogOut, MessageSquareHeart, Trash2 } from 'lucide-react'
+import { CreditCard, Bell, BellOff, Download, Loader2, LogOut, MessageSquareHeart, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { BottomNav } from '@/components/bottom-nav'
 import { FeedbackDialog } from '@/components/feedback-dialog'
@@ -23,6 +23,7 @@ import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useI18n } from '@/lib/i18n'
+import { getPushState, isPushSupported, subscribeToPush, unsubscribeFromPush, type PushState } from '@/lib/push-client'
 import { createClient } from '@/lib/supabase/client'
 import type { PlanId } from '@/lib/billing/plans'
 
@@ -54,6 +55,8 @@ export default function AccountPage() {
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [feedbackOpen, setFeedbackOpen] = useState(false)
   const [billing, setBilling] = useState<BillingInfo | null>(null)
+  const [pushState, setPushState] = useState<PushState | null>(null)
+  const [pushBusy, setPushBusy] = useState(false)
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data: { user } }) => {
@@ -76,6 +79,11 @@ export default function AccountPage() {
       setDisplayName(name)
       setSavedName(name)
       if (billingRes?.ok) setBilling((await billingRes.json()) as BillingInfo)
+      if (isPushSupported()) {
+        getPushState()
+          .then(setPushState)
+          .catch(() => {})
+      }
       setLoading(false)
     })
   }, [supabase, router])
@@ -111,6 +119,22 @@ export default function AccountPage() {
     setSigningOut(true)
     await supabase.auth.signOut()
     router.replace('/login')
+  }
+
+  const handleTogglePush = async () => {
+    if (!pushState) return
+    setPushBusy(true)
+    try {
+      const ok = pushState.subscribed ? await unsubscribeFromPush() : await subscribeToPush()
+      if (!ok) {
+        toast.error(t('Could not update notifications. Try again.'))
+        return
+      }
+      setPushState(await getPushState())
+      toast.success(t('Success'))
+    } finally {
+      setPushBusy(false)
+    }
   }
 
   const handleDeleteAccount = async () => {
@@ -207,6 +231,36 @@ export default function AccountPage() {
           <Label htmlFor="language">{t('Language')}</Label>
           <LanguagePicker id="language" />
         </section>
+
+        {pushState && (
+          <>
+            <Separator />
+            <section className="flex flex-col gap-1.5">
+              <Label>{t('Notifications')}</Label>
+              <Button
+                type="button"
+                variant="outline"
+                className="min-h-11"
+                disabled={pushBusy || pushState.permission === 'denied'}
+                onClick={handleTogglePush}
+              >
+                {pushBusy ? (
+                  <Loader2 className="animate-spin" aria-hidden />
+                ) : pushState.subscribed ? (
+                  <BellOff aria-hidden />
+                ) : (
+                  <Bell aria-hidden />
+                )}
+                {pushState.subscribed ? t('Turn notifications off') : t('Turn notifications on')}
+              </Button>
+              {pushState.permission === 'denied' && (
+                <p className="text-xs text-muted-foreground">
+                  {t('Notifications are blocked in your browser settings')}
+                </p>
+              )}
+            </section>
+          </>
+        )}
 
         <Separator />
 

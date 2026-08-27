@@ -277,4 +277,12 @@ export const es: Record<string, string> = {
   'Bonus scans': 'Escaneos extra',
   'Enjoying Tap Ticket?': '¿Te gusta Tap Ticket?',
   'Dismiss': 'Descartar',
+  'Enable notifications': 'Activar notificaciones',
+  'Get notified when you are added to a ticket or trip': 'Recibe un aviso cuando te añadan a un ticket o viaje',
+  'Could not enable notifications': 'No se pudieron activar las notificaciones',
+  'Could not update notifications. Try again.': 'No se pudieron actualizar las notificaciones. Inténtalo de nuevo.',
+  'Notifications': 'Notificaciones',
+  'Turn notifications on': 'Activar notificaciones',
+  'Turn notifications off': 'Desactivar notificaciones',
+  'Notifications are blocked in your browser settings': 'Las notificaciones están bloqueadas en la configuración del navegador',
 }
