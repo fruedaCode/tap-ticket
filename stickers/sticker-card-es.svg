@@ -21,7 +21,7 @@
   </g>
   <text x="155.04" y="184.24" style="font-family:'GeistSticker','Geist',Inter,system-ui,sans-serif"
         font-size="62" font-weight="700" letter-spacing="-2.4" fill="#FFFFFF">tapticket</text>
-  <text x="80" y="330" style="font-family:'GeistSticker','Geist',Inter,system-ui,sans-serif" font-size="38" font-weight="500" fill="#FFFFFF">Escanea un ticket,</text>
+  <text x="80" y="330" style="font-family:'GeistSticker','Geist',Inter,system-ui,sans-serif" font-size="38" font-weight="500" fill="#FFFFFF">Escanea tu ticket,</text>
   <text x="80" y="378" style="font-family:'GeistSticker','Geist',Inter,system-ui,sans-serif" font-size="38" font-weight="700" fill="#FFFFFF">divide la cuenta</text>
   <text x="80" y="492" style="font-family:'GeistSticker','Geist',Inter,system-ui,sans-serif" font-size="30" font-weight="700" letter-spacing="1" fill="#FFFFFF" opacity="0.9">tapticket.es</text>
 </svg>

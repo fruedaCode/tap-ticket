@@ -32,8 +32,9 @@ Requires a built app once (the Geist font is read from `.next/static/media/`):
 
 ```sh
 npm run build        # or `next dev`, just to populate .next/static/media
-node stickers/tools/generate.mjs
-node stickers/tools/verify.mjs
+cd stickers/tools
+npm run generate
+npm run verify
 ```
 
 Edit `stickers/tools/generate.mjs` to change the copy, URL, sizes, or colors.

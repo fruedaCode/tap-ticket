@@ -27,9 +27,9 @@ const FONT_B64 = fs.readFileSync(FONT_PATH).toString('base64')
 const FONT_CSS = `@font-face{font-family:'GeistSticker';src:url(data:font/woff2;base64,${FONT_B64}) format('woff2');font-weight:100 900;font-style:normal;}`
 
 const LANGS = {
-  es: { line1: 'Escanea un ticket,', line2: 'divide la cuenta' },
-  ca: { line1: 'Escaneja un tiquet,', line2: 'divideix el compte' },
-  en: { line1: 'Scan a ticket,', line2: 'split the bill' },
+  es: { line1: 'Escanea tu ticket,', line2: 'divide la cuenta' },
+  ca: { line1: 'Escaneja el teu tiquet,', line2: 'divideix el compte' },
+  en: { line1: 'Scan your ticket,', line2: 'split the bill' },
 }
 
 // ---------------------------------------------------------------- QR matrix
