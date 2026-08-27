@@ -21,21 +21,30 @@ type Locale = 'en' | 'es' | 'ca'
 
 // The app's i18n lives client-side; push payloads are built server-side, so
 // keep a small mirror here keyed by the recipient's user_metadata.locale.
-const strings: Record<Locale, { ticketTitle: string; tripTitle: string; body: (title: string) => string }> = {
+const strings: Record<
+  Locale,
+  { title: (kind: 'ticket' | 'trip') => string; body: (kind: 'ticket' | 'trip', target: string) => string }
+> = {
   en: {
-    ticketTitle: 'New shared ticket',
-    tripTitle: 'New shared trip',
-    body: (title) => `You were added to “${title}”`,
+    title: (kind) => (kind === 'ticket' ? 'New shared ticket' : 'New shared trip'),
+    body: (kind, target) =>
+      target
+        ? `You were added to “${target}”`
+        : `You were added to a shared ${kind === 'ticket' ? 'ticket' : 'trip'}`,
   },
   es: {
-    ticketTitle: 'Nuevo ticket compartido',
-    tripTitle: 'Nuevo viaje compartido',
-    body: (title) => `Te han añadido a “${title}”`,
+    title: (kind) => (kind === 'ticket' ? 'Nuevo ticket compartido' : 'Nuevo viaje compartido'),
+    body: (kind, target) =>
+      target
+        ? `Te han añadido a “${target}”`
+        : `Te han añadido a ${kind === 'ticket' ? 'un ticket' : 'un viaje'} compartido`,
   },
   ca: {
-    ticketTitle: 'Nou tiquet compartit',
-    tripTitle: 'Nou viatge compartit',
-    body: (title) => `T’han afegit a “${title}”`,
+    title: (kind) => (kind === 'ticket' ? 'Nou tiquet compartit' : 'Nou viatge compartit'),
+    body: (kind, target) =>
+      target
+        ? `T’han afegit a “${target}”`
+        : `T’han afegit a ${kind === 'ticket' ? 'un tiquet' : 'un viatge'} compartit`,
   },
 }
 
@@ -70,8 +79,8 @@ export async function sendAddedToTicketPush(
 
     const s = strings[await recipientLocale(admin, userId)]
     const payload = JSON.stringify({
-      title: target.kind === 'ticket' ? s.ticketTitle : s.tripTitle,
-      body: s.body(target.title),
+      title: s.title(target.kind),
+      body: s.body(target.kind, target.title),
       url: target.kind === 'ticket' ? `/tickets/${target.id}` : `/trips/${target.id}`,
     })
 

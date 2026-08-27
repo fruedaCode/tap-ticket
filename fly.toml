@@ -10,6 +10,7 @@ primary_region = "cdg"
   NEXT_PUBLIC_SITE_URL = "https://tapticket.es"
   NEXT_PUBLIC_POSTHOG_KEY="phc_rDvqM3daUXqPkWFpfrH5njojea7avHK9fYG7Mv7yGzWq"
   NEXT_PUBLIC_POSTHOG_HOST="https://eu.i.posthog.com"
+  NEXT_PUBLIC_VAPID_PUBLIC_KEY="BIdP4X5IADSdylQhTssl9aCj68jfeQjxpi6fm4riHNNPaqp3omKvJ3m0_3PWs8RvECB7Qw7dOehsLJiBkrTAgOs"
 
 [http_service]
   internal_port = 3000

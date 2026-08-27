@@ -26,9 +26,13 @@ export async function POST(request: Request) {
   // RLS ("tickets member read" / "trips member read") hides the row for
   // non-members, so a missing row is the membership check
   const { data: target } = isTicket
-    ? await supabase.from('tickets').select('share_token, title').eq('id', ticketId).maybeSingle()
-    : await supabase.from('trips').select('share_token, title').eq('id', tripId).maybeSingle()
+    ? await supabase.from('tickets').select('share_token, restaurant').eq('id', ticketId).maybeSingle()
+    : await supabase.from('trips').select('share_token, name').eq('id', tripId).maybeSingle()
   if (!target) return NextResponse.json({ error: 'forbidden' }, { status: 403 })
+  // display name for the push payload: tickets carry it in restaurant.name
+  const targetTitle = isTicket
+    ? ((target as { restaurant?: { name?: string } | null }).restaurant?.name ?? '')
+    : ((target as { name?: string }).name ?? '')
 
   const admin = getAdminSupabase()
   // profiles is RLS-locked for the client (0006) — the lookup needs the service role.
@@ -64,7 +68,7 @@ export async function POST(request: Request) {
     await sendAddedToTicketPush(admin, profile.id, {
       kind: isTicket ? 'ticket' : 'trip',
       id: isTicket ? ticketId : tripId,
-      title: target.title,
+      title: targetTitle,
     })
     return NextResponse.json({ ok: true, invited: false })
   }
