@@ -33,6 +33,43 @@ self.addEventListener("activate", (event) => {
   );
 });
 
+self.addEventListener("push", (event) => {
+  let data = {};
+  try {
+    data = event.data ? event.data.json() : {};
+  } catch {
+    // fall through to the defaults below
+  }
+  const title = typeof data.title === "string" ? data.title : "TapTicket";
+  event.waitUntil(
+    self.registration.showNotification(title, {
+      body: typeof data.body === "string" ? data.body : "",
+      icon: "/icons/icon-192.png",
+      data: { url: typeof data.url === "string" ? data.url : "/tickets" },
+    }),
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const url = event.notification.data?.url || "/tickets";
+  event.waitUntil(
+    self.clients
+      .matchAll({ type: "window", includeUncontrolled: true })
+      .then((windowClients) => {
+        // focus an existing tab when possible instead of opening a new one
+        for (const client of windowClients) {
+          if (new URL(client.url).origin === self.location.origin) {
+            client.focus();
+            client.navigate(url);
+            return;
+          }
+        }
+        return self.clients.openWindow(url);
+      }),
+  );
+});
+
 self.addEventListener("fetch", (event) => {
   const { request } = event;
 

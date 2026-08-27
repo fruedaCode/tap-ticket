@@ -6,6 +6,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { Camera, Search } from 'lucide-react'
 import { BottomNav } from '@/components/bottom-nav'
 import { FeedbackPromptCard } from '@/components/feedback-prompt-card'
+import { PushPromptCard } from '@/components/push-prompt-card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -230,6 +231,7 @@ function TicketsPageContent() {
       ) : (
         <>
           <FeedbackPromptCard ownedTickets={rows.filter((row) => row.membership.role === 'owner').length} />
+          <PushPromptCard />
           {groups.length === 0 ? (
             <p className="px-4 pt-16 text-center text-muted-foreground">{t('No tickets match your filters')}</p>
           ) : (
