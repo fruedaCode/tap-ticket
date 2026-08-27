@@ -277,4 +277,6 @@ export const en: Record<string, string> = {
   'Bonus scans': 'Bonus scans',
   'Enjoying Tap Ticket?': 'Enjoying Tap Ticket?',
   'Dismiss': 'Dismiss',
+  'Camera not working?': 'Camera not working?',
+  'Allow camera access for Chrome in your iPhone Settings, or upload from your gallery instead.': 'Allow camera access for Chrome in your iPhone Settings, or upload from your gallery instead.',
 }

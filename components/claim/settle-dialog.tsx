@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { numberToCurrency } from '@/lib/currency'
+import { useCameraPermissionHint } from '@/lib/hooks/useCameraPermissionHint'
 import { useI18n } from '@/lib/i18n'
 import { createSettlement, uploadSettlementProof } from '@/lib/mutations'
 import { getActivePaid, getOutstanding, type UserBill } from '@/lib/split'
@@ -57,6 +58,7 @@ function SettleBody({
   const { lang, t } = useI18n()
   const [supabase] = useState(createClient)
   const inputRef = useRef<HTMLInputElement>(null)
+  const { notifyCameraOpened, notifyFileSelected } = useCameraPermissionHint()
 
   // a submitted proof counts as paid; what's left is the share minus active settlements
   const alreadyPaid = getActivePaid(ticket.settlements, userId)
@@ -78,10 +80,13 @@ function SettleBody({
   const onFileSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0]
     if (!selected) return
+    notifyFileSelected()
     if (previewUrl) URL.revokeObjectURL(previewUrl)
     setFile(selected)
     setPreviewUrl(URL.createObjectURL(selected))
   }
+
+  const openPicker = () => { notifyCameraOpened(); inputRef.current?.click() }
 
   const handleMarkPaid = async () => {
     if (!file || !(remaining > 0)) return
@@ -140,7 +145,7 @@ function SettleBody({
                 onChange={onFileSelected}
               />
               {previewUrl ? (
-                <button type="button" className="block w-full" onClick={() => inputRef.current?.click()}>
+                <button type="button" className="block w-full" onClick={openPicker}>
                   {/* eslint-disable-next-line @next/next/no-img-element -- local object URL preview, not optimizable */}
                   <img
                     src={previewUrl}
@@ -152,7 +157,7 @@ function SettleBody({
                   />
                 </button>
               ) : (
-                <Button type="button" variant="outline" className="min-h-11" onClick={() => inputRef.current?.click()}>
+                <Button type="button" variant="outline" className="min-h-11" onClick={openPicker}>
                   <Camera aria-hidden />
                   {t('Add proof photo')}
                 </Button>

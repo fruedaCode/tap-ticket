@@ -277,4 +277,6 @@ export const ca: Record<string, string> = {
   'Bonus scans': 'Escanejos extres',
   'Enjoying Tap Ticket?': 'T\'agrada Tap Ticket?',
   'Dismiss': 'Descarta',
+  'Camera not working?': 'La càmera no funciona?',
+  'Allow camera access for Chrome in your iPhone Settings, or upload from your gallery instead.': 'Permet l\'accés a la càmera per a Chrome a la Configuració del teu iPhone, o puja la foto des de la galeria.',
 }
