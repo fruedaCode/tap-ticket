@@ -7,6 +7,7 @@ import { toast } from 'sonner'
 import { BottomNav } from '@/components/bottom-nav'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogFooter, DialogTitle } from '@/components/ui/dialog'
+import { useCameraPermissionHint } from '@/lib/hooks/useCameraPermissionHint'
 import { useI18n } from '@/lib/i18n'
 
 export default function ScanPage() {
@@ -25,6 +26,7 @@ function ScanPageContent() {
   const tripId = searchParams.get('tripId')
   const cameraInputRef = useRef<HTMLInputElement>(null)
   const galleryInputRef = useRef<HTMLInputElement>(null)
+  const { openCamera, notifyFileSelected } = useCameraPermissionHint()
 
   const [file, setFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
@@ -46,6 +48,7 @@ function ScanPageContent() {
   const onFileSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0]
     if (!selected) return
+    notifyFileSelected()
     setFile(selected)
     setPreviewUrl(URL.createObjectURL(selected))
   }
@@ -105,7 +108,7 @@ function ScanPageContent() {
 
         <button
           type="button"
-          onClick={() => cameraInputRef.current?.click()}
+          onClick={() => openCamera(() => cameraInputRef.current?.click())}
           className="flex flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-muted-foreground/25 px-6 py-12 text-center hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:bg-muted/50"
         >
           <div className="flex size-16 items-center justify-center rounded-full bg-primary/10">

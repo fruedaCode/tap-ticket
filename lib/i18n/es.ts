@@ -285,4 +285,6 @@ export const es: Record<string, string> = {
   'Turn notifications on': 'Activar notificaciones',
   'Turn notifications off': 'Desactivar notificaciones',
   'Notifications are blocked in your browser settings': 'Las notificaciones están bloqueadas en la configuración del navegador',
+  'Camera not working?': '¿No funciona la cámara?',
+  'Allow camera access for Chrome in your iPhone Settings, or upload from your gallery instead.': 'Permite el acceso a la cámara para Chrome en los Ajustes de tu iPhone, o sube la foto desde tu galería.',
 }
