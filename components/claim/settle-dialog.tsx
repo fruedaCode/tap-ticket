@@ -58,7 +58,7 @@ function SettleBody({
   const { lang, t } = useI18n()
   const [supabase] = useState(createClient)
   const inputRef = useRef<HTMLInputElement>(null)
-  const { notifyCameraOpened, notifyFileSelected } = useCameraPermissionHint()
+  const { openCamera, notifyFileSelected } = useCameraPermissionHint()
 
   // a submitted proof counts as paid; what's left is the share minus active settlements
   const alreadyPaid = getActivePaid(ticket.settlements, userId)
@@ -86,7 +86,7 @@ function SettleBody({
     setPreviewUrl(URL.createObjectURL(selected))
   }
 
-  const openPicker = () => { notifyCameraOpened(); inputRef.current?.click() }
+  const openPicker = () => openCamera(() => inputRef.current?.click())
 
   const handleMarkPaid = async () => {
     if (!file || !(remaining > 0)) return

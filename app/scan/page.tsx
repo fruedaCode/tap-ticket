@@ -26,7 +26,7 @@ function ScanPageContent() {
   const tripId = searchParams.get('tripId')
   const cameraInputRef = useRef<HTMLInputElement>(null)
   const galleryInputRef = useRef<HTMLInputElement>(null)
-  const { notifyCameraOpened, notifyFileSelected } = useCameraPermissionHint()
+  const { openCamera, notifyFileSelected } = useCameraPermissionHint()
 
   const [file, setFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
@@ -108,7 +108,7 @@ function ScanPageContent() {
 
         <button
           type="button"
-          onClick={() => { notifyCameraOpened(); cameraInputRef.current?.click() }}
+          onClick={() => openCamera(() => cameraInputRef.current?.click())}
           className="flex flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-muted-foreground/25 px-6 py-12 text-center hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:bg-muted/50"
         >
           <div className="flex size-16 items-center justify-center rounded-full bg-primary/10">
