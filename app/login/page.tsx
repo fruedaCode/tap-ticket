@@ -39,7 +39,12 @@ function LoginForm() {
   const { t, lang } = useI18n()
   const searchParams = useSearchParams()
   const next = searchParams.get('next') ?? '/tickets'
-  const safeNext = next.startsWith('/') && !next.startsWith('//') ? next : '/tickets'
+  // '/\evil.com' passes a startsWith('/') check but browsers normalize the
+  // backslash to '//evil.com' on navigation — reject backslashes too.
+  const safeNext =
+    next.startsWith('/') && !next.startsWith('//') && !next.includes('\\')
+      ? next
+      : '/tickets'
   const error = searchParams.get('error')
 
   const [email, setEmail] = useState('')

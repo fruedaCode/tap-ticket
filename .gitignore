@@ -42,3 +42,6 @@ next-env.d.ts
 
 # sticker generator tooling
 stickers/tools/node_modules/
+
+# third-party skills library (cloned, not vendored)
+.agents/skills/anthropic-cybersecurity-skills/
