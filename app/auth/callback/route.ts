@@ -10,7 +10,12 @@ export async function GET(request: Request) {
   const origin = host ? `${proto}://${host}` : new URL(request.url).origin
   const code = searchParams.get('code')
   const rawNext = searchParams.get('next') ?? '/tickets'
-  const next = rawNext.startsWith('/') && !rawNext.startsWith('//') ? rawNext : '/tickets'
+  // '/\evil.com' passes a startsWith('/') check but browsers normalize the
+  // backslash to '//evil.com' on navigation — reject backslashes too.
+  const next =
+    rawNext.startsWith('/') && !rawNext.startsWith('//') && !rawNext.includes('\\')
+      ? rawNext
+      : '/tickets'
   if (code) {
     const supabase = await createClient()
     const { error } = await supabase.auth.exchangeCodeForSession(code)
