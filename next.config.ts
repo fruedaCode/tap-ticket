@@ -10,7 +10,8 @@ const contentSecurityPolicy = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' blob: data:",
+  // *.supabase.co hosts the signed ticket images in Storage
+  "img-src 'self' blob: data: https://*.supabase.co",
   "font-src 'self'",
   // Supabase (auth/rest/realtime) and PostHog (fallback if the /ingest
   // reverse proxy is bypassed; ui_host links point at these hosts too)
