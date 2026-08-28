@@ -1,16 +1,9 @@
-import type { ItemAssignment, Settlement, SettlementStatus, TicketItem } from '@/lib/types'
+import type { ItemAssignment, Settlement, TicketItem } from '@/lib/types'
 import type { UserBill } from './bill'
 import { getPercentagePaid, isItemPaid } from './paid'
 import { getFinalPrice } from './price'
 
 type PricedItem = Pick<TicketItem, 'quantity' | 'price' | 'discount_percentage' | 'discount_amount'>
-
-// sum of settlements a user has made with the given status
-export function getPaidByStatus(settlements: Settlement[], userId: string, status: SettlementStatus): number {
-  return settlements
-    .filter((s) => s.from_user === userId && s.status === status)
-    .reduce((sum, s) => sum + s.amount, 0)
-}
 
 // a submitted proof counts as paid: active = pending or confirmed (rejection reopens the debt)
 export function getActivePaid(settlements: Settlement[], userId: string): number {

@@ -158,8 +158,8 @@ export async function createSettlement(
   }
 }
 
-// another member confirms or rejects a claimed payment (RLS blocks the payer)
-export async function resolveSettlement(supabase: SupabaseClient, id: string, status: 'confirmed' | 'rejected') {
-  const { error } = await supabase.from('settlements').update({ status }).eq('id', id)
+// another member rejects (disputes) a claimed payment, reopening the debt (RLS blocks the payer)
+export async function rejectSettlement(supabase: SupabaseClient, id: string) {
+  const { error } = await supabase.from('settlements').update({ status: 'rejected' }).eq('id', id)
   if (error) throw error
 }

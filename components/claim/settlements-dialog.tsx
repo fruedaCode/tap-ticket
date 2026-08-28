@@ -8,12 +8,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { memberName } from '@/components/claim/participant-avatar'
 import { numberToCurrency } from '@/lib/currency'
 import { useI18n } from '@/lib/i18n'
-import { resolveSettlement } from '@/lib/mutations'
+import { rejectSettlement } from '@/lib/mutations'
 import { createClient } from '@/lib/supabase/client'
 import type { Settlement, TicketDetail } from '@/lib/types'
 
-// group-wide settlement history: every payment, its proof, and confirm/reject
-// for pending payments from other members
+// group-wide settlement history: every payment and its proof; any member other
+// than the payer may reject (dispute) a pending payment, which reopens the debt
 export function SettlementsDialog({
   ticket,
   userId,
@@ -39,9 +39,9 @@ export function SettlementsDialog({
   }
   const money = (n: number) => numberToCurrency(n, lang)
 
-  const handleResolve = async (id: string, status: 'confirmed' | 'rejected') => {
+  const handleReject = async (id: string) => {
     try {
-      await resolveSettlement(supabase, id, status)
+      await rejectSettlement(supabase, id)
     } catch {
       toast.error(t('Could not reject the payment. Try again.'))
     }
@@ -92,7 +92,7 @@ export function SettlementsDialog({
                           size="sm"
                           onClick={() => {
                             setConfirmingId(null)
-                            void handleResolve(s.id, 'rejected')
+                            void handleReject(s.id)
                           }}
                         >
                           {t('Confirm')}

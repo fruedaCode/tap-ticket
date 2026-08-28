@@ -164,20 +164,20 @@ export function ItemDialog({
           <Button
             type="button"
             variant={view === 'mine' ? 'default' : 'outline'}
-            size="icon"
-            aria-label={t('Mine')}
+            className="flex-1"
             onClick={() => setView('mine')}
           >
-            <User />
+            <User aria-hidden />
+            {t('Just me')}
           </Button>
           <Button
             type="button"
             variant={view === 'split' ? 'default' : 'outline'}
-            size="icon"
-            aria-label={t('Split')}
+            className="flex-1"
             onClick={() => setView('split')}
           >
-            <Users />
+            <Users aria-hidden />
+            {t('Share it')}
           </Button>
         </div>
 

@@ -167,6 +167,10 @@ export default function TicketSummaryPage() {
   const paidPct = getTicketPaidPercentage(ticket.items)
   const settledAmount = getSettledTotal(ticket.settlements)
   const coveredClaims = getCoveredClaims(ticket.items, ticket.settlements)
+  // first-time guidance: shown until the viewer claims any share of any item
+  const viewerHasClaims = ticket.items.some((i) =>
+    i.assignments.some((a) => a.user_id === userId && a.amount > 0),
+  )
 
   return (
     <div className="mx-auto w-full min-h-dvh max-w-md bg-background pb-56">
@@ -224,6 +228,11 @@ export default function TicketSummaryPage() {
           <p className="pb-2 text-xs text-muted-foreground">
             {t('Items extracted by AI — tap Edit to correct any mistake.')}
           </p>
+          {userId && !viewerHasClaims && ticket.items.length > 0 && (
+            <p className="mb-3 rounded-lg border bg-muted/50 p-3 text-sm">
+              {t('Tap an item to claim what you had — inside, use Split to share it with the group.')}
+            </p>
+          )}
           {ticket.items.length === 0 ? (
             <div className="flex flex-col items-center gap-3 rounded-xl border bg-card p-6 text-center">
               <div className="flex size-12 items-center justify-center rounded-full bg-muted">

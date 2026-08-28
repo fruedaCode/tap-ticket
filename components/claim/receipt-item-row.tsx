@@ -62,7 +62,7 @@ export function ReceiptItemRow({
       ? t('You')
       : claimantIds.length > 0
         ? otherClaimants.map((id) => nameById.get(id) ?? t('User')).join(', ')
-        : t('Tap to claim')
+        : t('Tap to choose your share')
   const ariaLabel = `${item.description}, ${numberToCurrency(amount, lang)}, ${stateLabel}`
 
   return (

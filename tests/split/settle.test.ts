@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest'
-import { getActivePaid, getCoveredClaims, getOutstanding, getPaidByStatus, getSettledItemIds, getSettledTotal } from '@/lib/split'
+import { getActivePaid, getCoveredClaims, getOutstanding, getSettledItemIds, getSettledTotal } from '@/lib/split'
 import type { ItemAssignment, Settlement } from '@/lib/types'
 
 function settlement(overrides: Partial<Settlement>): Settlement {
@@ -28,20 +28,6 @@ const item = (id: string, price: number, assignments: ItemAssignment[]) => ({
 })
 const claim = (itemId: string, userId: string, amount: number, payment_type: 'unit' | 'percentage' = 'unit'): ItemAssignment =>
   ({ id: `${itemId}-${userId}`, item_id: itemId, user_id: userId, payment_type, amount })
-
-it('sums settlements by from_user and status', () => {
-  const settlements = [
-    settlement({ id: 's1', amount: 5, status: 'confirmed' }),
-    settlement({ id: 's2', amount: 3, status: 'confirmed' }),
-    settlement({ id: 's3', amount: 4, status: 'pending' }),
-    settlement({ id: 's4', amount: 2, status: 'rejected' }),
-    settlement({ id: 's5', amount: 9, status: 'confirmed', from_user: 'u2' }),
-  ]
-  expect(getPaidByStatus(settlements, 'u1', 'confirmed')).toBe(8)
-  expect(getPaidByStatus(settlements, 'u1', 'pending')).toBe(4)
-  expect(getPaidByStatus(settlements, 'u1', 'rejected')).toBe(2)
-  expect(getPaidByStatus(settlements, 'u2', 'confirmed')).toBe(9)
-})
 
 it('active paid sums pending and confirmed, not rejected', () => {
   const settlements = [

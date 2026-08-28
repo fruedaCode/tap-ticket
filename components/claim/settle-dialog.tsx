@@ -107,6 +107,10 @@ function SettleBody({
 
   return (
     <>
+      <p className="rounded-lg border bg-muted/50 p-3 text-sm text-muted-foreground">
+        {t('No money moves in this app — pay your share however you like and attach the receipt as proof.')}
+      </p>
+
       <div className="flex flex-col gap-2 text-sm">
         <div className="flex justify-between">
           <span className="text-muted-foreground">{t('My part')}</span>
