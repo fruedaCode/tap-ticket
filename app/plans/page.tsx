@@ -20,6 +20,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { useI18n } from '@/lib/i18n'
 import { createClient } from '@/lib/supabase/client'
 import { PLAN_CATALOGUE, type PaidPlanId, type PlanId } from '@/lib/billing/plans'
+import { WITHDRAWAL_CONSENT_TEXT } from '@/lib/legal/withdrawal'
 import { cn } from '@/lib/utils'
 
 type BillingStatus = {
@@ -54,6 +55,10 @@ function PlansContent() {
   const [status, setStatus] = useState<BillingStatus | null>(null)
   const [pending, setPending] = useState<string | null>(null)
   const [cancelOpen, setCancelOpen] = useState(false)
+  // Withdrawal-right consent dialog (art. 102 TRLGDCU): which paid plan it
+  // was opened for, and whether the explicit checkbox is ticked.
+  const [consentPlan, setConsentPlan] = useState<PaidPlanId | null>(null)
+  const [consentChecked, setConsentChecked] = useState(false)
 
   useEffect(() => {
     const checkout = searchParams.get('checkout')
@@ -81,14 +86,15 @@ function PlansContent() {
   const formatPrice = (cents: number) =>
     new Intl.NumberFormat(lang, { style: 'currency', currency: 'EUR' }).format(cents / 100)
 
-  // Free -> paid: hosted Checkout (collects the payment method).
+  // Free -> paid: hosted Checkout (collects the payment method). Only reached
+  // from the consent dialog, so the withdrawal waiver is always sent.
   const startCheckout = async (plan: PaidPlanId) => {
     setPending(plan)
     try {
       const res = await fetch('/api/billing/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan }),
+        body: JSON.stringify({ plan, withdrawalConsent: true }),
       })
       if (!res.ok) throw new Error()
       const { url } = (await res.json()) as { url: string }
@@ -194,8 +200,18 @@ function PlansContent() {
         </Button>
       )
     }
+    // Free -> paid must pass through the withdrawal-waiver dialog: art. 102
+    // TRLGDCU requires express consent via an explicit checkbox, not just a
+    // button click.
     return (
-      <Button className="w-full" disabled={pending !== null} onClick={() => startCheckout(planId)}>
+      <Button
+        className="w-full"
+        disabled={pending !== null}
+        onClick={() => {
+          setConsentChecked(false)
+          setConsentPlan(planId as PaidPlanId)
+        }}
+      >
         {isPending && <Loader2 className="animate-spin" aria-hidden="true" />}
         {t('Upgrade')}
       </Button>
@@ -325,6 +341,56 @@ function PlansContent() {
             >
               {pending === 'cancel' && <Loader2 className="animate-spin" aria-hidden="true" />}
               {t('Cancel subscription')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={consentPlan !== null}
+        onOpenChange={(open: boolean) => {
+          if (!open) setConsentPlan(null)
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t('Immediate start of the service')}</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            {t(
+              'TapTicket is a digital service that starts as soon as you subscribe. Spanish consumer law requires your express request before we can begin.',
+            )}
+          </p>
+          <label className="flex items-start gap-3 text-sm">
+            <input
+              type="checkbox"
+              checked={consentChecked}
+              onChange={(e) => setConsentChecked(e.target.checked)}
+              className="mt-0.5 size-4 shrink-0 accent-primary"
+            />
+            {/* Exact formula required by art. 102 TRLGDCU — kept in Spanish on
+                purpose, do not translate or paraphrase. */}
+            <span>{WITHDRAWAL_CONSENT_TEXT}</span>
+          </label>
+          <p className="text-xs text-muted-foreground">
+            {t(
+              'This legal text is shown in Spanish, as required by Spanish consumer law (art. 102 TRLGDCU).',
+            )}
+          </p>
+          <DialogFooter>
+            <DialogClose render={<Button variant="outline" />}>{t('Cancel')}</DialogClose>
+            <Button
+              type="button"
+              disabled={!consentChecked || pending !== null}
+              onClick={() => {
+                if (!consentPlan) return
+                const plan = consentPlan
+                setConsentPlan(null)
+                void startCheckout(plan)
+              }}
+            >
+              {pending === consentPlan && <Loader2 className="animate-spin" aria-hidden="true" />}
+              {t('Continue to payment')}
             </Button>
           </DialogFooter>
         </DialogContent>

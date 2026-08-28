@@ -13,6 +13,14 @@ export const ca: LegalDocs = {
     body: (
       <>
         <p>
+          <strong>
+            TapTicket és un nom comercial operat per {COMPANY.name}, NIF {COMPANY.taxId}, en
+            qualitat de persona física. Aquesta activitat no constitueix una societat de
+            responsabilitat limitada. La relació contractual i el tractament de dades es fan
+            directament amb el titular.
+          </strong>
+        </p>
+        <p>
           Aquesta política explica quines dades personals recull TapTicket, per a què i què hi pots
           fer. Està redactada d&apos;acord amb el Reglament General de Protecció de Dades (RGPD) i la
           Llei Orgànica 3/2018 (LOPDGDD).
@@ -113,6 +121,11 @@ export const ca: LegalDocs = {
           </li>
         </ul>
         <p>
+          Podem actualitzar els nostres proveïdors de serveis. Els canvis significatius es
+          notificaran per correu electrònic o notificació a l&apos;aplicació amb almenys 15 dies
+          d&apos;antelació.
+        </p>
+        <p>
           No venem mai les teves dades ni les cedim amb finalitats publicitàries. Les persones amb qui
           comparteixes un tiquet veuen el teu nom visible, el teu avatar, els articles que has
           reclamat i el teu saldo en aquell tiquet; no veuen la teva adreça de correu electrònic.
@@ -172,7 +185,16 @@ export const ca: LegalDocs = {
           Española de Protección de Datos, C/ Jorge Juan 6, 28001 Madrid ({AEPD}).
         </p>
 
-        <h2>8. Intel·ligència artificial</h2>
+        <h2>8. Galetes i consentiment</h2>
+        <p>
+          Fem servir una plataforma de gestió de consentiments. Les galetes i els rastrejadors no
+          essencials (inclosa l&apos;analítica de PostHog) es bloquegen fins que donis el teu
+          consentiment explícit, que pots retirar en qualsevol moment des de la{' '}
+          <a href="/legal/cookies">política de galetes</a>. Rebutjar l&apos;analítica no limita cap
+          funció de l&apos;app.
+        </p>
+
+        <h2>9. Intel·ligència artificial</h2>
         <p>
           TapTicket fa servir un model de visió per IA per llegir la foto del teu tiquet i
           convertir-la en una llista d&apos;articles i preus. L&apos;extracció és automàtica i{' '}
@@ -182,10 +204,18 @@ export const ca: LegalDocs = {
           abans d&apos;enviar la foto, que la processarà una IA.
         </p>
 
-        <h2>9. Edat</h2>
+        <h2>10. Brenques de seguretat</h2>
+        <p>
+          En cas de violació de seguretat de dades personals susceptible de comportar un risc per
+          als teus drets, t&apos;ho notificarem a tu i a l&apos;AEPD sense dilació indeguda i, en
+          tot cas, en el termini de 72 hores des que n&apos;haguem tingut coneixement, d&apos;acord
+          amb els arts. 33 i 34 del RGPD.
+        </p>
+
+        <h2>11. Edat</h2>
         <p>TapTicket no s&apos;adreça a menors de 14 anys.</p>
 
-        <h2>10. Canvis</h2>
+        <h2>12. Canvis</h2>
         <p>
           Si modifiquem aquesta política n&apos;actualitzarem la data que apareix al principi de la
           pàgina i, en canvis rellevants, t&apos;avisarem dins de l&apos;app.
@@ -198,6 +228,15 @@ export const ca: LegalDocs = {
     title: 'Termes del servei',
     body: (
       <>
+        <p>
+          <strong>
+            TapTicket és un nom comercial operat per {COMPANY.name}, NIF {COMPANY.taxId}, en
+            qualitat de persona física. Aquesta activitat no constitueix una societat de
+            responsabilitat limitada. La relació contractual i el tractament de dades es fan
+            directament amb el titular.
+          </strong>
+        </p>
+
         <h2>1. Amb qui contractes</h2>
         <p>
           TapTicket està operat per {COMPANY.name}, NIF {COMPANY.taxId}, {COMPANY.address}, contacte{' '}
@@ -228,12 +267,37 @@ export const ca: LegalDocs = {
           l&apos;IVA quan correspongui.
         </p>
         <p>
-          En subscriure&apos;t demanes que la prestació comenci immediatament i reconeixes que perds el
-          dret de desistiment de 14 dies un cop el servei s&apos;ha prestat completament en aquell
-          període.
+          Si un pagament periòdic falla, l&apos;accés a les funcions de pagament se suspendrà després
+          d&apos;un període de gràcia de 3 dies. No es carregaran comissions addicionals pels
+          pagaments fallits.
         </p>
 
-        <h2>5. Ús acceptable</h2>
+        <h2>5. Dret de desistiment</h2>
+        <p>
+          Com a consumidor, disposes en principi d&apos;un dret de desistiment de 14 dies
+          d&apos;acord amb l&apos;article 102 del Text Refós de la Llei General per a la Defensa dels
+          Consumidors i Usuaris (TRLGDCU).
+        </p>
+        <p>
+          El dret de desistiment de 14 dies es perd únicament quan, durant el procés de pagament,
+          marques una casella específica amb la fórmula exacta exigida per l&apos;article 102 del
+          TRLGDCU. L&apos;acceptació d&apos;aquests termes, per si sola, <strong>no</strong>{' '}
+          constitueix renúncia al dret de desistiment.
+        </p>
+        <p>La casella que apareix en el moment del pagament conté aquest text exacte:</p>
+        <p>
+          <em>
+            «Solicito que la prestación del servicio comience de forma inmediata y renuncio
+            expresamente a mi derecho de desistimiento una vez el servicio se haya prestado por
+            completo en el periodo de suscripción contratado.»
+          </em>
+        </p>
+        <p>
+          Si no marques aquesta casella, conserves intacte el teu dret de desistiment durant 14
+          dies.
+        </p>
+
+        <h2>6. Ús acceptable</h2>
         <p>Et compromets a no:</p>
         <ul>
           <li>pujar imatges que no siguin un tiquet o un justificant de pagament;</li>
@@ -245,7 +309,7 @@ export const ca: LegalDocs = {
           <li>fer servir el servei per infringir la llei o de manera que el degradi per als altres.</li>
         </ul>
 
-        <h2>6. El teu contingut</h2>
+        <h2>7. El teu contingut</h2>
         <p>
           Els tiquets i les imatges que puges continuen sent teus. Ens concedeixes únicament el permís
           necessari per emmagatzemar-los i tractar-los perquè el servei funcioni —inclòs l&apos;enviament
@@ -253,7 +317,7 @@ export const ca: LegalDocs = {
           comparteixes el tiquet.
         </p>
 
-        <h2>7. Precisió de la IA: revisa el resultat</h2>
+        <h2>8. Precisió de la IA: revisa el resultat</h2>
         <p>
           L&apos;extracció d&apos;articles la fa automàticament un model d&apos;IA i{' '}
           <strong>pot contenir errors</strong>: preus equivocats, línies absents, quantitats mal
@@ -261,37 +325,54 @@ export const ca: LegalDocs = {
           responsable de revisar i corregir un tiquet abans de fiar-te&apos;n o compartir-lo, i
           TapTicket no respon dels diners liquidats a partir d&apos;un resultat no revisat.
         </p>
+        <p>
+          TapTicket no proporciona assessorament financer, comptable ni fiscal. Els totals extrets
+          tenen caràcter merament informatiu i s&apos;han de contrastar amb el tiquet original.
+        </p>
 
-        <h2>8. Disponibilitat</h2>
+        <h2>9. Disponibilitat</h2>
         <p>
           Treballem per mantenir TapTicket disponible, però no garantim un servei ininterromput. Les
           funcionalitats poden canviar i podem suspendre o discontinuar el servei, avisant-ne quan
           sigui raonable.
         </p>
 
-        <h2>9. Responsabilitat</h2>
+        <h2>10. Responsabilitat</h2>
         <p>
           En la mesura que ho permeti la llei, no responem de danys indirectes o conseqüencials ni de
-          pèrdues derivades del teu ús del servei. Res del que s&apos;hi disposa limita la
-          responsabilitat que no es pot limitar legalment, incloses el dol i la culpa greu, ni els
-          teus drets com a consumidor.
+          pèrdues derivades del teu ús del servei.
+        </p>
+        <p>
+          En qualsevol cas, la responsabilitat total acumulada no excedirà el total abonat per
+          l&apos;usuari en els 12 mesos anteriors a la reclamació, o de 100 € si no s&apos;ha fet cap
+          pagament. L&apos;anterior no afecta els drets del consumidor que no es puguin renunciar
+          legalment ni la responsabilitat per dol o culpa greu.
         </p>
 
-        <h2>10. Fi del contracte</h2>
+        <h2>11. Fi del contracte</h2>
         <p>
           Pots deixar de fer servir TapTicket i eliminar el teu compte quan vulguis des de la pantalla
           de Compte. Podem suspendre o tancar un compte que incompleixi aquests termes.
         </p>
-
-        <h2>11. Llei aplicable i controvèrsies</h2>
         <p>
-          Aquests termes es regeixen per la legislació espanyola. Si ets consumidor, pots demandar
-          davant els tribunals del teu lloc de residència i també pots acudir a la plataforma de
-          resolució de litigis en línia de la Comissió Europea a{' '}
-          <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noreferrer">
-            ec.europa.eu/consumers/odr
-          </a>
-          .
+          Si el servei es discontinua, podràs exportar les teves dades mitjançant la funció{' '}
+          <em>Baixa les meves dades</em> durant almenys 30 dies des de l&apos;avís. Transcorregut
+          aquest termini, les dades s&apos;eliminaran d&apos;acord amb la nostra política de
+          conservació.
+        </p>
+
+        <h2>12. Llei aplicable i controvèrsies</h2>
+        <p>Aquests termes es regeixen per la legislació espanyola.</p>
+        <p>
+          Abans d&apos;iniciar accions judicials, les parts es comprometen a intentar la resolució
+          del conflicte mitjançant mediació o arbitratge de consum (sistema arbitral de consum),
+          quan escaigui.
+        </p>
+        <p>
+          Si ets consumidor, pots demandar davant els tribunals del teu lloc de residència.
+          L&apos;antiga plataforma europea de resolució de litigis en línia (ODR) va deixar de
+          funcionar el 20 de juliol de 2025 (Reglament (UE) 2024/3228), de manera que la via
+          extrajudicial disponible és el sistema arbitral de consum de la teva comunitat autònoma.
         </p>
       </>
     ),
@@ -361,7 +442,8 @@ export const ca: LegalDocs = {
 
         <h2>Titular</h2>
         <ul>
-          <li>Denominació: {COMPANY.name}</li>
+          <li>Titular: {COMPANY.name} (persona física)</li>
+          <li>Nom comercial: {COMPANY.tradeName}</li>
           <li>NIF: {COMPANY.taxId}</li>
           <li>Domicili: {COMPANY.address}</li>
           <li>

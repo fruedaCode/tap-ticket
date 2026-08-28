@@ -13,6 +13,14 @@ export const es: LegalDocs = {
     body: (
       <>
         <p>
+          <strong>
+            TapTicket es un nombre comercial operado por {COMPANY.name}, NIF {COMPANY.taxId}, en
+            calidad de persona física. Esta actividad no constituye una sociedad de responsabilidad
+            limitada. La relación contractual y el tratamiento de datos se realizan directamente con
+            el titular.
+          </strong>
+        </p>
+        <p>
           Esta política explica qué datos personales recoge TapTicket, para qué y qué puedes hacer al
           respecto. Está redactada conforme al Reglamento General de Protección de Datos (RGPD) y a
           la Ley Orgánica 3/2018 (LOPDGDD).
@@ -110,6 +118,11 @@ export const es: LegalDocs = {
           </li>
         </ul>
         <p>
+          Podemos actualizar nuestros proveedores de servicios. Los cambios significativos se
+          notificarán por correo electrónico o notificación en la aplicación con al menos 15 días de
+          antelación.
+        </p>
+        <p>
           Nunca vendemos tus datos ni los cedemos con fines publicitarios. Las personas con las que
           compartes un ticket ven tu nombre visible, tu avatar, los artículos que has reclamado y tu
           saldo en ese ticket; no ven tu dirección de correo electrónico.
@@ -167,7 +180,16 @@ export const es: LegalDocs = {
           Protección de Datos, C/ Jorge Juan 6, 28001 Madrid ({AEPD}).
         </p>
 
-        <h2>8. Inteligencia artificial</h2>
+        <h2>8. Cookies y consentimiento</h2>
+        <p>
+          Utilizamos una plataforma de gestión de consentimientos. Las cookies y rastreadores no
+          esenciales (incluida la analítica de PostHog) se bloquean hasta que otorgues tu
+          consentimiento explícito, que puedes retirar en cualquier momento desde la{' '}
+          <a href="/legal/cookies">política de cookies</a>. Rechazar la analítica no limita ninguna
+          función de la app.
+        </p>
+
+        <h2>9. Inteligencia artificial</h2>
         <p>
           TapTicket usa un modelo de visión por IA para leer la foto de tu ticket y convertirla en una
           lista de artículos y precios. La extracción es automática y{' '}
@@ -177,10 +199,18 @@ export const es: LegalDocs = {
           avisamos, antes de enviar la foto, de que la procesará una IA.
         </p>
 
-        <h2>9. Edad</h2>
+        <h2>10. Brechas de seguridad</h2>
+        <p>
+          En caso de violación de seguridad de datos personales susceptible de entrañar un riesgo
+          para tus derechos, te lo notificaremos a ti y a la AEPD sin dilación indebida y, en todo
+          caso, en el plazo de 72 horas desde que tengamos conocimiento de ella, conforme a los arts.
+          33 y 34 del RGPD.
+        </p>
+
+        <h2>11. Edad</h2>
         <p>TapTicket no está dirigido a menores de 14 años.</p>
 
-        <h2>10. Cambios</h2>
+        <h2>12. Cambios</h2>
         <p>
           Si modificamos esta política actualizaremos la fecha que aparece al principio de la página
           y, en cambios relevantes, te avisaremos dentro de la app.
@@ -193,6 +223,15 @@ export const es: LegalDocs = {
     title: 'Términos del servicio',
     body: (
       <>
+        <p>
+          <strong>
+            TapTicket es un nombre comercial operado por {COMPANY.name}, NIF {COMPANY.taxId}, en
+            calidad de persona física. Esta actividad no constituye una sociedad de responsabilidad
+            limitada. La relación contractual y el tratamiento de datos se realizan directamente con
+            el titular.
+          </strong>
+        </p>
+
         <h2>1. Con quién contratas</h2>
         <p>
           TapTicket está operado por {COMPANY.name}, NIF {COMPANY.taxId}, {COMPANY.address}, contacto{' '}
@@ -223,12 +262,35 @@ export const es: LegalDocs = {
           IVA cuando corresponda.
         </p>
         <p>
-          Al suscribirte solicitas que la prestación comience de inmediato y reconoces que pierdes el
-          derecho de desistimiento de 14 días una vez el servicio se ha prestado por completo en ese
-          periodo.
+          Si un pago periódico fracasa, el acceso a las funciones de pago se suspenderá tras un
+          periodo de gracia de 3 días. No se cargarán comisiones adicionales por pagos fallidos.
         </p>
 
-        <h2>5. Uso aceptable</h2>
+        <h2>5. Derecho de desistimiento</h2>
+        <p>
+          Como consumidor, dispones en principio de un derecho de desistimiento de 14 días conforme
+          al artículo 102 del Texto Refundido de la Ley General para la Defensa de los Consumidores y
+          Usuarios (TRLGDCU).
+        </p>
+        <p>
+          El derecho de desistimiento de 14 días se pierde únicamente cuando, durante el proceso de
+          pago, marcas una casilla específica con la fórmula exacta exigida por el artículo 102 del
+          TRLGDCU. La aceptación de estos términos, por sí sola, <strong>no</strong> constituye
+          renuncia al derecho de desistimiento.
+        </p>
+        <p>La casilla que aparece en el momento del pago contiene este texto exacto:</p>
+        <p>
+          <em>
+            «Solicito que la prestación del servicio comience de forma inmediata y renuncio
+            expresamente a mi derecho de desistimiento una vez el servicio se haya prestado por
+            completo en el periodo de suscripción contratado.»
+          </em>
+        </p>
+        <p>
+          Si no marcas esa casilla, conservas intacto tu derecho de desistimiento durante 14 días.
+        </p>
+
+        <h2>6. Uso aceptable</h2>
         <p>Te comprometes a no:</p>
         <ul>
           <li>subir imágenes que no sean un ticket o un justificante de pago;</li>
@@ -240,7 +302,7 @@ export const es: LegalDocs = {
           <li>usar el servicio para infringir la ley o de forma que lo degrade para los demás.</li>
         </ul>
 
-        <h2>6. Tu contenido</h2>
+        <h2>7. Tu contenido</h2>
         <p>
           Los tickets e imágenes que subes siguen siendo tuyos. Nos concedes únicamente el permiso
           necesario para almacenarlos y tratarlos con el fin de que el servicio funcione —incluido el
@@ -248,7 +310,7 @@ export const es: LegalDocs = {
           las que compartes el ticket.
         </p>
 
-        <h2>7. Precisión de la IA: revisa el resultado</h2>
+        <h2>8. Precisión de la IA: revisa el resultado</h2>
         <p>
           La extracción de artículos la realiza automáticamente un modelo de IA y{' '}
           <strong>puede contener errores</strong>: precios equivocados, líneas ausentes, cantidades mal
@@ -256,37 +318,54 @@ export const es: LegalDocs = {
           responsable de revisar y corregir un ticket antes de fiarte de él o compartirlo, y TapTicket
           no responde del dinero liquidado sobre la base de un resultado no revisado.
         </p>
+        <p>
+          TapTicket no proporciona asesoramiento financiero, contable ni fiscal. Los totales
+          extraídos tienen carácter meramente informativo y deben contrastarse con el ticket
+          original.
+        </p>
 
-        <h2>8. Disponibilidad</h2>
+        <h2>9. Disponibilidad</h2>
         <p>
           Trabajamos para mantener TapTicket disponible, pero no garantizamos un servicio
           ininterrumpido. Las funcionalidades pueden cambiar y podemos suspender o discontinuar el
           servicio, avisando cuando sea razonable.
         </p>
 
-        <h2>9. Responsabilidad</h2>
+        <h2>10. Responsabilidad</h2>
         <p>
           En la medida en que lo permita la ley, no respondemos de daños indirectos o consecuenciales
-          ni de pérdidas derivadas de tu uso del servicio. Nada de lo aquí dispuesto limita la
-          responsabilidad que no puede limitarse legalmente, incluidas el dolo y la culpa grave, ni
-          tus derechos como consumidor.
+          ni de pérdidas derivadas de tu uso del servicio.
+        </p>
+        <p>
+          En cualquier caso, la responsabilidad total acumulada no excederá del total abonado por el
+          usuario en los 12 meses anteriores a la reclamación, o de 100 € si no se ha realizado
+          ningún pago. Lo anterior no afecta a los derechos del consumidor que no puedan renunciarse
+          legalmente ni a la responsabilidad por dolo o culpa grave.
         </p>
 
-        <h2>10. Fin del contrato</h2>
+        <h2>11. Fin del contrato</h2>
         <p>
           Puedes dejar de usar TapTicket y eliminar tu cuenta cuando quieras desde la pantalla de
           Cuenta. Podemos suspender o cerrar una cuenta que incumpla estos términos.
         </p>
-
-        <h2>11. Ley aplicable y controversias</h2>
         <p>
-          Estos términos se rigen por la legislación española. Si eres consumidor, puedes demandar
-          ante los tribunales de tu lugar de residencia y también puedes acudir a la plataforma de
-          resolución de litigios en línea de la Comisión Europea en{' '}
-          <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noreferrer">
-            ec.europa.eu/consumers/odr
-          </a>
-          .
+          Si el servicio se discontinúa, podrás exportar tus datos mediante la función{' '}
+          <em>Descargar mis datos</em> durante al menos 30 días desde el aviso. Transcurrido dicho
+          plazo, los datos se eliminarán conforme a nuestra política de conservación.
+        </p>
+
+        <h2>12. Ley aplicable y controversias</h2>
+        <p>Estos términos se rigen por la legislación española.</p>
+        <p>
+          Antes de iniciar acciones judiciales, las partes se comprometen a intentar la resolución
+          del conflicto mediante mediación o arbitraje de consumo (sistema arbitral de consumo),
+          cuando resulte de aplicación.
+        </p>
+        <p>
+          Si eres consumidor, puedes demandar ante los tribunales de tu lugar de residencia. La
+          antigua plataforma europea de resolución de litigios en línea (ODR) dejó de funcionar el 20
+          de julio de 2025 (Reglamento (UE) 2024/3228), por lo que la vía extrajudicial disponible es
+          el sistema arbitral de consumo de tu comunidad autónoma.
         </p>
       </>
     ),
@@ -355,7 +434,8 @@ export const es: LegalDocs = {
 
         <h2>Titular</h2>
         <ul>
-          <li>Denominación: {COMPANY.name}</li>
+          <li>Titular: {COMPANY.name} (persona física)</li>
+          <li>Nombre comercial: {COMPANY.tradeName}</li>
           <li>NIF: {COMPANY.taxId}</li>
           <li>Domicilio: {COMPANY.address}</li>
           <li>

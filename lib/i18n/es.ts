@@ -287,4 +287,8 @@ export const es: Record<string, string> = {
   'Notifications are blocked in your browser settings': 'Las notificaciones están bloqueadas en la configuración del navegador',
   'Camera not working?': '¿No funciona la cámara?',
   'Allow camera access for Chrome in your iPhone Settings, or upload from your gallery instead.': 'Permite el acceso a la cámara para Chrome en los Ajustes de tu iPhone, o sube la foto desde tu galería.',
+  'Immediate start of the service': 'Comienzo inmediato del servicio',
+  'TapTicket is a digital service that starts as soon as you subscribe. Spanish consumer law requires your express request before we can begin.': 'TapTicket es un servicio digital que comienza en cuanto te suscribes. La normativa española de consumo exige tu solicitud expresa antes de que podamos empezar.',
+  'This legal text is shown in Spanish, as required by Spanish consumer law (art. 102 TRLGDCU).': 'Este texto legal se muestra en español, conforme a la normativa española de consumo (art. 102 TRLGDCU).',
+  'Continue to payment': 'Continuar al pago',
 }

@@ -13,9 +13,16 @@ export const en: LegalDocs = {
     body: (
       <>
         <p>
+          <strong>
+            TapTicket is a trade name operated by {COMPANY.name}, NIF {COMPANY.taxId}, as a natural
+            person. This activity is not a limited liability company. The contractual relationship
+            and the processing of data are entered into directly with the operator.
+          </strong>
+        </p>
+        <p>
           This policy explains what personal data TapTicket collects, why, and what you can do about
-          it. It is written for the EU General Data Protection Regulation (GDPR) and Spanish
-          organic law 3/2018 (LOPDGDD).
+          it. It is written in accordance with the EU General Data Protection Regulation (GDPR) and
+          Spanish organic law 3/2018 (LOPDGDD).
         </p>
 
         <h2>1. Who is responsible for your data</h2>
@@ -105,6 +112,10 @@ export const en: LegalDocs = {
           </li>
         </ul>
         <p>
+          We may update our service providers. Significant changes will be notified by email or
+          in-app notification at least 15 days in advance.
+        </p>
+        <p>
           We never sell your data and never share it for advertising. People you share a ticket with
           can see your display name, your avatar, the items you claimed and your balance on that
           ticket — they cannot see your email address.
@@ -157,7 +168,15 @@ export const en: LegalDocs = {
           authority, Agencia Española de Protección de Datos, C/ Jorge Juan 6, 28001 Madrid ({AEPD}).
         </p>
 
-        <h2>8. Artificial intelligence</h2>
+        <h2>8. Cookies and consent</h2>
+        <p>
+          We use a consent management platform. Non-essential cookies and trackers (including
+          PostHog analytics) are blocked until you give your explicit consent, which you can
+          withdraw at any time from the <a href="/legal/cookies">cookie policy</a>. Rejecting
+          analytics does not limit any feature of the app.
+        </p>
+
+        <h2>9. Artificial intelligence</h2>
         <p>
           TapTicket uses an AI vision model to read your receipt photo and turn it into a list of
           items and prices. The extraction is automatic and <strong>can be wrong</strong>: you can
@@ -166,10 +185,17 @@ export const en: LegalDocs = {
           on the scan screen, before you send the photo, that AI will process it.
         </p>
 
-        <h2>9. Age</h2>
+        <h2>10. Security breaches</h2>
+        <p>
+          In the event of a personal data breach likely to result in a risk to your rights, we will
+          notify you and the AEPD without undue delay and, in any case, within 72 hours of becoming
+          aware of it, in accordance with articles 33 and 34 of the GDPR.
+        </p>
+
+        <h2>11. Age</h2>
         <p>TapTicket is not intended for people under 14 years of age.</p>
 
-        <h2>10. Changes</h2>
+        <h2>12. Changes</h2>
         <p>
           If we change this policy we will update the date shown at the top of this page and, for
           significant changes, tell you inside the app.
@@ -182,6 +208,14 @@ export const en: LegalDocs = {
     title: 'Terms of service',
     body: (
       <>
+        <p>
+          <strong>
+            TapTicket is a trade name operated by {COMPANY.name}, NIF {COMPANY.taxId}, as a natural
+            person. This activity is not a limited liability company. The contractual relationship
+            and the processing of data are entered into directly with the operator.
+          </strong>
+        </p>
+
         <h2>1. Who you are contracting with</h2>
         <p>
           TapTicket is operated by {COMPANY.name}, tax ID {COMPANY.taxId}, {COMPANY.address}, contact{' '}
@@ -210,12 +244,32 @@ export const en: LegalDocs = {
           not refund the remainder of a started period. Prices include VAT where applicable.
         </p>
         <p>
-          Because the service is supplied digitally and immediately, by subscribing you ask us to
-          start performance right away and acknowledge that you lose the 14-day right of withdrawal
-          once the service has been fully performed for that period.
+          If a recurring payment fails, access to paid features will be suspended after a 3-day
+          grace period. No additional fees will be charged for failed payments.
         </p>
 
-        <h2>5. Acceptable use</h2>
+        <h2>5. Right of withdrawal</h2>
+        <p>
+          As a consumer, you have in principle a 14-day right of withdrawal under article 102 of the
+          consolidated text of the Spanish General Law for the Defence of Consumers and Users
+          (TRLGDCU).
+        </p>
+        <p>
+          The 14-day right of withdrawal is lost only when, during checkout, you tick a specific box
+          with the exact wording required by article 102 of the TRLGDCU. Accepting these terms, on
+          its own, does <strong>not</strong> constitute a waiver of the right of withdrawal.
+        </p>
+        <p>The box shown at checkout contains this exact text:</p>
+        <p>
+          <em>
+            «Solicito que la prestación del servicio comience de forma inmediata y renuncio
+            expresamente a mi derecho de desistimiento una vez el servicio se haya prestado por
+            completo en el periodo de suscripción contratado.»
+          </em>
+        </p>
+        <p>If you do not tick that box, your right of withdrawal remains intact for 14 days.</p>
+
+        <h2>6. Acceptable use</h2>
         <p>You agree not to:</p>
         <ul>
           <li>upload images containing anything other than a receipt or a payment proof;</li>
@@ -224,14 +278,14 @@ export const en: LegalDocs = {
           <li>use the service to break the law, or in a way that degrades it for other people.</li>
         </ul>
 
-        <h2>6. Your content</h2>
+        <h2>7. Your content</h2>
         <p>
           The receipts and images you upload remain yours. You grant us only the permission needed to
           store and process them so the service can work — including sending the receipt photo to our
           AI provider — and to show them to the people you share a ticket with.
         </p>
 
-        <h2>7. AI accuracy — please check the result</h2>
+        <h2>8. AI accuracy — please check the result</h2>
         <p>
           Item extraction is performed automatically by an AI model and{' '}
           <strong>may contain errors</strong>: wrong prices, missing lines, misread quantities. The
@@ -239,36 +293,52 @@ export const en: LegalDocs = {
           responsible for reviewing and correcting a ticket before relying on it or sharing it, and
           TapTicket is not liable for money settled on the basis of an unchecked result.
         </p>
+        <p>
+          TapTicket does not provide financial, accounting or tax advice. The extracted totals are
+          for information only and should be checked against the original receipt.
+        </p>
 
-        <h2>8. Availability</h2>
+        <h2>9. Availability</h2>
         <p>
           We work to keep TapTicket available but do not guarantee uninterrupted service. Features may
           change, and we may suspend or discontinue the service, giving notice where reasonable.
         </p>
 
-        <h2>9. Liability</h2>
+        <h2>10. Liability</h2>
         <p>
           To the extent permitted by law, we are not liable for indirect or consequential damages, or
-          for loss arising from your use of the service. Nothing here limits liability that cannot be
-          limited by law, including liability for wilful misconduct or gross negligence, or your
-          statutory rights as a consumer.
+          for loss arising from your use of the service.
+        </p>
+        <p>
+          In any case, total aggregate liability will not exceed the total amount paid by the user in
+          the 12 months preceding the claim, or €100 if no payment has been made. The foregoing does
+          not affect consumer rights that cannot be legally waived, nor liability for wilful
+          misconduct or gross negligence.
         </p>
 
-        <h2>10. Ending the agreement</h2>
+        <h2>11. Ending the agreement</h2>
         <p>
           You can stop using TapTicket and delete your account at any time from the Account screen. We
           may suspend or close an account that breaches these terms.
         </p>
-
-        <h2>11. Governing law and disputes</h2>
         <p>
-          These terms are governed by Spanish law. If you are a consumer, you may bring proceedings in
-          the courts of your place of residence, and you can also use the European Commission&apos;s
-          online dispute resolution platform at{' '}
-          <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noreferrer">
-            ec.europa.eu/consumers/odr
-          </a>
-          .
+          If the service is discontinued, you will be able to export your data using the{' '}
+          <em>Download my data</em> feature for at least 30 days from the notice. After that period,
+          the data will be deleted in accordance with our retention policy.
+        </p>
+
+        <h2>12. Governing law and disputes</h2>
+        <p>These terms are governed by Spanish law.</p>
+        <p>
+          Before starting legal proceedings, the parties agree to attempt to resolve the dispute
+          through mediation or consumer arbitration (the consumer arbitration system), where
+          applicable.
+        </p>
+        <p>
+          If you are a consumer, you may bring proceedings in the courts of your place of residence.
+          The former European online dispute resolution (ODR) platform ceased operation on 20 July
+          2025 (Regulation (EU) 2024/3228), so the available out-of-court route is the consumer
+          arbitration system of your autonomous community.
         </p>
       </>
     ),
@@ -335,7 +405,8 @@ export const en: LegalDocs = {
 
         <h2>Operator</h2>
         <ul>
-          <li>Name: {COMPANY.name}</li>
+          <li>Operator: {COMPANY.name} (natural person)</li>
+          <li>Trade name: {COMPANY.tradeName}</li>
           <li>Tax ID: {COMPANY.taxId}</li>
           <li>Registered address: {COMPANY.address}</li>
           <li>

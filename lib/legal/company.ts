@@ -2,10 +2,16 @@
 // privacy policy, the terms and the LSSI-CE legal notice.
 //
 // TODO(legal): have the rendered pages reviewed by counsel before advertising.
+// LEGAL STATUS: operated by a natural person — unlimited personal liability
+// (art. 1911 CC). Form an SL before scaling beyond beta; no clause in the
+// terms changes that.
 // The pages print these values as-is, so a wrong value is visible rather than
 // silently missing — that is deliberate.
 export const COMPANY = {
-  name: 'TapTicket',
+  // Natural person (persona física / autónomo) — there is no company behind
+  // the trade name, and the legal pages must say so (LSSI-CE art. 10).
+  name: 'Fernando Rueda Oliva',
+  tradeName: 'TapTicket',
   taxId: '48327703B',
   address: 'C/Murcia 12, Barcelona 08027',
   // Registro Mercantil entry. LSSI-CE art. 10.1(b) only requires this for
@@ -17,4 +23,4 @@ export const COMPANY = {
 } as const
 
 // Shown as "last updated" on every legal page. Bump when the text changes.
-export const LAST_UPDATED = '2026-08-09'
+export const LAST_UPDATED = '2026-08-28'
