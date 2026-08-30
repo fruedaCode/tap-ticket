@@ -269,7 +269,7 @@ export default function TicketSummaryPage() {
       </div>
 
       {selectedItem && userId && (
-        <ItemDialog item={selectedItem} userId={userId} coveredClaims={coveredClaims} onClose={() => setSelectedItemId(null)} />
+        <ItemDialog item={selectedItem} userId={selected} coveredClaims={coveredClaims} onClose={() => setSelectedItemId(null)} />
       )}
 
       {userId && (

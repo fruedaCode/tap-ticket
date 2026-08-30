@@ -38,7 +38,6 @@ export function ReceiptItemRow({
   )
   const viewerPct = getPercentagePaid(item, item.assignments, viewerId)
   const viewerClaims = viewerPct > 0
-  const isShared = claimantIds.length > 1
   const userShare = finalPrice * viewerPct
 
   // partially claimed with unit granularity → "N of M left"
@@ -95,7 +94,7 @@ export function ReceiptItemRow({
                   <ClaimChip key={id} variant="other" label={nameById.get(id) ?? t('User')} />
                 ))}
                 {overflow > 0 && <ClaimChip variant="other" label={`+${overflow}`} />}
-                {isShared && <ClaimChip variant="shared" label={`${t('Split')} · ${claimantIds.length}`} />}
+                {item.split_among > 0 && <ClaimChip variant="shared" label={`${t('Split')} · ${item.split_among}`} />}
                 {showLeft && (
                   <ClaimChip variant="left" label={`${leftUnits} ${t('of')} ${item.quantity} ${t('left')}`} />
                 )}

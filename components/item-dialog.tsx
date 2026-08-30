@@ -168,7 +168,7 @@ export function ItemDialog({
             onClick={() => setView('mine')}
           >
             <User aria-hidden />
-            {t('Just me')}
+            {t(isSplit ? 'My part' : 'Just me')}
           </Button>
           <Button
             type="button"
@@ -180,6 +180,12 @@ export function ItemDialog({
             {t('Share it')}
           </Button>
         </div>
+
+        {isSplit && (
+          <p className="rounded-lg border bg-muted/50 p-3 text-sm">
+            {t('This item has been split in')} {item.split_among} {t('Parts')}
+          </p>
+        )}
 
         {view === 'mine' ? (
           <div className="flex flex-col gap-4">
@@ -205,11 +211,6 @@ export function ItemDialog({
           </div>
         ) : (
           <div className="flex flex-col gap-4">
-            {isSplit && (
-              <p className="rounded-lg border bg-muted/50 p-3 text-sm">
-                {t('This item has been split in')} {item.split_among} {t('Parts')}
-              </p>
-            )}
             <Stepper label={t('Divide among')} value={splitAmong} min={2} max={99} onChange={setSplitAmong} />
             {splitLocked && (
               <p className="text-[13px] text-muted-foreground">{t('Settled shares are locked')}</p>
