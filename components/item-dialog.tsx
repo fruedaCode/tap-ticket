@@ -24,12 +24,14 @@ function Stepper({
   min,
   max,
   onChange,
+  disabled = false,
 }: {
   label: string
   value: number
   min: number
   max: number
   onChange: (value: number) => void
+  disabled?: boolean
 }) {
   const { t } = useI18n()
   return (
@@ -41,7 +43,7 @@ function Stepper({
           variant="outline"
           size="icon"
           aria-label={t('Decrease quantity')}
-          disabled={value <= min}
+          disabled={disabled || value <= min}
           onClick={() => onChange(Math.max(min, value - 1))}
         >
           <Minus />
@@ -52,7 +54,7 @@ function Stepper({
           variant="outline"
           size="icon"
           aria-label={t('Increase quantity')}
-          disabled={value >= max}
+          disabled={disabled || value >= max}
           onClick={() => onChange(Math.min(max, value + 1))}
         >
           <Plus />
@@ -211,7 +213,7 @@ export function ItemDialog({
           </div>
         ) : (
           <div className="flex flex-col gap-4">
-            <Stepper label={t('Divide among')} value={splitAmong} min={2} max={99} onChange={setSplitAmong} />
+            <Stepper label={t('Divide among')} value={splitAmong} min={2} max={99} onChange={setSplitAmong} disabled={splitLocked} />
             {splitLocked && (
               <p className="text-[13px] text-muted-foreground">{t('Settled shares are locked')}</p>
             )}

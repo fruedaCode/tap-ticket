@@ -17,17 +17,26 @@ export async function setItemAmount(
 
 // split item evenly among N; selected user takes 1/N, rest 0 (RN handleSplitItem)
 export async function splitItem(supabase: SupabaseClient, item: TicketItemWithAssignments, n: number, userId: string) {
-  const { error } = await supabase.from('ticket_items').update({ split_among: n }).eq('id', item.id)
-  if (error) throw error
-  const { error: aErr } = await supabase.from('item_assignments').upsert(
+  // two-phase rewrite: clear every claim before setting the new ones, so the
+  // capacity trigger never observes >100% while rows are updated one by one
+  const { error: clearErr } = await supabase.from('item_assignments').upsert(
     item.assignments.map((a) => ({
       item_id: item.id,
       user_id: a.user_id,
       payment_type: 'percentage' as const,
-      amount: a.user_id === userId ? 1 / n : 0,
+      amount: 0,
     })),
     { onConflict: 'item_id,user_id' },
   )
+  if (clearErr) throw clearErr
+  const { error } = await supabase.from('ticket_items').update({ split_among: n }).eq('id', item.id)
+  if (error) throw error
+  const { error: aErr } = await supabase
+    .from('item_assignments')
+    .upsert(
+      { item_id: item.id, user_id: userId, payment_type: 'percentage' as const, amount: 1 / n },
+      { onConflict: 'item_id,user_id' },
+    )
   if (aErr) throw aErr
 }
 
