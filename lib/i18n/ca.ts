@@ -61,7 +61,7 @@ export const ca: Record<string, string> = {
   'Parts': 'parts',
   'My share': 'Meva part:',
   'Split': 'Dividir',
-  'Unsplit': 'Desdividir',
+  'Unsplit': 'Desfer',
   'Please note that this action cannot be undone. Deleting your account will remove all associated data permanently': 'Tingui en compte que aquesta acció no es pot desfer. Eliminar el seu compte eliminarà tots els dades associades de manera permanent.',
   'Add by email': 'Afegeix per email',
   'User email': 'Email de l’usuari',

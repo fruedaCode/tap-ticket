@@ -61,7 +61,7 @@ export const en: Record<string, string> = {
   'Parts': 'parts',
   'My share': 'My share:',
   'Split': 'Split',
-  'Unsplit': 'Unsplit',
+  'Unsplit': 'Undo',
   'Please note that this action cannot be undone. Deleting your account will remove all associated data permanently': 'Please note that this action cannot be undone. Deleting your account will remove all associated data permanently.',
   'Add by email': 'Add by email',
   'User email': 'User email',
