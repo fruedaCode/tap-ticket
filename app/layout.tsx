@@ -18,9 +18,33 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://tapticket.es";
+
+// Spanish copy on purpose: the i18n provider defaults to "es", so this is the
+// language crawlers see in the prerendered HTML (<html lang="es">).
+const title = "TapTicket — Escanea un ticket, divide la cuenta";
+const description =
+  "Haz una foto, comparte un enlace y tus amigos eligen lo suyo. Las cuentas se hacen solas.";
+
 export const metadata: Metadata = {
-  title: "TapTicket",
-  description: "Scan a ticket and split it easily",
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: title,
+    template: "%s · TapTicket",
+  },
+  description,
+  openGraph: {
+    type: "website",
+    siteName: "TapTicket",
+    title,
+    description,
+    locale: "es_ES",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title,
+    description,
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",

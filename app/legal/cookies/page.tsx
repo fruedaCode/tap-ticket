@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { ConsentSettings } from '@/components/consent-settings'
 import { LegalPage } from '@/components/legal-page'
 
-export const metadata: Metadata = { title: 'Política de cookies — TapTicket' }
+export const metadata: Metadata = { title: 'Política de cookies' }
 
 export default function CookiesPage() {
   return (
