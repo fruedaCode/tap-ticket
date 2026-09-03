@@ -137,7 +137,7 @@ export const ca: Record<string, string> = {
   'Sign in': 'Entrar',
   'Scan a ticket, split the bill': 'Escaneja un tiquet, divideix el compte',
   'Snap a photo, share a link, and friends claim what they had. The math is done for you.': 'Fes una foto, comparteix un enllaç i els teus amics trien el seu. Els comptes es fan sols.',
-  'A receipt scanned into a phone where friends split the bill': 'Un tiquet escanejat en un mòbil on els amics divideixen el compte',
+  'A receipt scanned into a phone, claimed by three friends and settled': 'Un tiquet escanejat en un mòbil, repartit entre tres amics i saldat',
   'Ready to split the next bill?': 'A punt per dividir el proper compte?',
   'Get started': 'Comença',
   'See how it works': 'Mira com funciona',

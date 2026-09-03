@@ -137,7 +137,7 @@ export const es: Record<string, string> = {
   'Sign in': 'Entrar',
   'Scan a ticket, split the bill': 'Escanea un ticket, divide la cuenta',
   'Snap a photo, share a link, and friends claim what they had. The math is done for you.': 'Haz una foto, comparte un enlace y tus amigos eligen lo suyo. Las cuentas se hacen solas.',
-  'A receipt scanned into a phone where friends split the bill': 'Un ticket escaneado en un móvil donde los amigos dividen la cuenta',
+  'A receipt scanned into a phone, claimed by three friends and settled': 'Un ticket escaneado en un móvil, repartido entre tres amigos y saldado',
   'Ready to split the next bill?': '¿Listo para dividir la próxima cuenta?',
   'Get started': 'Empezar',
   'See how it works': 'Ver cómo funciona',

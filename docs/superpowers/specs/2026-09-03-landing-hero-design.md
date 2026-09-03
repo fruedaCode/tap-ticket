@@ -1,7 +1,35 @@
-# Landing hero: scroll-pinned story
+# Landing hero: cinematic product moment
 
 Date: 2026-09-03
-Status: approved for planning
+Status: built
+
+The scroll-pinned version described below was built, reviewed and rejected. The
+hero is now direction A, a one-shot cinematic entrance. The sections marked
+SUPERSEDED are kept because they record why the pinned approach was dropped and
+which of its findings still apply.
+
+## What was built instead
+
+- The hero is a single `min-h-[100dvh]` section. No tall section, no sticky
+  wrapper, no scroll driving anything.
+- `HeroStory` is unchanged: it still maps progress 0 to 1 across the same three
+  moments. A timed `animate(progress, 1)` over 1.9s replaces `useScroll`, so the
+  story plays once on load and rests on the settled frame.
+- One subtext line, the existing key. Three crossfading beat lines needed scroll
+  time to be readable and were dropped, along with their two i18n keys.
+- The entrance for the headline, subtext, CTAs and story container is CSS
+  (`animate-in fade-in-0 ... motion-reduce:animate-none` from tw-animate-css),
+  not Motion. A server-rendered `opacity: 0` left the hero blank until hydration,
+  which is the worst thing to do to the LCP element. CSS runs at first paint and
+  needs no JavaScript.
+- Reduced motion goes through `animate(..., { duration: 0 })`, not
+  `progress.set(1)`. A bare `set` on a value nothing is animating updates the
+  value but never schedules Motion's render, leaving the artwork on frame one.
+
+Measured: story runs 1800ms; hydration errors 0 at 1280x800 and 390x844 in both
+motion modes; hero fills the viewport exactly on both.
+
+## SUPERSEDED: original scroll-pinned design
 
 ## Goal
 
@@ -17,7 +45,7 @@ playable in-hero demo). Scroll-pinned story was selected.
 
 | Decision | Choice | Why |
 | --- | --- | --- |
-| Direction | Scroll-pinned story | Selected by the user over a one-shot animation and a playable demo |
+| Direction | ~~Scroll-pinned story~~ Rejected after review; replaced by the cinematic one-shot | |
 | Beat count | 3 | Mirrors what the product does; ~2 screens of scroll. 4 beats duplicates "How it works" and feels like a hostage situation on mobile |
 | Pinning mechanism | CSS `position: sticky` + Motion `useScroll` | No new dependency; the page keeps native scroll speed; avoids mixing GSAP with the Motion already used across this page |
 | h1 | Fixed, never swaps | Stable h1 for SEO and screen readers |
@@ -127,9 +155,9 @@ component.
 
 - No rendered markup may branch on `useReducedMotion()`. That includes `initial`,
   `className`, and any `style` value.
-- Under reduced motion the component passes a constant `MotionValue(0)` in place
-  of `scrollYProgress`. Both paths render beat 1 at progress 0, so server and
-  client markup are identical; the branch only changes what happens after scroll.
+- Never swap which MotionValue a `useTransform` reads from. This was in the
+  original design and proved wrong in practice: some hooks stay subscribed to the
+  old value and the beats desynchronise. Keep one value for the component's life.
 - Dropping the pin under reduced motion is done in CSS with Tailwind
   `motion-reduce:` variants (`motion-reduce:h-auto` on the section,
   `motion-reduce:static` on the sticky wrapper), never in JavaScript.

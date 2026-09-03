@@ -1,33 +1,51 @@
 'use client'
 
-import { useRef } from 'react'
+import { useEffect } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
-import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react'
+import { animate, useMotionValue, useReducedMotion } from 'motion/react'
 import { useI18n } from '@/lib/i18n'
 import { Button } from '@/components/ui/button'
+import { HeroStory } from '@/components/hero-story'
 
-const EASE = [0.16, 1, 0.3, 1] as const
+// Long enough to read as three distinct moments, short enough that nobody is
+// waiting on it before reaching for the CTA. The CTAs are on screen well before
+// it finishes, so this never gates the page.
+const STORY_DURATION = 3.4
+
+// The entrance is CSS, not Motion: a server-rendered `opacity: 0` would leave
+// the hero blank until hydration, which is the worst thing to do to the element
+// the page is judged on. These run at first paint and need no JavaScript.
+const ENTER = 'animate-in fade-in-0 slide-in-from-bottom-6 duration-700 fill-mode-both motion-reduce:animate-none'
 
 export function LandingHero() {
   const { t } = useI18n()
   const reduce = useReducedMotion()
-  const ref = useRef<HTMLElement>(null)
 
-  // Gentle parallax on the visual while the hero scrolls away (depth cue).
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
-  const imgY = useTransform(scrollYProgress, [0, 1], [0, reduce ? 0 : -40])
-  const imgScale = useTransform(scrollYProgress, [0, 1], [1, reduce ? 1 : 0.97])
+  // Drives the illustration, 0 to 1. It starts at 0, which is what the server
+  // renders, so the first paint never depends on a media query. Its identity
+  // never changes: swapping the value a useTransform reads from leaves some
+  // hooks subscribed to the old one and desynchronises the artwork.
+  const progress = useMotionValue(0)
 
-  // The initial state must not depend on `reduce`: the server has no media
-  // query, so branching here makes the SSR markup disagree with the hydrated
-  // client for reduced-motion visitors. Only the transition is gated, which
-  // collapses the reveal to a single frame instead of removing it.
-  const rise = (delay: number) => ({
-    initial: { opacity: 0, y: 24 },
-    animate: { opacity: 1, y: 0 },
-    transition: reduce ? { duration: 0 } : { duration: 0.7, delay, ease: EASE },
-  })
+  useEffect(() => {
+    // Reduced motion lands on the settled frame instead of losing the payoff,
+    // and it goes through animate() rather than progress.set(): a bare set on a
+    // value nobody is animating updates the value but never schedules Motion's
+    // render, so the artwork would stay on the first frame. Running after mount
+    // keeps the first paint identical either way.
+    const controls = animate(progress, 1, {
+      // Explicit so `duration` is always literal wall-clock time rather than a
+      // spring's perceptual hint.
+      type: 'tween',
+      duration: reduce ? 0 : STORY_DURATION,
+      // Linear on purpose. An eased master curve races through the middle of the
+      // timeline, which is where claiming and settling live, so those moments
+      // flash past however long the total is. The rhythm comes from the
+      // staggered ranges inside HeroStory instead.
+      ease: 'linear',
+    })
+    return () => controls.stop()
+  }, [progress, reduce])
 
   // The headline is translated as one string; the accent falls on the part
   // after the comma, which holds in en/es/ca ("…, split the bill").
@@ -37,52 +55,50 @@ export function LandingHero() {
   const accent = comma === -1 ? '' : headline.slice(comma + 2)
 
   return (
-    <section
-      ref={ref}
-      className="grid grid-cols-1 items-center gap-10 py-12 sm:py-16 lg:grid-cols-[1.1fr_0.9fr] lg:gap-6 lg:pt-20"
-    >
-      <div className="flex flex-col items-start gap-6">
-        <motion.h1
-          {...rise(0)}
-          className="text-balance text-4xl font-semibold leading-[1.05] tracking-tighter sm:text-5xl"
-        >
-          {lead}
-          {accent && (
-            <>
-              {' '}
-              <span className="text-primary">{accent}</span>
-            </>
-          )}
-        </motion.h1>
-        <motion.p {...rise(0.1)} className="max-w-md text-lg text-muted-foreground">
-          {t('Snap a photo, share a link, and friends claim what they had. The math is done for you.')}
-        </motion.p>
-        <motion.div {...rise(0.2)} className="flex items-center gap-3">
-          <Button size="lg" nativeButton={false} render={<Link href="/login" />}>
-            {t('Get started')}
-          </Button>
-          <Button size="lg" variant="ghost" nativeButton={false} render={<Link href="#how-it-works" />}>
-            {t('See how it works')}
-          </Button>
-        </motion.div>
-      </div>
+    <section className="flex min-h-[100dvh] items-center">
+      <div className="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-8 px-8 pt-24 pb-12 lg:grid-cols-[0.95fr_1.15fr] lg:gap-10">
+        <div className="flex flex-col items-start gap-6">
+          <h1
+            className={`text-balance text-4xl font-semibold leading-[1.05] tracking-tighter sm:text-5xl lg:text-6xl ${ENTER}`}
+          >
+            {lead}
+            {accent && (
+              <>
+                {' '}
+                <span className="text-primary">{accent}</span>
+              </>
+            )}
+          </h1>
 
-      <motion.div style={{ y: imgY, scale: imgScale }}>
-        <motion.div
-          initial={{ opacity: 0, y: 32, scale: 0.96 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={reduce ? { duration: 0 } : { duration: 0.9, delay: 0.25, ease: EASE }}
+          <p
+            className={`max-w-md text-lg text-muted-foreground ${ENTER} [animation-delay:100ms]`}
+          >
+            {t('Snap a photo, share a link, and friends claim what they had. The math is done for you.')}
+          </p>
+
+          <div className={`flex items-center gap-3 ${ENTER} [animation-delay:200ms]`}>
+            <Button size="lg" nativeButton={false} render={<Link href="/login" />}>
+              {t('Get started')}
+            </Button>
+            <Button
+              size="lg"
+              variant="ghost"
+              nativeButton={false}
+              render={<Link href="#how-it-works" />}
+            >
+              {t('See how it works')}
+            </Button>
+          </div>
+        </div>
+
+        {/* Capped on phones so the headline, subtext and both CTAs still fit
+            above it without scrolling. */}
+        <div
+          className={`w-full [&>svg]:max-h-[42dvh] lg:[&>svg]:max-h-none animate-in fade-in-0 zoom-in-95 duration-1000 fill-mode-both motion-reduce:animate-none [animation-delay:150ms]`}
         >
-          <Image
-            src="/hero.svg"
-            alt={t('A receipt scanned into a phone where friends split the bill')}
-            width={400}
-            height={300}
-            priority
-            className="w-full rounded-3xl"
-          />
-        </motion.div>
-      </motion.div>
+          <HeroStory progress={progress} />
+        </div>
+      </div>
     </section>
   )
 }

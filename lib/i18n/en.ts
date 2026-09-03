@@ -137,7 +137,7 @@ export const en: Record<string, string> = {
   'Sign in': 'Sign in',
   'Scan a ticket, split the bill': 'Scan a ticket, split the bill',
   'Snap a photo, share a link, and friends claim what they had. The math is done for you.': 'Snap a photo, share a link, and friends claim what they had. The math is done for you.',
-  'A receipt scanned into a phone where friends split the bill': 'A receipt scanned into a phone where friends split the bill',
+  'A receipt scanned into a phone, claimed by three friends and settled': 'A receipt scanned into a phone, claimed by three friends and settled',
   'Ready to split the next bill?': 'Ready to split the next bill?',
   'Get started': 'Get started',
   'See how it works': 'See how it works',
