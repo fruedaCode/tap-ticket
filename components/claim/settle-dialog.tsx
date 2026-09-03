@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { Camera, Loader2 } from 'lucide-react'
+import { Camera, Image as ImageIcon, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -57,7 +57,8 @@ function SettleBody({
 }) {
   const { lang, t } = useI18n()
   const [supabase] = useState(createClient)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const cameraInputRef = useRef<HTMLInputElement>(null)
+  const galleryInputRef = useRef<HTMLInputElement>(null)
   const { openCamera, notifyFileSelected } = useCameraPermissionHint()
 
   // a submitted proof counts as paid; what's left is the share minus active settlements
@@ -86,7 +87,8 @@ function SettleBody({
     setPreviewUrl(URL.createObjectURL(selected))
   }
 
-  const openPicker = () => openCamera(() => inputRef.current?.click())
+  const openCameraPicker = () => openCamera(() => cameraInputRef.current?.click())
+  const openGalleryPicker = () => galleryInputRef.current?.click()
 
   const handleMarkPaid = async () => {
     if (!file || !(remaining > 0)) return
@@ -138,34 +140,48 @@ function SettleBody({
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="settle-proof">{t('Payment proof')}</Label>
+              <Label htmlFor="settle-proof-camera">{t('Payment proof')}</Label>
+              <p className="text-xs text-muted-foreground">
+                {t('Take a photo of the payment receipt, or choose a picture or screenshot you already have — for example, a screenshot of the transfer.')}
+              </p>
               <input
-                ref={inputRef}
-                id="settle-proof"
+                ref={cameraInputRef}
+                id="settle-proof-camera"
                 type="file"
                 accept="image/jpeg,image/png,image/webp"
                 capture="environment"
                 className="hidden"
                 onChange={onFileSelected}
               />
-              {previewUrl ? (
-                <button type="button" className="block w-full" onClick={openPicker}>
-                  {/* eslint-disable-next-line @next/next/no-img-element -- local object URL preview, not optimizable */}
-                  <img
-                    src={previewUrl}
-                    alt={t('Payment proof')}
-                    width={previewDims?.width}
-                    height={previewDims?.height}
-                    onLoad={(e) => setPreviewDims({ width: e.currentTarget.naturalWidth, height: e.currentTarget.naturalHeight })}
-                    className="max-h-48 w-full rounded-lg object-contain"
-                  />
-                </button>
-              ) : (
-                <Button type="button" variant="outline" className="min-h-11" onClick={openPicker}>
-                  <Camera aria-hidden />
-                  {t('Add proof photo')}
-                </Button>
+              <input
+                ref={galleryInputRef}
+                id="settle-proof-gallery"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                className="hidden"
+                onChange={onFileSelected}
+              />
+              {previewUrl && (
+                // eslint-disable-next-line @next/next/no-img-element -- local object URL preview, not optimizable
+                <img
+                  src={previewUrl}
+                  alt={t('Payment proof')}
+                  width={previewDims?.width}
+                  height={previewDims?.height}
+                  onLoad={(e) => setPreviewDims({ width: e.currentTarget.naturalWidth, height: e.currentTarget.naturalHeight })}
+                  className="max-h-48 w-full rounded-lg object-contain"
+                />
               )}
+              <div className="grid grid-cols-2 gap-2">
+                <Button type="button" variant="outline" className="min-h-11" onClick={openCameraPicker}>
+                  <Camera aria-hidden />
+                  {t('Take picture')}
+                </Button>
+                <Button type="button" variant="outline" className="min-h-11" onClick={openGalleryPicker}>
+                  <ImageIcon aria-hidden />
+                  {t('Upload from gallery')}
+                </Button>
+              </div>
             </div>
 
             <Button

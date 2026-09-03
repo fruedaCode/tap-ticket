@@ -106,27 +106,35 @@ function ScanPageContent() {
           onChange={onFileSelected}
         />
 
-        <button
-          type="button"
-          onClick={() => openCamera(() => cameraInputRef.current?.click())}
-          className="flex flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-muted-foreground/25 px-6 py-12 text-center hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:bg-muted/50"
-        >
-          <div className="flex size-16 items-center justify-center rounded-full bg-primary/10">
-            <Camera className="size-8 text-primary" aria-hidden />
-          </div>
-          <p className="text-base font-medium">{t('Take picture')}</p>
-          <p className="text-sm text-muted-foreground">{t('Snap a photo of your receipt')}</p>
-        </button>
+        <div className="grid grid-cols-2 gap-3">
+          <button
+            type="button"
+            onClick={() => openCamera(() => cameraInputRef.current?.click())}
+            className="flex cursor-pointer flex-col items-center justify-center gap-3 rounded-2xl border bg-card px-4 py-8 text-center shadow-sm transition hover:border-primary/40 hover:bg-muted/50 hover:shadow-md active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          >
+            <div className="flex size-14 items-center justify-center rounded-full bg-primary/10">
+              <Camera className="size-7 text-primary" aria-hidden />
+            </div>
+            <p className="text-base font-medium">{t('Take picture')}</p>
+            <p className="text-xs text-muted-foreground">{t('Snap a photo of your receipt')}</p>
+          </button>
 
-        <Button
-          type="button"
-          variant="outline"
-          className="min-h-11 w-full gap-2"
-          onClick={() => galleryInputRef.current?.click()}
-        >
-          <ImagePlus className="size-5" aria-hidden />
-          {t('Upload from gallery')}
-        </Button>
+          <button
+            type="button"
+            onClick={() => galleryInputRef.current?.click()}
+            className="flex cursor-pointer flex-col items-center justify-center gap-3 rounded-2xl border bg-card px-4 py-8 text-center shadow-sm transition hover:border-primary/40 hover:bg-muted/50 hover:shadow-md active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          >
+            <div className="flex size-14 items-center justify-center rounded-full bg-primary/10">
+              <ImagePlus className="size-7 text-primary" aria-hidden />
+            </div>
+            <p className="text-base font-medium">{t('Upload from gallery')}</p>
+            <p className="text-xs text-muted-foreground">{t('Choose a picture or screenshot you already have')}</p>
+          </button>
+        </div>
+
+        <p className="text-center text-xs text-muted-foreground">
+          {t('Take a photo of the receipt, or choose a picture or screenshot you already have.')}
+        </p>
 
         <div className="rounded-xl border bg-card p-4">
           <p className="mb-3 text-sm font-medium">{t('Tips for a good scan')}</p>
