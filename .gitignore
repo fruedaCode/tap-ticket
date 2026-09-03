@@ -45,3 +45,6 @@ stickers/tools/node_modules/
 
 # third-party skills library (cloned, not vendored)
 .agents/skills/anthropic-cybersecurity-skills/
+
+# superpowers brainstorming session files
+.superpowers/
