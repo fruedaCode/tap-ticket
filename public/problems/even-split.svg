@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="Three friends who ordered different amounts each paying an identical share">
+  <rect x="8" y="8" width="384" height="284" rx="24" fill="#FDECEA"/>
+  <!-- diners -->
+  <g>
+    <circle cx="108" cy="96" r="24" fill="#DC2626"/>
+    <circle cx="108" cy="90" r="7" fill="#FFFFFF"/>
+    <path d="M97 110 A 11 11 0 0 1 119 110 Z" fill="#FFFFFF"/>
+    <circle cx="200" cy="96" r="24" fill="#450A0A"/>
+    <circle cx="200" cy="90" r="7" fill="#FFFFFF"/>
+    <path d="M189 110 A 11 11 0 0 1 211 110 Z" fill="#FFFFFF"/>
+    <circle cx="292" cy="96" r="24" fill="#D97706"/>
+    <circle cx="292" cy="90" r="7" fill="#FFFFFF"/>
+    <path d="M281 110 A 11 11 0 0 1 303 110 Z" fill="#FFFFFF"/>
+  </g>
+  <!-- what each of them ordered: one line, three lines, two lines -->
+  <g fill="#D9C8C3">
+    <rect x="86" y="134" width="44" height="9" rx="4.5"/>
+    <rect x="178" y="134" width="44" height="9" rx="4.5"/>
+    <rect x="178" y="148" width="44" height="9" rx="4.5"/>
+    <rect x="178" y="162" width="44" height="9" rx="4.5"/>
+    <rect x="270" y="134" width="44" height="9" rx="4.5"/>
+    <rect x="270" y="148" width="44" height="9" rx="4.5"/>
+  </g>
+  <line x1="56" y1="184" x2="344" y2="184" stroke="#F0DAD5" stroke-width="2.5"/>
+  <!-- but every share comes out the same -->
+  <g fill="#DC2626">
+    <rect x="80" y="202" width="56" height="16" rx="8"/>
+    <rect x="172" y="202" width="56" height="16" rx="8"/>
+    <rect x="264" y="202" width="56" height="16" rx="8"/>
+  </g>
+  <g fill="#450A0A" opacity="0.3">
+    <rect x="146" y="204" width="16" height="3.5" rx="1.75"/>
+    <rect x="146" y="212.5" width="16" height="3.5" rx="1.75"/>
+    <rect x="238" y="204" width="16" height="3.5" rx="1.75"/>
+    <rect x="238" y="212.5" width="16" height="3.5" rx="1.75"/>
+  </g>
+  <!-- the diner who ordered least is overpaying -->
+  <rect x="74" y="196" width="68" height="28" rx="14" fill="none" stroke="#DC2626" stroke-width="3" opacity="0.45"/>
+</svg>

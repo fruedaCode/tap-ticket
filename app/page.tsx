@@ -38,6 +38,26 @@ const STEPS = [
 // Bento rhythm: wide/narrow then narrow/wide, never four equal tiles.
 const STEP_SPANS = ['lg:col-span-7', 'lg:col-span-5', 'lg:col-span-5', 'lg:col-span-7']
 
+// The two people an even split lets down: the diner who under-ordered and the
+// waiter who has to do the maths at the terminal.
+const PROBLEMS = [
+  {
+    img: '/problems/even-split.svg',
+    alt: 'Three friends who ordered different amounts each paying an identical share',
+    title: 'Nobody ordered the same thing',
+    body: 'You had water and a starter. Someone else had wine and dessert, and the even split makes you pay for half of it.',
+  },
+  {
+    img: '/problems/waiter-time.svg',
+    alt: 'A card terminal with three payments queued, a running clock and a failed manual split',
+    title: 'The waiter turns into a calculator',
+    body: 'Every diner paying separately is one more card payment, plus a total split by hand. One wrong tap and somebody gets charged twice.',
+  },
+] as const
+
+// Diptych split by a hairline, so the problems do not read as another tile grid.
+const PROBLEM_SPANS = ['sm:pr-8', 'sm:border-l sm:pl-8']
+
 const PLAN_ORDER: PlanId[] = ['free', 'standard', 'pro']
 
 const PLAN_NAME_KEY: Record<PlanId, string> = {
@@ -53,10 +73,11 @@ export default function LandingPage() {
   const formatPrice = (cents: number) =>
     new Intl.NumberFormat(lang, { style: 'currency', currency: 'EUR' }).format(cents / 100)
 
-  // initial:false + unconditional whileInView keeps content visible even when
-  // useReducedMotion resolves after the first client render.
+  // The initial state must not depend on `reduce` (see landing-hero): the
+  // server has no media query, so branching here makes the SSR markup
+  // disagree with the hydrated client for reduced-motion visitors.
   const reveal = (i: number) => ({
-    initial: reduce ? false : { opacity: 0, y: 24 },
+    initial: { opacity: 0, y: 24 },
     whileInView: { opacity: 1, y: 0 },
     viewport: { once: true, amount: 0.3 },
     transition: reduce ? { duration: 0 } : { duration: 0.6, delay: i * 0.07, ease: EASE },
@@ -73,6 +94,31 @@ export default function LandingPage() {
 
       <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col px-4">
         <LandingHero />
+
+        <section className="pb-16 sm:pb-24">
+          <h2 className="mb-8 text-center text-2xl font-semibold tracking-tight text-balance">
+            {t('Why splitting a bill goes wrong')}
+          </h2>
+          <div className="grid gap-10 sm:grid-cols-2 sm:gap-0">
+            {PROBLEMS.map((problem, i) => (
+              <motion.div key={problem.title} {...reveal(i)} className={PROBLEM_SPANS[i]}>
+                <img
+                  src={problem.img}
+                  alt={t(problem.alt)}
+                  width={400}
+                  height={300}
+                  loading="lazy"
+                  className="mb-3 w-full rounded-lg"
+                />
+                <h3 className="font-semibold text-balance">{t(problem.title)}</h3>
+                <p className="mt-1 text-sm text-muted-foreground">{t(problem.body)}</p>
+              </motion.div>
+            ))}
+          </div>
+          <motion.p {...reveal(2)} className="mt-8 text-center font-medium text-balance">
+            {t('Each person pays their own share, and the restaurant still gets one payment.')}
+          </motion.p>
+        </section>
 
         <section id="how-it-works" className="scroll-mt-8 pb-16 sm:pb-24">
           <h2 className="mb-8 text-center text-2xl font-semibold tracking-tight">

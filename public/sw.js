@@ -1,5 +1,13 @@
 // Bump CACHE_NAME on each deploy to invalidate old caches
-const CACHE_NAME = "tapticket-v1";
+const CACHE_NAME = "tapticket-v2";
+
+// A worker installed by `next start` on localhost keeps controlling the origin
+// afterwards, so it goes on intercepting and caching assets on every later
+// `next dev`. Browsers re-fetch this file on navigation, so treating localhost
+// as off-limits here lets an already-installed worker retire itself.
+const IS_LOCALHOST = ["localhost", "127.0.0.1", "[::1]"].includes(
+  self.location.hostname,
+);
 
 const MAX_CACHE_ENTRIES = 50;
 
@@ -25,11 +33,13 @@ self.addEventListener("activate", (event) => {
       .then((keys) =>
         Promise.all(
           keys
-            .filter((key) => key !== CACHE_NAME)
+            .filter((key) => IS_LOCALHOST || key !== CACHE_NAME)
             .map((key) => caches.delete(key)),
         ),
       )
-      .then(() => self.clients.claim()),
+      .then(() =>
+        IS_LOCALHOST ? self.registration.unregister() : self.clients.claim(),
+      ),
   );
 });
 
@@ -73,6 +83,7 @@ self.addEventListener("notificationclick", (event) => {
 self.addEventListener("fetch", (event) => {
   const { request } = event;
 
+  if (IS_LOCALHOST) return;
   if (request.method !== "GET") return;
 
   const url = new URL(request.url);

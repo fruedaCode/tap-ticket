@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="A card terminal with three payments queued, a running clock and a failed manual split">
+  <rect x="8" y="8" width="384" height="284" rx="24" fill="#FDECEA"/>
+  <!-- cards queued up, one per person -->
+  <g>
+    <g transform="rotate(-9 74 104)">
+      <rect x="41" y="88" width="66" height="42" rx="7" fill="#450A0A" opacity="0.07"/>
+      <rect x="41" y="83" width="66" height="42" rx="7" fill="#FFFFFF"/>
+      <rect x="51" y="92" width="13" height="10" rx="2.5" fill="#D97706"/>
+      <rect x="49" y="109" width="34" height="6" rx="3" fill="#D9C8C3"/>
+    </g>
+    <g transform="rotate(5 74 152)">
+      <rect x="41" y="136" width="66" height="42" rx="7" fill="#450A0A" opacity="0.07"/>
+      <rect x="41" y="131" width="66" height="42" rx="7" fill="#FFFFFF"/>
+      <rect x="51" y="140" width="13" height="10" rx="2.5" fill="#D97706"/>
+      <rect x="49" y="157" width="34" height="6" rx="3" fill="#D9C8C3"/>
+    </g>
+    <g transform="rotate(-6 74 200)">
+      <rect x="41" y="184" width="66" height="42" rx="7" fill="#450A0A" opacity="0.07"/>
+      <rect x="41" y="179" width="66" height="42" rx="7" fill="#FFFFFF"/>
+      <rect x="51" y="188" width="13" height="10" rx="2.5" fill="#D97706"/>
+      <rect x="49" y="205" width="34" height="6" rx="3" fill="#D9C8C3"/>
+    </g>
+  </g>
+  <!-- card terminal -->
+  <rect x="148" y="79" width="112" height="164" rx="18" fill="#450A0A" opacity="0.07"/>
+  <rect x="148" y="72" width="112" height="164" rx="18" fill="#450A0A"/>
+  <rect x="162" y="86" width="80" height="56" rx="8" fill="#FFFFFF"/>
+  <rect x="174" y="98" width="44" height="8" rx="4" fill="#D9C8C3"/>
+  <rect x="174" y="112" width="30" height="8" rx="4" fill="#D9C8C3"/>
+  <rect x="174" y="126" width="36" height="10" rx="5" fill="#DC2626"/>
+  <rect x="218" y="126" width="16" height="10" rx="5" fill="#DC2626" opacity="0.6"/>
+  <!-- keypad, with the mistyped key lit up -->
+  <g fill="#FFFFFF" opacity="0.3">
+    <circle cx="176" cy="164" r="7"/>
+    <circle cx="204" cy="164" r="7"/>
+    <circle cx="232" cy="164" r="7"/>
+    <circle cx="176" cy="190" r="7"/>
+    <circle cx="204" cy="190" r="7"/>
+    <circle cx="232" cy="190" r="7"/>
+    <circle cx="176" cy="216" r="7"/>
+    <circle cx="204" cy="216" r="7"/>
+  </g>
+  <circle cx="232" cy="216" r="7" fill="#DC2626"/>
+  <!-- the split came out wrong -->
+  <circle cx="262" cy="74" r="17" fill="#DC2626"/>
+  <path d="M255 67 L269 81 M269 67 L255 81" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"/>
+  <!-- and the table is still waiting -->
+  <circle cx="328" cy="152" r="30" fill="#FFFFFF"/>
+  <circle cx="328" cy="152" r="30" fill="none" stroke="#D9C8C3" stroke-width="3"/>
+  <path d="M328 122 A 30 30 0 0 1 343 178" fill="none" stroke="#DC2626" stroke-width="4" stroke-linecap="round"/>
+  <g stroke="#450A0A" stroke-width="4" stroke-linecap="round">
+    <path d="M328 152 L328 132"/>
+    <path d="M328 152 L344 161"/>
+  </g>
+</svg>

@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "TapTicket — Escanea un ticket, divide la cuenta";
+export const alt = "TapTicket - Escanea un ticket, divide la cuenta";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 

@@ -19,10 +19,12 @@ export function LandingHero() {
   const imgY = useTransform(scrollYProgress, [0, 1], [0, reduce ? 0 : -40])
   const imgScale = useTransform(scrollYProgress, [0, 1], [1, reduce ? 1 : 0.97])
 
-  // initial:false + unconditional animate keeps content visible even when
-  // useReducedMotion resolves after the first client render.
+  // The initial state must not depend on `reduce`: the server has no media
+  // query, so branching here makes the SSR markup disagree with the hydrated
+  // client for reduced-motion visitors. Only the transition is gated, which
+  // collapses the reveal to a single frame instead of removing it.
   const rise = (delay: number) => ({
-    initial: reduce ? false : { opacity: 0, y: 24 },
+    initial: { opacity: 0, y: 24 },
     animate: { opacity: 1, y: 0 },
     transition: reduce ? { duration: 0 } : { duration: 0.7, delay, ease: EASE },
   })
@@ -67,7 +69,7 @@ export function LandingHero() {
 
       <motion.div style={{ y: imgY, scale: imgScale }}>
         <motion.div
-          initial={reduce ? false : { opacity: 0, y: 32, scale: 0.96 }}
+          initial={{ opacity: 0, y: 32, scale: 0.96 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={reduce ? { duration: 0 } : { duration: 0.9, delay: 0.25, ease: EASE }}
         >
