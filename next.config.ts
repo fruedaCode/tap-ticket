@@ -10,18 +10,21 @@ const contentSecurityPolicy = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
-  // *.supabase.co hosts the signed ticket images in Storage
-  "img-src 'self' blob: data: https://*.supabase.co",
+  // *.supabase.co hosts the signed ticket images in Storage; dev adds the
+  // local Supabase stack (supabase start)
+  `img-src 'self' blob: data: https://*.supabase.co${isDev ? " http://127.0.0.1:54321 http://localhost:54321" : ""}`,
   "font-src 'self'",
   // Supabase (auth/rest/realtime) and PostHog (fallback if the /ingest
   // reverse proxy is bypassed; ui_host links point at these hosts too)
-  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://eu.i.posthog.com https://eu-assets.i.posthog.com https://us.i.posthog.com https://us-assets.i.posthog.com",
+  `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://eu.i.posthog.com https://eu-assets.i.posthog.com https://us.i.posthog.com https://us-assets.i.posthog.com${isDev ? " http://127.0.0.1:54321 http://localhost:54321 ws://127.0.0.1:54321 ws://localhost:54321" : ""}`,
   "worker-src 'self'",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
   "frame-ancestors 'none'",
-  "upgrade-insecure-requests",
+  // skipped in dev: the local Supabase stack is plain HTTP on localhost and
+  // some browsers would upgrade those requests to HTTPS and fail
+  ...(isDev ? [] : ["upgrade-insecure-requests"]),
 ].join("; ");
 
 const securityHeaders = [
