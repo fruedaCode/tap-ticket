@@ -5,22 +5,21 @@
 // LEGAL STATUS: operated by a natural person — unlimited personal liability
 // (art. 1911 CC). Form an SL before scaling beyond beta; no clause in the
 // terms changes that.
-// The pages print these values as-is, so a wrong value is visible rather than
-// silently missing — that is deliberate.
+// The operator's personal name, tax ID and postal address are deliberately NOT
+// published: the pages identify the service by its trade name and offer the
+// full details on request by email. LSSI-CE art. 10.1(a) and GDPR art. 13
+// expect the operator to be identifiable, so publish a business address (never
+// a home one) here once there is one.
 export const COMPANY = {
-  // Natural person (persona física / autónomo) — there is no company behind
-  // the trade name, and the legal pages must say so (LSSI-CE art. 10).
-  name: 'Fernando Rueda Oliva',
-  tradeName: 'TapTicket',
-  taxId: '48327703B',
-  address: 'C/Murcia 12, Barcelona 08027',
+  name: 'TapTicket',
   // Registro Mercantil entry. LSSI-CE art. 10.1(b) only requires this for
   // entities actually entered in a public registry; a sole trader (autónomo) is
   // not, so leaving this empty omits the line from the legal notice entirely.
   registry: '',
-  contactEmail: 'fernandoruedaoliva@gmail.com',
-  privacyEmail: 'fernandoruedaoliva@gmail.com',
+  // Any address at tapticket.es reaches the operator (catch-all).
+  contactEmail: 'support@tapticket.es',
+  privacyEmail: 'privacy@tapticket.es',
 } as const
 
 // Shown as "last updated" on every legal page. Bump when the text changes.
-export const LAST_UPDATED = '2026-08-28'
+export const LAST_UPDATED = '2026-09-06'

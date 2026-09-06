@@ -14,9 +14,10 @@ export const en: LegalDocs = {
       <>
         <p>
           <strong>
-            TapTicket is a trade name operated by {COMPANY.name}, NIF {COMPANY.taxId}, as a natural
-            person. This activity is not a limited liability company. The contractual relationship
-            and the processing of data are entered into directly with the operator.
+            TapTicket is a service operated by a natural person, not by a limited liability
+            company. The contractual relationship and the processing of data are entered into
+            directly with the operator, whose full identifying details are available on request
+            at <a href={`mailto:${COMPANY.contactEmail}`}>{COMPANY.contactEmail}</a>.
           </strong>
         </p>
         <p>
@@ -27,8 +28,9 @@ export const en: LegalDocs = {
 
         <h2>1. Who is responsible for your data</h2>
         <p>
-          Data controller: {COMPANY.name}, tax ID {COMPANY.taxId}, {COMPANY.address}. Privacy
-          contact: <a href={`mailto:${COMPANY.privacyEmail}`}>{COMPANY.privacyEmail}</a>.
+          Data controller: {COMPANY.name}. Privacy contact:{' '}
+          <a href={`mailto:${COMPANY.privacyEmail}`}>{COMPANY.privacyEmail}</a>. The operator&apos;s
+          full identifying and postal details are available on request at that address.
         </p>
 
         <h2>2. What we collect</h2>
@@ -210,15 +212,16 @@ export const en: LegalDocs = {
       <>
         <p>
           <strong>
-            TapTicket is a trade name operated by {COMPANY.name}, NIF {COMPANY.taxId}, as a natural
-            person. This activity is not a limited liability company. The contractual relationship
-            and the processing of data are entered into directly with the operator.
+            TapTicket is a service operated by a natural person, not by a limited liability
+            company. The contractual relationship and the processing of data are entered into
+            directly with the operator, whose full identifying details are available on request
+            at <a href={`mailto:${COMPANY.contactEmail}`}>{COMPANY.contactEmail}</a>.
           </strong>
         </p>
 
         <h2>1. Who you are contracting with</h2>
         <p>
-          TapTicket is operated by {COMPANY.name}, tax ID {COMPANY.taxId}, {COMPANY.address}, contact{' '}
+          TapTicket is operated by {COMPANY.name}, contact{' '}
           <a href={`mailto:${COMPANY.contactEmail}`}>{COMPANY.contactEmail}</a>. By using TapTicket you
           accept these terms.
         </p>
@@ -405,15 +408,16 @@ export const en: LegalDocs = {
 
         <h2>Operator</h2>
         <ul>
-          <li>Operator: {COMPANY.name} (natural person)</li>
-          <li>Trade name: {COMPANY.tradeName}</li>
-          <li>Tax ID: {COMPANY.taxId}</li>
-          <li>Registered address: {COMPANY.address}</li>
+          <li>Service: {COMPANY.name}</li>
           <li>
             Email: <a href={`mailto:${COMPANY.contactEmail}`}>{COMPANY.contactEmail}</a>
           </li>
           {COMPANY.registry && <li>Commercial registry: {COMPANY.registry}</li>}
         </ul>
+        <p>
+          TapTicket is operated by a natural person. The operator&apos;s full identifying details
+          and postal address are available free of charge on request at the address above.
+        </p>
 
         <h2>Purpose</h2>
         <p>

@@ -14,10 +14,11 @@ export const ca: LegalDocs = {
       <>
         <p>
           <strong>
-            TapTicket és un nom comercial operat per {COMPANY.name}, NIF {COMPANY.taxId}, en
-            qualitat de persona física. Aquesta activitat no constitueix una societat de
+            TapTicket és un servei operat per una persona física; no constitueix una societat de
             responsabilitat limitada. La relació contractual i el tractament de dades es fan
-            directament amb el titular.
+            directament amb el titular, les dades identificatives completes del qual estan
+            disponibles a petició a{' '}
+            <a href={`mailto:${COMPANY.contactEmail}`}>{COMPANY.contactEmail}</a>.
           </strong>
         </p>
         <p>
@@ -28,9 +29,10 @@ export const ca: LegalDocs = {
 
         <h2>1. Qui respon de les teves dades</h2>
         <p>
-          Responsable del tractament: {COMPANY.name}, NIF {COMPANY.taxId}, {COMPANY.address}.
-          Contacte de privacitat:{' '}
-          <a href={`mailto:${COMPANY.privacyEmail}`}>{COMPANY.privacyEmail}</a>.
+          Responsable del tractament: {COMPANY.name}. Contacte de privacitat:{' '}
+          <a href={`mailto:${COMPANY.privacyEmail}`}>{COMPANY.privacyEmail}</a>. Les dades
+          identificatives i el domicili complets del responsable estan disponibles a petició en
+          aquesta mateixa adreça.
         </p>
 
         <h2>2. Quines dades recollim</h2>
@@ -230,16 +232,17 @@ export const ca: LegalDocs = {
       <>
         <p>
           <strong>
-            TapTicket és un nom comercial operat per {COMPANY.name}, NIF {COMPANY.taxId}, en
-            qualitat de persona física. Aquesta activitat no constitueix una societat de
+            TapTicket és un servei operat per una persona física; no constitueix una societat de
             responsabilitat limitada. La relació contractual i el tractament de dades es fan
-            directament amb el titular.
+            directament amb el titular, les dades identificatives completes del qual estan
+            disponibles a petició a{' '}
+            <a href={`mailto:${COMPANY.contactEmail}`}>{COMPANY.contactEmail}</a>.
           </strong>
         </p>
 
         <h2>1. Amb qui contractes</h2>
         <p>
-          TapTicket està operat per {COMPANY.name}, NIF {COMPANY.taxId}, {COMPANY.address}, contacte{' '}
+          TapTicket està operat per {COMPANY.name}, contacte{' '}
           <a href={`mailto:${COMPANY.contactEmail}`}>{COMPANY.contactEmail}</a>. En fer servir
           TapTicket acceptes aquests termes.
         </p>
@@ -442,16 +445,18 @@ export const ca: LegalDocs = {
 
         <h2>Titular</h2>
         <ul>
-          <li>Titular: {COMPANY.name} (persona física)</li>
-          <li>Nom comercial: {COMPANY.tradeName}</li>
-          <li>NIF: {COMPANY.taxId}</li>
-          <li>Domicili: {COMPANY.address}</li>
+          <li>Servei: {COMPANY.name}</li>
           <li>
             Correu electrònic:{' '}
             <a href={`mailto:${COMPANY.contactEmail}`}>{COMPANY.contactEmail}</a>
           </li>
           {COMPANY.registry && <li>Dades registrals: {COMPANY.registry}</li>}
         </ul>
+        <p>
+          TapTicket està operat per una persona física. Les dades identificatives completes i el
+          domicili del titular estan disponibles de manera gratuïta a petició a l&apos;adreça de
+          correu anterior.
+        </p>
 
         <h2>Objecte</h2>
         <p>

@@ -14,10 +14,11 @@ export const es: LegalDocs = {
       <>
         <p>
           <strong>
-            TapTicket es un nombre comercial operado por {COMPANY.name}, NIF {COMPANY.taxId}, en
-            calidad de persona física. Esta actividad no constituye una sociedad de responsabilidad
-            limitada. La relación contractual y el tratamiento de datos se realizan directamente con
-            el titular.
+            TapTicket es un servicio operado por una persona física; no constituye una sociedad
+            de responsabilidad limitada. La relación contractual y el tratamiento de datos se
+            realizan directamente con el titular, cuyos datos identificativos completos están
+            disponibles a petición en{' '}
+            <a href={`mailto:${COMPANY.contactEmail}`}>{COMPANY.contactEmail}</a>.
           </strong>
         </p>
         <p>
@@ -28,9 +29,10 @@ export const es: LegalDocs = {
 
         <h2>1. Quién responde de tus datos</h2>
         <p>
-          Responsable del tratamiento: {COMPANY.name}, NIF {COMPANY.taxId}, {COMPANY.address}.
-          Contacto de privacidad:{' '}
-          <a href={`mailto:${COMPANY.privacyEmail}`}>{COMPANY.privacyEmail}</a>.
+          Responsable del tratamiento: {COMPANY.name}. Contacto de privacidad:{' '}
+          <a href={`mailto:${COMPANY.privacyEmail}`}>{COMPANY.privacyEmail}</a>. Los datos
+          identificativos y el domicilio completos del responsable están disponibles a petición
+          en esa misma dirección.
         </p>
 
         <h2>2. Qué datos recogemos</h2>
@@ -225,16 +227,17 @@ export const es: LegalDocs = {
       <>
         <p>
           <strong>
-            TapTicket es un nombre comercial operado por {COMPANY.name}, NIF {COMPANY.taxId}, en
-            calidad de persona física. Esta actividad no constituye una sociedad de responsabilidad
-            limitada. La relación contractual y el tratamiento de datos se realizan directamente con
-            el titular.
+            TapTicket es un servicio operado por una persona física; no constituye una sociedad
+            de responsabilidad limitada. La relación contractual y el tratamiento de datos se
+            realizan directamente con el titular, cuyos datos identificativos completos están
+            disponibles a petición en{' '}
+            <a href={`mailto:${COMPANY.contactEmail}`}>{COMPANY.contactEmail}</a>.
           </strong>
         </p>
 
         <h2>1. Con quién contratas</h2>
         <p>
-          TapTicket está operado por {COMPANY.name}, NIF {COMPANY.taxId}, {COMPANY.address}, contacto{' '}
+          TapTicket está operado por {COMPANY.name}, contacto{' '}
           <a href={`mailto:${COMPANY.contactEmail}`}>{COMPANY.contactEmail}</a>. Al usar TapTicket
           aceptas estos términos.
         </p>
@@ -434,16 +437,18 @@ export const es: LegalDocs = {
 
         <h2>Titular</h2>
         <ul>
-          <li>Titular: {COMPANY.name} (persona física)</li>
-          <li>Nombre comercial: {COMPANY.tradeName}</li>
-          <li>NIF: {COMPANY.taxId}</li>
-          <li>Domicilio: {COMPANY.address}</li>
+          <li>Servicio: {COMPANY.name}</li>
           <li>
             Correo electrónico:{' '}
             <a href={`mailto:${COMPANY.contactEmail}`}>{COMPANY.contactEmail}</a>
           </li>
           {COMPANY.registry && <li>Datos registrales: {COMPANY.registry}</li>}
         </ul>
+        <p>
+          TapTicket está operado por una persona física. Los datos identificativos completos y el
+          domicilio del titular están disponibles de forma gratuita a petición en la dirección de
+          correo anterior.
+        </p>
 
         <h2>Objeto</h2>
         <p>
