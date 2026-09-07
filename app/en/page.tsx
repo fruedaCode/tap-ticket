@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { LandingPage } from "@/components/landing-page";
 import { buildLandingJsonLd } from "@/lib/seo/jsonld";
 
-const title = "TapTicket — Escanea tickets con IA y divide la cuenta";
+const title = "TapTicket — Scan a receipt with AI and split the bill";
 const description =
-  "Escanea un ticket con IA, comparte un enlace y tus amigos eligen lo suyo. Divide la cuenta entre amigos en segundos, sin calculadora ni apps que instalar.";
+  "Scan any receipt with AI, share a link and friends claim what they had. Split restaurant and bar bills fairly in seconds — no app install, no calculator.";
 
 export const metadata: Metadata = {
   // `absolute` opts out of the root layout's "%s · TapTicket" template, which
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   title: { absolute: title },
   description,
   alternates: {
-    canonical: "/",
+    canonical: "/en",
     languages: {
       es: "/",
       en: "/en",
@@ -22,7 +22,11 @@ export const metadata: Metadata = {
   openGraph: {
     title,
     description,
-    locale: "es_ES",
+    locale: "en_US",
+  },
+  twitter: {
+    title,
+    description,
   },
 };
 
@@ -32,7 +36,7 @@ export default function Page() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(buildLandingJsonLd("es")),
+          __html: JSON.stringify(buildLandingJsonLd("en")),
         }}
       />
       <LandingPage />

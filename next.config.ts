@@ -2,6 +2,16 @@ import type { NextConfig } from "next";
 
 const isDev = process.env.NODE_ENV === "development";
 
+// The browser talks to Supabase directly, so the CSP must name whichever
+// stack NEXT_PUBLIC_SUPABASE_URL points at. Gate on the URL, not NODE_ENV:
+// a prod build (`next start`) against `supabase start` needs the local
+// exceptions just as much as `next dev` does.
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
+const isLocalSupabase = /^https?:\/\/(127\.0\.0\.1|localhost)(:|\/|$)/.test(
+  supabaseUrl,
+);
+const allowLocalStack = isDev || isLocalSupabase;
+
 // Static CSP (no nonces): every public page is prerendered and cached at the
 // Fly edge, and nonce-based CSP would force dynamic rendering on all routes.
 // script-src keeps 'unsafe-inline' because the App Router embeds inline RSC
@@ -10,21 +20,21 @@ const contentSecurityPolicy = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
-  // *.supabase.co hosts the signed ticket images in Storage; dev adds the
-  // local Supabase stack (supabase start)
-  `img-src 'self' blob: data: https://*.supabase.co${isDev ? " http://127.0.0.1:54321 http://localhost:54321" : ""}`,
+  // *.supabase.co hosts the signed ticket images in Storage; the local
+  // Supabase stack (supabase start) is added whenever it is in use
+  `img-src 'self' blob: data: https://*.supabase.co${allowLocalStack ? " http://127.0.0.1:54321 http://localhost:54321" : ""}`,
   "font-src 'self'",
   // Supabase (auth/rest/realtime) and PostHog (fallback if the /ingest
   // reverse proxy is bypassed; ui_host links point at these hosts too)
-  `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://eu.i.posthog.com https://eu-assets.i.posthog.com https://us.i.posthog.com https://us-assets.i.posthog.com${isDev ? " http://127.0.0.1:54321 http://localhost:54321 ws://127.0.0.1:54321 ws://localhost:54321" : ""}`,
+  `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://eu.i.posthog.com https://eu-assets.i.posthog.com https://us.i.posthog.com https://us-assets.i.posthog.com${allowLocalStack ? " http://127.0.0.1:54321 http://localhost:54321 ws://127.0.0.1:54321 ws://localhost:54321" : ""}`,
   "worker-src 'self'",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
   "frame-ancestors 'none'",
-  // skipped in dev: the local Supabase stack is plain HTTP on localhost and
-  // some browsers would upgrade those requests to HTTPS and fail
-  ...(isDev ? [] : ["upgrade-insecure-requests"]),
+  // skipped when the local Supabase stack is in use: it is plain HTTP on
+  // localhost and some browsers would upgrade those requests to HTTPS and fail
+  ...(allowLocalStack ? [] : ["upgrade-insecure-requests"]),
 ].join("; ");
 
 const securityHeaders = [

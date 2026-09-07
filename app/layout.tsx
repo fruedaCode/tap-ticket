@@ -21,10 +21,12 @@ const geistMono = Geist_Mono({
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://tapticket.es";
 
 // Spanish copy on purpose: the i18n provider defaults to "es", so this is the
-// language crawlers see in the prerendered HTML (<html lang="es">).
-const title = "TapTicket - Escanea un ticket, divide la cuenta";
+// language crawlers see in the prerendered HTML (<html lang="es">). The
+// landing pages override these (app/page.tsx, app/en/page.tsx); these strings
+// are the site-wide default for every other route.
+const title = "TapTicket - Escanea tickets con IA y divide la cuenta";
 const description =
-  "Haz una foto, comparte un enlace y tus amigos eligen lo suyo. Las cuentas se hacen solas.";
+  "Escanea un ticket con IA, comparte un enlace y tus amigos eligen lo suyo. Las cuentas se hacen solas.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

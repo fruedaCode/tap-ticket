@@ -1,5 +1,6 @@
 'use client'
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+import { usePathname } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { es } from './es'
 import { en } from './en'
@@ -7,6 +8,13 @@ import { ca } from './ca'
 
 export type Lang = 'es' | 'en' | 'ca'
 const dicts: Record<Lang, Record<string, string>> = { es, en, ca }
+
+// Public landing pages exist per language (/en) so crawlers get a fully
+// translated, indexable page; the URL locks the language there instead of
+// localStorage. Everything else keeps the saved-language behaviour.
+function forcedLangForPath(pathname: string): Lang | null {
+  return pathname === '/en' || pathname.startsWith('/en/') ? 'en' : null
+}
 
 // Keeps auth.users.user_metadata.locale in sync with the app language so
 // Supabase auth emails (magic link, etc.) can localize via {{ .Data.locale }}.
@@ -30,16 +38,21 @@ const I18nContext = createContext<{ lang: Lang; setLang: (l: Lang) => void; t: (
 })
 
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const [lang, setLangState] = useState<Lang>('es')
+  const pathname = usePathname()
+  const forced = forcedLangForPath(pathname)
+  const [savedLang, setSavedLang] = useState<Lang>('es')
   useEffect(() => {
     const saved = localStorage.getItem('lang') as Lang | null
     const current = saved && dicts[saved] ? saved : 'es'
-    if (current !== 'es') queueMicrotask(() => setLangState(current))
-    syncLocaleToUserMetadata(current)
-  }, [])
+    if (current !== 'es') queueMicrotask(() => setSavedLang(current))
+    syncLocaleToUserMetadata(forced ?? current)
+  }, [forced])
+  // A forced route (/en) wins over the stored language so the URL is the
+  // single source of truth for crawlers and visitors alike.
+  const lang = forced ?? savedLang
   const setLang = (l: Lang) => {
-    setLangState(l)
-    localStorage.setItem('lang', l)
+    setSavedLang(l)
+    if (!forced) localStorage.setItem('lang', l)
     syncLocaleToUserMetadata(l)
   }
   useEffect(() => {
