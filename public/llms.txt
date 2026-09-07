@@ -1,0 +1,20 @@
+# TapTicket
+
+> TapTicket is a web app that scans restaurant and bar receipts with AI and lets a group split the bill: one person photographs the ticket, shares a link, and everyone claims their own items from their phone. No app install and no account needed for guests.
+
+## Languages
+
+The product is available in Spanish (default, https://tapticket.es) and English (https://tapticket.es/en).
+
+## How it works
+
+1. Take a photo of the receipt. AI reads every line item and its price.
+2. Share a link. Friends join from their phones in seconds, with nothing to install.
+3. Each person taps what they had, in real time. Partial splits are handled automatically.
+4. See exactly who owes what and track payments until everyone is settled.
+
+## Pages
+
+- [Inicio (español)](https://tapticket.es): escanea tickets con IA y divide la cuenta entre amigos
+- [Home (English)](https://tapticket.es/en): scan a receipt with AI and split the bill
+- [Plans](https://tapticket.es/plans): pricing and plans
