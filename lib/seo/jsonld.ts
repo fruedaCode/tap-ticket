@@ -4,6 +4,11 @@ import { FAQ_ITEMS } from "./faq";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://tapticket.es";
 
+// Public profiles that identify TapTicket as an entity (GitHub, X, LinkedIn,
+// Product Hunt...). Added to the Organization schema as sameAs so answer
+// engines can connect mentions across sources. Empty until the profiles exist.
+const SOCIAL_PROFILES: string[] = [];
+
 const dictFor = { en, es } as const;
 
 export type LandingJsonLdLang = keyof typeof dictFor;
@@ -38,6 +43,14 @@ export function buildLandingJsonLd(lang: LandingJsonLdLang) {
     "@context": "https://schema.org",
     "@graph": [
       {
+        "@type": "Organization",
+        "@id": `${siteUrl}#org`,
+        name: "TapTicket",
+        url: siteUrl,
+        logo: `${siteUrl}/icons/icon-512.png`,
+        ...(SOCIAL_PROFILES.length > 0 ? { sameAs: SOCIAL_PROFILES } : {}),
+      },
+      {
         "@type": "WebApplication",
         "@id": `${url}#app`,
         name: "TapTicket",
@@ -45,6 +58,7 @@ export function buildLandingJsonLd(lang: LandingJsonLdLang) {
         inLanguage: lang,
         applicationCategory: "FinanceApplication",
         operatingSystem: "Web",
+        creator: { "@id": `${siteUrl}#org` },
         description: t(
           "Snap a photo and AI reads every line. Share a link, friends claim what they had, and the math is done for you.",
         ),
