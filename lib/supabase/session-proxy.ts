@@ -5,8 +5,9 @@ import { NextResponse, type NextRequest } from 'next/server'
 // cookie policy and LSSI notice, which must be readable before signing up;
 // '/api/billing/webhook' must bypass the cookie gate — the Stripe HMAC signature
 // is its authentication; '/join' handles its own auth (invite links arrive with
-// the session in the URL fragment, before any cookie exists).
-const PUBLIC_PATHS = ['/login', '/auth', '/plans', '/legal', '/api/billing/webhook', '/join']
+// the session in the URL fragment, before any cookie exists); '/en' is the
+// English landing — public so crawlers can index it.
+const PUBLIC_PATHS = ['/login', '/auth', '/plans', '/legal', '/api/billing/webhook', '/join', '/en']
 
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request })

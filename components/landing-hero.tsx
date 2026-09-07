@@ -73,7 +73,7 @@ export function LandingHero() {
           <p
             className={`max-w-md text-lg text-muted-foreground ${ENTER} [animation-delay:100ms]`}
           >
-            {t('Snap a photo, share a link, and friends claim what they had. The math is done for you.')}
+            {t('Snap a photo and AI reads every line. Share a link, friends claim what they had, and the math is done for you.')}
           </p>
 
           <div className={`flex items-center gap-3 ${ENTER} [animation-delay:200ms]`}>
